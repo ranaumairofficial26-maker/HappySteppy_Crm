@@ -92,9 +92,9 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     buttonUrl: string;
     imageUrl: string;
   }>({
-    title: 'Home Refresh Sale',
-    subtitle: 'Transform Your Living Space',
-    discountText: 'Up to 40% OFF',
+    title: 'Modern Living Essentials',
+    subtitle: 'Stylish, functional and made for everyday comfort.',
+    discountText: '50% OFF',
     buttonText: 'Discover Now',
     buttonUrl: '/products',
     imageUrl: 'assets/images/home-refresh-banner.jpg'
