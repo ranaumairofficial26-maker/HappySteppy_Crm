@@ -1911,55 +1911,677 @@
   }
 }
 /* ==========================================================================
-   RESPONSIVE BREAKPOINTS
+   RESPONSIVE BREAKPOINTS (Mobile & Tablet Perfection - Desktop Locked)
    ========================================================================== */
 @media (max-width: 1024px) {
   .hero-combo-grid {
     grid-template-columns: 210px 1fr;
+    gap: 14px;
   }
 
   .trending-products-section .trending-products-grid {
     grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
   }
 
   .style-flash-section .style-flash-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
 
   .social-proof-row {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .shopora-footer .footer-top-row {
     grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
   }
 }
 
 @media (max-width: 768px) {
+  :host {
+    zoom: 1; /* Reset zoom on mobile screens for sharp native rendering */
+  }
+
+  /* 1. Header & Navigation */
+  .shopora-header {
+    padding: 12px 0 10px;
+
+    .header-inner {
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .brand-logo .brand-logo-img {
+      height: 40px;
+    }
+
+    .header-nav {
+      order: 3;
+      width: 100%;
+      overflow-x: auto;
+      white-space: nowrap;
+      gap: 8px;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      .nav-link {
+        font-size: 0.84rem;
+        padding: 5px 12px;
+        background: #f8fafc;
+        border-radius: 16px;
+        border: 1px solid #edf2f7;
+
+        &.active {
+          background: #ecfccb;
+          border-color: #65a30d;
+
+          &::after {
+            display: none;
+          }
+        }
+      }
+    }
+
+    .search-wrapper {
+      order: 2;
+      width: 100%;
+      max-width: 100%;
+      margin: 4px 0 0;
+      padding: 2px 4px 2px 14px;
+      height: 42px;
+
+      input {
+        font-size: 0.84rem;
+      }
+
+      .search-circle-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 0.85rem;
+      }
+    }
+
+    .header-divider {
+      display: none;
+    }
+
+    .header-actions {
+      gap: 12px;
+
+      .action-btn {
+        .action-icon {
+          font-size: 1.15rem;
+        }
+
+        .action-label {
+          font-size: 0.68rem;
+        }
+      }
+    }
+  }
+
+  /* 2. Hero Section & Horizontal Category Pills */
   .hero-combo-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
+  .sidebar-categories-aside {
+    border-radius: 16px;
+    padding: 10px 12px;
+    background: #ffffff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+
+    .sidebar-category-list {
+      display: flex;
+      flex-direction: row;
+      overflow-x: auto;
+      gap: 8px;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      .sidebar-category-item {
+        padding: 6px 14px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        flex-shrink: 0;
+
+        &.active {
+          background: #ecfccb;
+          border-color: #65a30d;
+          color: #365314;
+        }
+
+        .cat-chevron {
+          display: none;
+        }
+      }
+    }
+  }
+
+  /* Hero Banner Card */
+  .hero-banner-main-card {
+    min-height: 240px;
+    aspect-ratio: auto;
+    border-radius: 18px;
+
+    .hero-banner-main-img {
+      object-fit: cover;
+      object-position: right 30%;
+    }
+
+    .hero-card-content-overlay {
+      max-width: 75%;
+      padding: 18px 16px;
+
+      .hero-tag-offer {
+        font-size: 0.68rem;
+        margin-bottom: 4px;
+      }
+
+      .hero-main-title {
+        font-size: 1.45rem;
+        line-height: 1.15;
+        margin-bottom: 6px;
+      }
+
+      .hero-main-subtext {
+        font-size: 0.78rem;
+        line-height: 1.3;
+        margin-bottom: 12px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .hero-cta-buttons-group {
+        gap: 8px;
+
+        .btn-hero-primary,
+        .btn-hero-secondary {
+          padding: 7px 14px;
+          font-size: 0.78rem;
+          height: 36px;
+        }
+      }
+    }
+
+    .headphone-doodle-rays {
+      display: none;
+    }
+  }
+
+  /* Trust Cards Grid */
   .hero-trust-cards-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 8px;
+    margin-top: 10px;
+
+    .trust-card-item {
+      padding: 10px;
+      gap: 10px;
+      border-radius: 12px;
+
+      .trust-card-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+      }
+
+      .trust-title {
+        font-size: 0.76rem;
+      }
+
+      .trust-sub {
+        font-size: 0.65rem;
+      }
+    }
   }
 
-  .trending-products-section .trending-products-grid {
-    grid-template-columns: repeat(2, 1fr);
+  /* 3. Trending Products Grid (2 Products per row on mobile) */
+  .trending-products-section {
+    padding: 24px 0;
+
+    .section-header-row {
+      margin-bottom: 14px;
+
+      .section-title {
+        font-size: 1.25rem;
+      }
+
+      .section-view-all {
+        font-size: 0.8rem;
+      }
+    }
+
+    .trending-products-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .trending-card {
+      padding: 10px;
+      border-radius: 14px;
+
+      .card-top-badges .badge-discount {
+        font-size: 0.68rem;
+        padding: 3px 6px;
+      }
+
+      .btn-wishlist {
+        width: 28px;
+        height: 28px;
+        font-size: 0.85rem;
+      }
+
+      .product-thumb-wrap {
+        height: 130px;
+        margin-bottom: 8px;
+      }
+
+      .product-title {
+        font-size: 0.82rem;
+        height: 2.3em;
+        line-height: 1.25;
+      }
+
+      .product-rating-row {
+        gap: 4px;
+        margin-bottom: 8px;
+
+        .rating-stars {
+          font-size: 0.68rem;
+        }
+
+        .rating-score,
+        .rating-count {
+          font-size: 0.7rem;
+        }
+      }
+
+      .product-bottom-row {
+        .product-pricing {
+          .price-current {
+            font-size: 0.95rem;
+          }
+
+          .price-original {
+            font-size: 0.72rem;
+          }
+        }
+
+        .btn-add-cart-circle {
+          width: 32px;
+          height: 32px;
+          font-size: 0.85rem;
+        }
+      }
+    }
   }
 
-  .style-items-grid {
-    grid-template-columns: repeat(2, 1fr);
+  /* 4. Home Refresh Banner on Mobile */
+  .home-refresh-section {
+    padding: 8px 0 24px;
   }
 
-  .shopora-footer .footer-top-row {
+  .home-refresh-card {
+    aspect-ratio: auto;
+    min-height: 200px;
+    border-radius: 18px;
+
+    .home-refresh-banner-img {
+      object-fit: cover;
+      opacity: 0.35;
+    }
+
+    .home-refresh-content-overlay {
+      padding: 18px 16px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 14px;
+
+      .refresh-meta-col {
+        .refresh-event-tag {
+          font-size: 0.68rem;
+        }
+
+        .refresh-main-title {
+          font-size: 1.35rem;
+          line-height: 1.15;
+          margin-bottom: 4px;
+        }
+
+        .refresh-subtext {
+          font-size: 0.78rem;
+          line-height: 1.25;
+        }
+      }
+
+      .refresh-divider {
+        display: none;
+      }
+
+      .refresh-offer-col {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        gap: 12px;
+
+        .refresh-discount-val {
+          font-size: 1.5rem;
+        }
+
+        .btn-refresh-shop {
+          padding: 8px 18px;
+          font-size: 0.8rem;
+          height: 38px;
+        }
+      }
+    }
+  }
+
+  /* 5. Shop by Style & Flash Sale */
+  .style-flash-section {
+    padding: 8px 0 24px;
+
+    .style-flash-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .shop-by-style-card {
+      padding: 14px;
+      border-radius: 18px;
+
+      .style-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        margin-bottom: 12px;
+
+        .style-main-title {
+          font-size: 1.25rem;
+        }
+
+        .style-main-sub {
+          font-size: 0.78rem;
+        }
+      }
+
+      .style-items-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+
+        .style-single-thumb {
+          height: 110px;
+        }
+
+        .style-single-footer {
+          padding: 8px 10px;
+
+          .style-title {
+            font-size: 0.82rem;
+          }
+
+          .style-sub {
+            font-size: 0.68rem;
+          }
+
+          .btn-style-arrow {
+            width: 26px;
+            height: 26px;
+            font-size: 0.7rem;
+          }
+        }
+      }
+    }
+
+    .flash-sale-box {
+      border-radius: 18px;
+
+      .flash-top-bar {
+        padding: 10px 14px;
+        flex-wrap: wrap;
+        gap: 8px;
+
+        .flash-brand-title {
+          font-size: 0.95rem;
+        }
+
+        .countdown-timer-wrap {
+          gap: 4px;
+
+          .time-box {
+            min-width: 26px;
+            padding: 3px 6px;
+            font-size: 0.78rem;
+          }
+        }
+      }
+
+      .flash-product-body {
+        padding: 14px;
+        flex-direction: column;
+        gap: 14px;
+
+        .flash-img-col {
+          width: 100%;
+          height: 160px;
+        }
+
+        .flash-details-col {
+          width: 100%;
+
+          .flash-prod-name {
+            font-size: 1rem;
+          }
+
+          .flash-pricing {
+            .flash-sale-price {
+              font-size: 1.35rem;
+            }
+          }
+
+          .btn-flash-claim {
+            height: 42px;
+            font-size: 0.88rem;
+          }
+        }
+      }
+    }
+  }
+
+  /* 6. Social Proof Cards */
+  .social-proof-row {
     grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 8px 0 24px;
+
+    .proof-card {
+      padding: 14px;
+      border-radius: 16px;
+    }
+
+    .proof-testimonial-card {
+      .proof-avatar-img {
+        width: 40px;
+        height: 40px;
+      }
+
+      .testimonial-quote-text {
+        font-size: 0.78rem;
+      }
+    }
+
+    .proof-shoppers-card {
+      padding: 16px 12px;
+
+      .wreath-svg {
+        width: 24px;
+        height: 40px;
+      }
+
+      .shoppers-count {
+        font-size: 1.5rem;
+      }
+    }
+
+    .proof-brands-card {
+      .brands-headline {
+        font-size: 0.85rem;
+        margin-bottom: 10px;
+      }
+
+      .brands-ticker-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
+      }
+
+      .brands-pills-list {
+        flex-wrap: nowrap;
+        gap: 8px;
+
+        .brand-item-pill {
+          flex-shrink: 0;
+          padding: 6px 12px;
+          font-size: 0.78rem;
+        }
+      }
+    }
+  }
+
+  /* 7. Footer */
+  .shopora-footer {
+    padding: 28px 0 16px;
+
+    .footer-top-row {
+      grid-template-columns: 1fr 1fr;
+      gap: 22px 14px;
+
+      .footer-brand-col {
+        grid-column: 1 / -1;
+
+        .footer-brand-logo-img {
+          height: 38px;
+        }
+
+        .footer-tagline {
+          font-size: 0.8rem;
+        }
+      }
+
+      .footer-nav-col {
+        .footer-col-title {
+          font-size: 0.88rem;
+          margin-bottom: 10px;
+        }
+
+        .footer-links-list li a {
+          font-size: 0.78rem;
+        }
+      }
+
+      .footer-newsletter-col {
+        grid-column: 1 / -1;
+
+        .footer-col-title {
+          font-size: 0.92rem;
+        }
+
+        .newsletter-form {
+          flex-direction: column;
+          gap: 8px;
+
+          .newsletter-input-wrap {
+            width: 100%;
+          }
+
+          .btn-subscribe {
+            width: 100%;
+            justify-content: center;
+          }
+        }
+      }
+
+      .footer-social-col {
+        grid-column: 1 / -1;
+
+        .social-icons-row {
+          justify-content: center;
+          gap: 10px;
+        }
+      }
+    }
+
+    .footer-bottom-bar {
+      flex-direction: column;
+      gap: 10px;
+      text-align: center;
+      padding-top: 18px;
+
+      .copyright-text {
+        font-size: 0.76rem;
+      }
+
+      .legal-links {
+        justify-content: center;
+        flex-wrap: wrap;
+        font-size: 0.74rem;
+        gap: 8px;
+      }
+    }
+  }
+
+  /* 8. Floating Action Buttons */
+  .floating-whatsapp-btn {
+    bottom: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+    font-size: 1.6rem;
+  }
+
+  .floating-admin-btn {
+    bottom: 16px;
+    left: 16px;
+    height: 40px;
+    padding: 0 14px;
+    font-size: 0.78rem;
+    gap: 6px;
   }
 }
 
 @media (max-width: 480px) {
   .hero-trust-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-banner-main-card .hero-card-content-overlay {
+    max-width: 90%;
+  }
+
+  .shopora-footer .footer-top-row {
     grid-template-columns: 1fr;
   }
 }
