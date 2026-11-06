@@ -1,0 +1,134 @@
+/* Global Styles & Exact Theme Variables from happysteppy.pk */
+:root {
+  --pls-primary-font: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --pls-font-size: 15px;
+  --pls-font-weight: 400;
+  --pls-line-height: 1.6;
+  --pls-container-width: 1320px;
+  --pls-primary-color: #228b22;
+  --pls-primary-hover: #1b701b;
+  --pls-primary-light: #f0fdf4;
+  --pls-secondary-color: #1F1F1F;
+  --pls-secondary-color2: #A0A0A0;
+  --pls-critical-color: #DB4444;
+  --pls-heading-color: #1F1F1F;
+  --pls-text-color: #696C70;
+  --pls-theme-background-color: #F7F7F7;
+  --pls-body-background: #ffffff;
+  --pls-border-color: #E9E9E9;
+  --pls-border-radius: 12px;
+  --pls-border-radius-s: 8px;
+  --pls-border-radius-xs: 4px;
+  --pls-radius-round: 99px;
+  --pls-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  --pls-shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.09);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--pls-primary-font);
+  font-size: var(--pls-font-size);
+  color: var(--pls-text-color);
+  background-color: var(--pls-body-background);
+  line-height: var(--pls-line-height);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--pls-primary-font);
+  color: var(--pls-heading-color);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--pls-container-width);
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* Badge Styles */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: var(--pls-border-radius-xs);
+  text-transform: uppercase;
+}
+
+.badge-sale {
+  background: var(--pls-critical-color);
+  color: #ffffff;
+}
+
+.badge-brand {
+  background: #f1f5f9;
+  color: #0284c7;
+}
+
+.badge-stock-in {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.badge-stock-low {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.badge-stock-out {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Modal styles for Admin */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(31, 31, 31, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-content {
+  background: #ffffff;
+  border-radius: var(--pls-border-radius);
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}

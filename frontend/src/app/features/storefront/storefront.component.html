@@ -1,0 +1,761 @@
+<!-- Top Main Header (Exact match to uploaded design with Happy Steppy branding) -->
+<header class="shopora-header">
+  <div class="container header-inner">
+    <!-- Brand Logo (Happy Steppy) -->
+    <a routerLink="/" class="brand-logo" title="Happy Steppy">
+      <img src="assets/images/logo.png" alt="Happy Steppy" class="brand-logo-img" />
+    </a>
+
+    <!-- Navigation Menu (Home, Shop ⌵, Collections ⌵, Deals, New Arrivals, Brands) -->
+    <nav class="header-nav">
+      <a
+        routerLink="/"
+        class="nav-link"
+        [class.active]="activeMenu() === 'Home'"
+        (click)="activeMenu.set('Home')"
+      >
+        Home
+      </a>
+      <a
+        routerLink="/"
+        class="nav-link"
+        [class.active]="activeMenu() === 'Shop'"
+        (click)="activeMenu.set('Shop')"
+      >
+        <span>Shop</span>
+        <i class="fa-solid fa-chevron-down nav-caret"></i>
+      </a>
+      <a
+        routerLink="/"
+        class="nav-link"
+        [class.active]="activeMenu() === 'Collections'"
+        (click)="activeMenu.set('Collections')"
+      >
+        <span>Collections</span>
+        <i class="fa-solid fa-chevron-down nav-caret"></i>
+      </a>
+      <a
+        routerLink="/"
+        class="nav-link"
+        [class.active]="activeMenu() === 'Deals'"
+        (click)="activeMenu.set('Deals')"
+      >
+        Deals
+      </a>
+      <a
+        routerLink="/admin"
+        class="nav-link admin-nav-link"
+        title="Open Admin CMS Management"
+      >
+        <i class="fa-solid fa-lock"></i>
+        <span>Admin Panel</span>
+      </a>
+    </nav>
+
+    <!-- Pill Search Input with Round Green Button -->
+    <div class="search-wrapper">
+      <i class="fa-solid fa-magnifying-glass search-icon-left"></i>
+      <input
+        type="text"
+        placeholder="Search for products, brands and more..."
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+      />
+      <button class="search-circle-btn" title="Search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+    </div>
+
+    <!-- Divider Bar -->
+    <div class="header-divider"></div>
+
+    <!-- Header Actions (Account, Wishlist, Cart) -->
+    <div class="header-actions">
+      <a routerLink="/admin" class="action-btn" title="Open Admin CMS">
+        <i class="fa-solid fa-user-shield action-icon"></i>
+        <span class="action-label">Admin</span>
+      </a>
+
+      <div class="action-btn" title="Wishlist">
+        <div class="badge-icon-wrap">
+          <i class="fa-regular fa-heart action-icon"></i>
+          <span class="action-counter-badge">{{ wishlistCount() }}</span>
+        </div>
+        <span class="action-label">Wishlist</span>
+      </div>
+
+      <div class="action-btn" title="Cart">
+        <div class="badge-icon-wrap">
+          <i class="fa-solid fa-cart-shopping action-icon"></i>
+          <span class="action-counter-badge">{{ cartCount() }}</span>
+        </div>
+        <span class="action-label">Cart</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="shopora-main">
+  <!-- 1. Hero Layout: Left Sidebar + Hero Banner & Trust Badges -->
+  <section class="container hero-combo-section">
+    <div class="hero-combo-grid">
+      <!-- Left Column: Category Sidebar Card -->
+      <aside class="sidebar-category-col">
+        <div class="sidebar-header-btn">
+          <i class="fa-solid fa-table-cells-large sidebar-grid-icon"></i>
+          <span>Shop by Category</span>
+        </div>
+
+        <ul class="sidebar-category-list">
+          @for (cat of categories(); track cat.name) {
+            <li
+              class="sidebar-category-item"
+              [class.active]="activeSidebarCat() === cat.name"
+              (click)="activeSidebarCat.set(cat.name)"
+            >
+              <div class="cat-item-left">
+                <i [class]="cat.icon + ' cat-icon-bullet'"></i>
+                <span class="cat-item-title">{{ cat.name }}</span>
+              </div>
+              <i class="fa-solid fa-chevron-right cat-chevron"></i>
+            </li>
+          }
+        </ul>
+      </aside>
+
+      <!-- Right Column: Hero Banner + Trust Badges -->
+      <div class="hero-main-col">
+        <!-- Hero Banner Graphic Card with Real HTML/CSS Content Overlay -->
+        <div class="hero-banner-main-card">
+          <img
+            [src]="heroSlide().desktopImageUrl"
+            [alt]="heroSlide().title"
+            class="hero-banner-main-img"
+          />
+
+          <!-- Real HTML/CSS Text & Buttons Content Overlay -->
+          <div class="hero-card-content-overlay">
+            <span class="hero-tag-offer">{{ heroSlide().badgeText }}</span>
+            <h1 class="hero-main-title">
+              {{ heroSlide().title }}
+            </h1>
+            <p class="hero-main-subtext">
+              {{ heroSlide().description }}
+            </p>
+
+            <div class="hero-cta-buttons-group">
+              <a
+                routerLink="/"
+                class="btn-hero-primary"
+                (click)="scrollToSection('trending-products')"
+              >
+                <span>{{ heroSlide().primaryButtonText }}</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </a>
+
+              <a
+                routerLink="/"
+                class="btn-hero-secondary"
+                (click)="scrollToSection('flash-sale-section')"
+              >
+                {{ heroSlide().secondaryButtonText }}
+              </a>
+            </div>
+          </div>
+
+          <!-- Doodle rays above headphones -->
+          <svg class="headphone-doodle-rays" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 40 C 18 28, 28 18, 40 8" stroke="#ffffff" stroke-width="3" stroke-linecap="round" />
+            <path d="M20 44 C 28 35, 36 26, 44 18" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" />
+            <path d="M4 32 C 10 24, 16 16, 24 10" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" />
+          </svg>
+
+          <!-- Carousel Pagination Dots (Exact from screenshot) -->
+          <div class="banner-carousel-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+
+        <!-- 4 Separate Trust Cards Grid (Client-specific Happy Steppy Guarantees) -->
+        <div class="hero-trust-cards-grid">
+          <div class="trust-card-item" title="We ship our products across Pakistan, making them accessible to customers everywhere.">
+            <div class="trust-card-icon">
+              <i class="fa-solid fa-truck-fast"></i>
+            </div>
+            <div class="trust-card-meta">
+              <strong class="trust-title">Shipping All Pakistan</strong>
+              <span class="trust-sub">Fast doorstep delivery</span>
+            </div>
+          </div>
+
+          <div class="trust-card-item" title="If you're not satisfied with your purchase, simply return it within 7 days for a refund.">
+            <div class="trust-card-icon">
+              <i class="fa-solid fa-rotate-left"></i>
+            </div>
+            <div class="trust-card-meta">
+              <strong class="trust-title">7-Day Money Back</strong>
+              <span class="trust-sub">100% refund guarantee</span>
+            </div>
+          </div>
+
+          <div class="trust-card-item" title="We stand behind our products and services and guarantee your complete satisfaction.">
+            <div class="trust-card-icon">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div class="trust-card-meta">
+              <strong class="trust-title">Our Guarantee</strong>
+              <span class="trust-sub">Satisfaction guaranteed</span>
+            </div>
+          </div>
+
+          <div class="trust-card-item" title="We're here to help you with any questions or concerns you have, 24/7.">
+            <div class="trust-card-icon">
+              <i class="fa-solid fa-headset"></i>
+            </div>
+            <div class="trust-card-meta">
+              <strong class="trust-title">24/7 Customer Service</strong>
+              <span class="trust-sub">Always here to help you</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Trending Products Section (5 Cards matching screenshot) -->
+  <section class="container trending-products-section" id="trending-products">
+    <div class="section-header-row">
+      <h2 class="section-title">Trending Products</h2>
+      <a routerLink="/" class="section-view-all">
+        <span>View All</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="trending-products-grid">
+      @for (prod of trendingProducts(); track prod.id) {
+        <div class="trending-card">
+          <!-- Discount Badge -->
+          <div class="card-top-badges">
+            <span class="badge-discount">{{ prod.discount }}% OFF</span>
+            <button
+              class="btn-wishlist"
+              [class.active]="prod.isWishlisted"
+              (click)="toggleWishlist(prod, $event)"
+              title="Add to Wishlist"
+            >
+              <i [class]="prod.isWishlisted ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
+            </button>
+          </div>
+
+          <!-- Product Image -->
+          <div class="product-thumb-wrap">
+            <img [src]="prod.imageUrl" [alt]="prod.name" class="product-thumb-img" />
+          </div>
+
+          <!-- Product Details -->
+          <div class="product-meta">
+            <h3 class="product-title">{{ prod.name }}</h3>
+
+            <div class="product-rating-row">
+              <div class="rating-stars">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star-half-stroke"></i>
+              </div>
+              <span class="rating-score">{{ prod.rating }}</span>
+              <span class="rating-count">({{ prod.reviewCount }})</span>
+            </div>
+
+            <div class="product-bottom-row">
+              <div class="product-pricing">
+                <span class="price-current">${{ prod.price.toFixed(2) }}</span>
+                <span class="price-original">${{ prod.originalPrice.toFixed(2) }}</span>
+              </div>
+
+              <button
+                class="btn-quick-cart"
+                (click)="addToCart(prod, $event)"
+                title="Add to Cart"
+              >
+                <i class="fa-solid fa-cart-shopping"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- 3. Home Refresh Event Feature Banner (Clean background with Real HTML/CSS Content Overlay) -->
+  <section class="container home-refresh-section">
+    <div class="home-refresh-card">
+      <img
+        [src]="promoBanner().imageUrl"
+        [alt]="promoBanner().title"
+        class="home-refresh-banner-img"
+      />
+
+      <!-- Real HTML/CSS Content Overlay on Clean Banner -->
+      <div class="home-refresh-content-overlay">
+        <!-- Event Meta -->
+        <div class="refresh-meta-col">
+          <span class="refresh-event-tag">
+            <span class="tag-line"></span>
+            <span>HOME REFRESH EVENT</span>
+            <span class="tag-line"></span>
+          </span>
+          <h2 class="refresh-main-title">{{ promoBanner().title }}</h2>
+          <p class="refresh-subtext">{{ promoBanner().subtitle }}</p>
+        </div>
+
+        <!-- Vertical Divider Bar -->
+        <div class="refresh-divider"></div>
+
+        <!-- Offer & Action -->
+        <div class="refresh-offer-col">
+          <div class="refresh-discount-meta">
+            <span class="refresh-discount-upto">Up to</span>
+            <strong class="refresh-discount-val">{{ promoBanner().discountText }}</strong>
+          </div>
+
+          <a
+            [routerLink]="promoBanner().buttonUrl"
+            class="btn-refresh-shop"
+            (click)="scrollToSection('trending-products')"
+            [title]="promoBanner().title"
+          >
+            <span>{{ promoBanner().buttonText }}</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Shop by Style (Left) + Flash Sale (Right) -->
+  <section class="container style-flash-section" id="flash-sale-section">
+    <div class="style-flash-grid">
+      <!-- Left: Shop by Style Card -->
+      <div class="shop-by-style-card">
+        <div class="style-card-header">
+          <div class="style-title-group">
+            <h2 class="style-main-title">Shop by Style</h2>
+            <span class="style-main-sub">Discover styles for every space and lifestyle.</span>
+          </div>
+          <a routerLink="/" class="style-view-all-link">
+            <span>View All Styles</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <div class="style-items-grid">
+          @for (style of styleCategories(); track style.title) {
+            <div class="style-single-item">
+              <div class="style-single-thumb">
+                <img [src]="style.imgUrl + '?v=8'" alt="" class="style-img" />
+              </div>
+              <div class="style-single-footer">
+                <div class="style-text-col">
+                  <h4 class="style-title">{{ style.title }}</h4>
+                  <p class="style-sub">{{ style.subtitle }}</p>
+                </div>
+                <button class="btn-style-arrow" title="Explore {{ style.title }}">
+                  <i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Right: Flash Sale Card -->
+      <div class="flash-sale-box">
+        <!-- Green Gradient Header Bar -->
+        <div class="flash-top-bar">
+          <div class="flash-brand-title">
+            <i class="fa-solid fa-bolt"></i>
+            <span>Flash Sale</span>
+          </div>
+
+          <div class="flash-timer-group">
+            <span class="flash-ends-label">Ends in:</span>
+            <div class="flash-digits">
+              <span class="digit-capsule">{{ pad(flashHours()) }} h</span>
+              <span class="digit-capsule">{{ pad(flashMinutes()) }} m</span>
+              <span class="digit-capsule">{{ pad(flashSeconds()) }} s</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Flash Body -->
+        <div class="flash-inner-body">
+          <div class="flash-left-img">
+            <img
+              src="assets/images/flash-headphones.jpg?v=6"
+              alt="Wireless Headphones Flash Sale"
+              class="flash-hd-img"
+            />
+          </div>
+
+          <div class="flash-v-divider"></div>
+
+          <div class="flash-right-details">
+            <h3 class="flash-product-name">Wireless Headphones</h3>
+
+            <div class="flash-stars-row">
+              <div class="stars-gold">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star-half-stroke"></i>
+              </div>
+              <span class="stars-val">4.8 (3.5k)</span>
+            </div>
+
+            <div class="flash-pricing-badge-row">
+              <div class="flash-prices">
+                <span class="flash-now">.99</span>
+                <span class="flash-was">.99</span>
+              </div>
+              <span class="flash-discount-pill">25% OFF</span>
+            </div>
+
+            <div class="flash-cta-stock-row">
+              <button
+                class="btn-flash-grab"
+                (click)="scrollToSection('trending-products')"
+              >
+                <span>Grab the Deal</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+
+              <div class="flash-sub-divider"></div>
+
+              <span class="flash-stock-left-tag">Only 42 left!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Social Proof: 3 Separate Clean Cards matching reference -->
+  <section class="container social-proof-row">
+    <!-- 1. Customer Testimonial Auto-Slider (Every 3 seconds) -->
+    <div
+      class="proof-card proof-testimonial-card"
+      (mouseenter)="pauseTestimonials()"
+      (mouseleave)="resumeTestimonials()"
+    >
+      <div class="proof-slider-body" [class.sliding]="isTestimonialSliding()">
+        <img
+          [src]="testimonial().avatarUrl"
+          [alt]="testimonial().name"
+          class="proof-avatar-img"
+        />
+        <div class="proof-testimonial-content">
+          <div class="quote-header">
+            <i class="fa-solid fa-quote-left quote-ico"></i>
+            <p class="testimonial-quote-text">
+              "{{ testimonial().comment }}"
+            </p>
+          </div>
+          <div class="proof-author-line">
+            <strong class="author-name">{{ testimonial().name }}</strong>
+            <span class="verified-badge">
+              <i class="fa-solid fa-circle-check"></i> {{ testimonial().role }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Auto-Slider Indicator Dots & Controls -->
+      @if (testimonialsList().length > 1) {
+        <div class="testimonial-slider-controls">
+          <button class="t-btn-nav prev" (click)="prevTestimonial()" title="Previous review">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <div class="t-slide-dots">
+            @for (t of testimonialsList(); track $index) {
+              <span
+                class="t-dot"
+                [class.active]="$index === currentTestimonialIndex()"
+                (click)="goToTestimonial($index)"
+              ></span>
+            }
+          </div>
+          <button class="t-btn-nav next" (click)="nextTestimonial()" title="Next review">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- 2. Loved by 500,000+ Happy Shoppers (Vector SVG High-Res) -->
+    <div class="proof-card proof-shoppers-card">
+      <div class="shoppers-wreath-wrap">
+        <svg class="wreath-svg wreath-left" viewBox="0 0 32 54" aria-hidden="true">
+          <path d="M28 50 C 18 45, 8 32, 12 6" fill="none" stroke="#65a30d" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M12 6 C 9 1, 16 0, 16 4 C 16 7, 13 8, 12 6 Z" fill="#65a30d"/>
+          <path d="M11 14 C 5 11, 8 6, 12 9 C 14 11, 13 14, 11 14 Z" fill="#65a30d"/>
+          <path d="M13 12 C 18 9, 21 14, 16 16 C 14 16, 13 14, 13 12 Z" fill="#65a30d"/>
+          <path d="M10 23 C 3 21, 5 15, 10 18 C 12 19, 12 22, 10 23 Z" fill="#65a30d"/>
+          <path d="M12 21 C 18 19, 20 25, 15 26 C 13 26, 12 24, 12 21 Z" fill="#65a30d"/>
+          <path d="M11 33 C 4 32, 5 26, 10 28 C 13 30, 13 33, 11 33 Z" fill="#65a30d"/>
+          <path d="M13 31 C 19 30, 20 36, 16 36 C 14 36, 13 33, 13 31 Z" fill="#65a30d"/>
+          <path d="M14 43 C 8 43, 8 37, 13 38 C 16 40, 16 43, 14 43 Z" fill="#65a30d"/>
+          <path d="M17 41 C 23 41, 23 47, 19 47 C 17 47, 16 43, 17 41 Z" fill="#65a30d"/>
+          <path d="M20 51 C 15 52, 14 47, 19 47 C 22 48, 22 51, 20 51 Z" fill="#65a30d"/>
+          <path d="M23 49 C 28 50, 27 55, 23 55 C 21 54, 21 51, 23 49 Z" fill="#65a30d"/>
+        </svg>
+
+        <div class="shoppers-text-block">
+          <span class="shoppers-caption">Loved by</span>
+          <span class="shoppers-count">500,000+</span>
+          <span class="shoppers-label">Happy Shoppers</span>
+        </div>
+
+        <svg class="wreath-svg wreath-right" viewBox="0 0 32 54" aria-hidden="true">
+          <path d="M28 50 C 18 45, 8 32, 12 6" fill="none" stroke="#65a30d" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M12 6 C 9 1, 16 0, 16 4 C 16 7, 13 8, 12 6 Z" fill="#65a30d"/>
+          <path d="M11 14 C 5 11, 8 6, 12 9 C 14 11, 13 14, 11 14 Z" fill="#65a30d"/>
+          <path d="M13 12 C 18 9, 21 14, 16 16 C 14 16, 13 14, 13 12 Z" fill="#65a30d"/>
+          <path d="M10 23 C 3 21, 5 15, 10 18 C 12 19, 12 22, 10 23 Z" fill="#65a30d"/>
+          <path d="M12 21 C 18 19, 20 25, 15 26 C 13 26, 12 24, 12 21 Z" fill="#65a30d"/>
+          <path d="M11 33 C 4 32, 5 26, 10 28 C 13 30, 13 33, 11 33 Z" fill="#65a30d"/>
+          <path d="M13 31 C 19 30, 20 36, 16 36 C 14 36, 13 33, 13 31 Z" fill="#65a30d"/>
+          <path d="M14 43 C 8 43, 8 37, 13 38 C 16 40, 16 43, 14 43 Z" fill="#65a30d"/>
+          <path d="M17 41 C 23 41, 23 47, 19 47 C 17 47, 16 43, 17 41 Z" fill="#65a30d"/>
+          <path d="M20 51 C 15 52, 14 47, 19 47 C 22 48, 22 51, 20 51 Z" fill="#65a30d"/>
+          <path d="M23 49 C 28 50, 27 55, 23 55 C 21 54, 21 51, 23 49 Z" fill="#65a30d"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 3. Trusted by Leading Brands -->
+    <div class="proof-card proof-brands-card">
+      <h4 class="brands-headline">Trusted by Leading Brands</h4>
+      <div class="brands-ticker-wrap">
+        <div class="brands-pills-list">
+          @for (brand of trustedBrands(); track brand) {
+            <div class="brand-item-pill">
+              <i class="fa-solid fa-circle-check brand-ico"></i>
+              <span>{{ brand }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+  </main>
+
+<!-- 6. Footer Section (Enhanced Beautiful Styling with Happy Steppy branding) -->
+<footer class="shopora-footer">
+  <div class="container footer-inner">
+    <div class="footer-top-row">
+      <!-- Brand & Mission -->
+      <div class="footer-brand-col">
+        <a routerLink="/" class="footer-brand-logo">
+          <img src="assets/images/logo.png" alt="Happy Steppy" class="footer-brand-logo-img" />
+        </a>
+        <p class="footer-tagline">
+          {{ footerSettings()['FooterAbout'] || 'Your one-stop shop for lifestyle, tech, home and more.' }}
+        </p>
+        <div class="footer-trust-badge">
+          <i class="fa-solid fa-shield-heart"></i>
+          <span>100% Guaranteed & Verified</span>
+        </div>
+      </div>
+
+      <!-- Links Column: Shop -->
+      <div class="footer-nav-col">
+        <h4 class="footer-col-title">Shop</h4>
+        <ul class="footer-links-list">
+          @if (getLinksForColumn('Shop'); as links) {
+            @for (l of links; track l.id) {
+              <li><a [routerLink]="l.url">{{ l.title }}</a></li>
+            }
+          } @else {
+            <li><a routerLink="/">All Products</a></li>
+            <li><a routerLink="/">Deals & Offers</a></li>
+            <li><a routerLink="/">New Arrivals</a></li>
+            <li><a routerLink="/">Best Sellers</a></li>
+          }
+        </ul>
+      </div>
+
+      <!-- Links Column: Help -->
+      <div class="footer-nav-col">
+        <h4 class="footer-col-title">Help</h4>
+        <ul class="footer-links-list">
+          @if (getLinksForColumn('Help'); as links) {
+            @for (l of links; track l.id) {
+              <li><a [routerLink]="l.url">{{ l.title }}</a></li>
+            }
+          } @else {
+            <li><a routerLink="/">Contact Us</a></li>
+            <li><a routerLink="/">FAQs</a></li>
+            <li><a routerLink="/">Shipping & Delivery</a></li>
+            <li><a routerLink="/">Returns & Refunds</a></li>
+          }
+        </ul>
+      </div>
+
+      <!-- Links Column: About -->
+      <div class="footer-nav-col">
+        <h4 class="footer-col-title">About</h4>
+        <ul class="footer-links-list">
+          @if (getLinksForColumn('About'); as links) {
+            @for (l of links; track l.id) {
+              <li><a [routerLink]="l.url">{{ l.title }}</a></li>
+            }
+          } @else {
+            <li><a routerLink="/">Our Story</a></li>
+            <li><a routerLink="/">Careers</a></li>
+            <li><a routerLink="/">Press</a></li>
+            <li><a routerLink="/">Blog</a></li>
+          }
+        </ul>
+      </div>
+
+      <!-- Newsletter: Stay in the Loop -->
+      <div class="footer-newsletter-col">
+        <h4 class="footer-col-title">{{ footerSettings()['NewsletterTitle'] || 'Stay in the Loop' }}</h4>
+        <p class="newsletter-sub">{{ footerSettings()['NewsletterSubtitle'] || 'Get the latest deals, new arrivals and more.' }}</p>
+
+        <form class="newsletter-form" (submit)="$event.preventDefault(); subscribeNewsletter()">
+          <div class="newsletter-input-wrap">
+            <i class="fa-regular fa-envelope input-envelope-icon"></i>
+            <input
+              type="email"
+              placeholder="Enter your email address"
+              [ngModel]="newsletterEmail()"
+              (ngModelChange)="newsletterEmail.set($event)"
+              name="newsletter"
+              required
+            />
+          </div>
+          <button type="submit" class="btn-subscribe">
+            <span>Subscribe</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </form>
+
+        @if (isSubscribed()) {
+          <div class="newsletter-success">
+            <i class="fa-solid fa-circle-check"></i> Thank you for subscribing!
+          </div>
+        }
+      </div>
+
+      <!-- Social Media Links -->
+      <div class="footer-social-col">
+        <h4 class="footer-col-title">Follow Us</h4>
+        <div class="social-icons-row">
+          <a
+            [href]="socialLinks()['instagram']"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-icon-btn social-instagram"
+            aria-label="Instagram"
+            title="Follow us on Instagram"
+          >
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+          <a
+            [href]="socialLinks()['facebook']"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-icon-btn social-facebook"
+            aria-label="Facebook"
+            title="Follow us on Facebook"
+          >
+            <i class="fa-brands fa-facebook-f"></i>
+          </a>
+          <a
+            [href]="socialLinks()['whatsapp']"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-icon-btn social-whatsapp"
+            aria-label="WhatsApp"
+            title="Chat with us on WhatsApp"
+          >
+            <i class="fa-brands fa-whatsapp"></i>
+          </a>
+          <a
+            [href]="socialLinks()['tiktok']"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-icon-btn social-tiktok"
+            aria-label="TikTok"
+            title="Follow us on TikTok"
+          >
+            <i class="fa-brands fa-tiktok"></i>
+          </a>
+          <a
+            [href]="socialLinks()['youtube']"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-icon-btn social-youtube"
+            aria-label="YouTube"
+            title="Subscribe on YouTube"
+          >
+            <i class="fa-brands fa-youtube"></i>
+          </a>
+          <a
+            [href]="socialLinks()['x'] || socialLinks()['twitter']"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-icon-btn social-x"
+            aria-label="X (Twitter)"
+            title="Follow us on X"
+          >
+            <i class="fa-brands fa-x-twitter"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Copyright Bar -->
+    <div class="footer-bottom-bar">
+      <span class="copyright-text">{{ footerSettings()['CopyrightText'] || '&copy; 2026 Happy Steppy. All rights reserved.' }}</span>
+      <div class="legal-links">
+        <a href="#">Privacy Policy</a>
+        <span class="legal-sep">|</span>
+        <a href="#">Terms of Service</a>
+        <span class="legal-sep">|</span>
+        <a href="#">Cookie Settings</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Floating Admin CMS Panel Switcher (Bottom Left) -->
+<a
+  routerLink="/admin"
+  class="floating-admin-btn"
+  title="Go to Admin Panel CMS"
+  aria-label="Admin Panel CMS"
+>
+  <i class="fa-solid fa-shield-halved"></i>
+  <span>Admin Panel</span>
+</a>
+
+<!-- Floating WhatsApp Quick-Chat Widget -->
+<a
+  [href]="socialLinks()['whatsapp']"
+  target="_blank"
+  rel="noopener noreferrer"
+  class="floating-whatsapp-btn"
+  title="Chat with us on WhatsApp: 0317 4641903"
+  aria-label="Chat with us on WhatsApp"
+>
+  <i class="fa-brands fa-whatsapp"></i>
+  <span class="whatsapp-tooltip">Chat on WhatsApp</span>
+</a>
