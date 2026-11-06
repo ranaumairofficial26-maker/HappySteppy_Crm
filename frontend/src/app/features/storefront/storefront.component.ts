@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, signal, inject, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -18,8 +18,10 @@ export interface StyleCategory {
   templateUrl: './storefront.component.html',
   styleUrl: './storefront.component.scss'
 })
-export class StorefrontComponent implements OnInit, OnDestroy {
+export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly api = inject(ApiService);
+  private readonly host = inject(ElementRef);
+  private scrollObserver: IntersectionObserver | null = null;
 
   searchQuery = signal<string>('');
   cartCount = signal<number>(2);
@@ -218,7 +220,46 @@ export class StorefrontComponent implements OnInit, OnDestroy {
     this.loadHomepageFromApi();
   }
 
+  ngAfterViewInit() {
+    this.setupScrollAnimations();
+  }
+
+  private setupScrollAnimations() {
+    if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
+      this.host.nativeElement.querySelectorAll('.scroll-fade-up, .scroll-stagger').forEach((el: Element) => {
+        el.classList.add('in-view');
+      });
+      return;
+    }
+
+    this.scrollObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          this.scrollObserver?.unobserve(entry.target);
+        }
+      });
+    }, {
+      root: null,
+      threshold: 0.08,
+      rootMargin: '0px 0px -30px 0px'
+    });
+
+    this.observeElements();
+  }
+
+  private observeElements() {
+    setTimeout(() => {
+      if (!this.scrollObserver) return;
+      const elements = this.host.nativeElement.querySelectorAll('.scroll-fade-up:not(.in-view), .scroll-stagger:not(.in-view)');
+      elements.forEach((el: Element) => this.scrollObserver?.observe(el));
+    }, 120);
+  }
+
   ngOnDestroy() {
+    if (this.scrollObserver) {
+      this.scrollObserver.disconnect();
+    }
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
     }
@@ -398,6 +439,8 @@ export class StorefrontComponent implements OnInit, OnDestroy {
         if (data.settings) {
           this.footerSettings.update(curr => ({ ...curr, ...data.settings }));
         }
+
+        this.observeElements();
       },
       error: (err) => {
         console.warn('API connection offline, using cached storefront assets', err);

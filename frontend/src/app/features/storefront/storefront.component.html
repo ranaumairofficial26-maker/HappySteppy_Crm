@@ -179,7 +179,7 @@
         </div>
 
         <!-- 4 Separate Trust Cards Grid (Client-specific Happy Steppy Guarantees) -->
-        <div class="hero-trust-cards-grid">
+        <div class="hero-trust-cards-grid scroll-stagger">
           <div class="trust-card-item" title="We ship our products across Pakistan, making them accessible to customers everywhere.">
             <div class="trust-card-icon">
               <i class="fa-solid fa-truck-fast"></i>
@@ -226,7 +226,7 @@
 
   <!-- 2. Trending Products Section (5 Cards matching screenshot) -->
   <section class="container trending-products-section" id="trending-products">
-    <div class="section-header-row">
+    <div class="section-header-row scroll-fade-up">
       <h2 class="section-title">Trending Products</h2>
       <a routerLink="/" class="section-view-all">
         <span>View All</span>
@@ -234,7 +234,7 @@
       </a>
     </div>
 
-    <div class="trending-products-grid">
+    <div class="trending-products-grid scroll-stagger">
       @for (prod of trendingProducts(); track prod.id) {
         <div class="trending-card">
           <!-- Discount Badge -->
@@ -292,7 +292,7 @@
   </section>
 
   <!-- 3. Home Refresh Event Feature Banner (Clean background with Real HTML/CSS Content Overlay) -->
-  <section class="container home-refresh-section">
+  <section class="container home-refresh-section scroll-fade-up">
     <div class="home-refresh-card">
       <img
         [src]="promoBanner().imageUrl"
@@ -341,7 +341,7 @@
   <section class="container style-flash-section" id="flash-sale-section">
     <div class="style-flash-grid">
       <!-- Left: Shop by Style Card -->
-      <div class="shop-by-style-card">
+      <div class="shop-by-style-card scroll-fade-up">
         <div class="style-card-header">
           <div class="style-title-group">
             <h2 class="style-main-title">Shop by Style</h2>
@@ -353,7 +353,7 @@
           </a>
         </div>
 
-        <div class="style-items-grid">
+        <div class="style-items-grid scroll-stagger">
           @for (style of styleCategories(); track style.title) {
             <div class="style-single-item">
               <div class="style-single-thumb">
@@ -374,7 +374,7 @@
       </div>
 
       <!-- Right: Flash Sale Card -->
-      <div class="flash-sale-box">
+      <div class="flash-sale-box scroll-fade-up">
         <!-- Green Gradient Header Bar -->
         <div class="flash-top-bar">
           <div class="flash-brand-title">
@@ -446,7 +446,7 @@
   </section>
 
   <!-- 5. Social Proof: 3 Separate Clean Cards matching reference -->
-  <section class="container social-proof-row">
+  <section class="container social-proof-row scroll-stagger">
     <!-- 1. Customer Testimonial Auto-Slider (Every 3 seconds) -->
     <div
       class="proof-card proof-testimonial-card"
@@ -558,7 +558,7 @@
 <!-- 6. Footer Section (Enhanced Beautiful Styling with Happy Steppy branding) -->
 <footer class="shopora-footer">
   <div class="container footer-inner">
-    <div class="footer-top-row">
+    <div class="footer-top-row scroll-fade-up">
       <!-- Brand & Mission -->
       <div class="footer-brand-col">
         <a routerLink="/" class="footer-brand-logo">
