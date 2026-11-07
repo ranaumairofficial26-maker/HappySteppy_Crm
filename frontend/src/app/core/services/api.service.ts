@@ -84,6 +84,10 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/admin/homepage/styles`, card);
   }
 
+  deleteStyleCard(id: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/admin/homepage/styles/${id}`);
+  }
+
   // Admin Homepage CMS: Flash Sale
   getFlashSale(): Observable<any> {
     return this.http.get(`${this.baseUrl}/admin/homepage/flash-sale`);

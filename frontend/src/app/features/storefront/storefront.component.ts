@@ -465,8 +465,8 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
         }
 
         // Dynamic Style Cards
-        if (data.styleCards && data.styleCards.length >= 4) {
-          this.styleCategories.set(data.styleCards.slice(0, 4).map((s: any) => ({
+        if (data.styleCards && data.styleCards.length > 0) {
+          this.styleCategories.set(data.styleCards.map((s: any) => ({
             title: s.title,
             subtitle: s.subtitle,
             imgUrl: s.imageUrl

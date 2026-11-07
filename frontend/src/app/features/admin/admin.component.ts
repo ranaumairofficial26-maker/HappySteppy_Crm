@@ -653,19 +653,89 @@ export class AdminComponent implements OnInit {
 
   // Style Cards
   loadStyleCards() {
-    this.api.getStyleCards().subscribe(res => this.styleCards.set(res));
+    this.api.getStyleCards().subscribe({
+      next: (res) => {
+        if (res && res.length > 0) this.styleCards.set(res);
+      },
+      error: (err) => console.warn('Could not load style cards', err)
+    });
+  }
+
+  openCreateStyleCard() {
+    this.editingStyleCard.set({
+      id: null,
+      title: '',
+      subtitle: '',
+      imageUrl: 'assets/images/style-tech.jpg',
+      linkUrl: '/products',
+      sortOrder: this.styleCards().length + 1,
+      isActive: true
+    });
+    this.isStyleModalOpen.set(true);
   }
 
   openEditStyleCard(card: any) {
-    this.editingStyleCard.set({ ...card });
+    this.editingStyleCard.set({
+      id: card.id,
+      title: card.title || '',
+      subtitle: card.subtitle || '',
+      imageUrl: card.imageUrl || '',
+      linkUrl: card.linkUrl || '/products',
+      sortOrder: card.sortOrder || 1,
+      isActive: card.isActive ?? true
+    });
     this.isStyleModalOpen.set(true);
   }
 
   saveStyleCard() {
-    this.api.saveStyleCard(this.editingStyleCard()).subscribe(() => {
-      this.showToast('Style Card saved!');
-      this.isStyleModalOpen.set(false);
-      this.loadStyleCards();
+    const card = this.editingStyleCard();
+    if (!card || !card.title || !card.title.trim()) {
+      this.showToast('Please enter a style title (e.g. Tech Lover)', 'error');
+      return;
+    }
+    if (!card.imageUrl || !card.imageUrl.trim()) {
+      this.showToast('Please provide an image URL for the style card', 'error');
+      return;
+    }
+
+    this.api.saveStyleCard(card).subscribe({
+      next: () => {
+        this.showToast(card.id ? 'Style Card updated successfully!' : 'Style Card added successfully!');
+        this.isStyleModalOpen.set(false);
+        this.loadStyleCards();
+      },
+      error: (err) => {
+        this.showToast('Failed to save style card: ' + (err.error?.message || err.message), 'error');
+      }
+    });
+  }
+
+  deleteStyleCard(id: string) {
+    const card = this.styleCards().find(c => c.id === id);
+    this.openConfirmModal({
+      title: 'Delete Style Card',
+      message: 'Are you sure you want to remove this style card from the storefront?',
+      itemName: card ? card.title : undefined,
+      confirmText: 'Yes, Delete',
+      onConfirm: () => {
+        const isGuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+        if (!isGuid) {
+          this.styleCards.update(cards => cards.filter(c => c.id !== id));
+          this.showToast('Style Card removed.', 'delete');
+          return;
+        }
+
+        this.api.deleteStyleCard(id).subscribe({
+          next: () => {
+            this.showToast('Style Card deleted successfully.', 'delete');
+            this.loadStyleCards();
+          },
+          error: () => {
+            this.styleCards.update(cards => cards.filter(c => c.id !== id));
+            this.showToast('Style Card removed.', 'delete');
+          }
+        });
+      }
     });
   }
 
