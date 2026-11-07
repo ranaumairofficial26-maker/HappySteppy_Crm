@@ -174,14 +174,12 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     imageUrl: 'assets/images/home-refresh-banner.jpg'
   });
 
-  // Sidebar Categories
+  // Sidebar Categories (synced with Admin Panel)
   readonly categories = signal<CategoryItem[]>([
-    { name: 'Electronics', icon: 'fa-solid fa-headphones', imgUrl: '' },
-    { name: 'Beauty & Personal Care', icon: 'fa-solid fa-pump-soap', imgUrl: '' },
-    { name: 'Sports & Fitness', icon: 'fa-solid fa-dumbbell', imgUrl: '' },
-    { name: 'Toys & Kids', icon: 'fa-solid fa-shapes', imgUrl: '' },
-    { name: 'Books & Stationery', icon: 'fa-solid fa-book-open', imgUrl: '' },
-    { name: 'Accessories', icon: 'fa-solid fa-clock', imgUrl: '' }
+    { name: 'Tech Lover', icon: 'fa-solid fa-laptop', imgUrl: '' },
+    { name: 'Modern Fashion', icon: 'fa-solid fa-shirt', imgUrl: '' },
+    { name: 'Home Vibes', icon: 'fa-solid fa-couch', imgUrl: '' },
+    { name: 'Active Life', icon: 'fa-solid fa-heart-pulse', imgUrl: '' }
   ]);
 
   // 4 "Shop by Style" Cards
@@ -193,12 +191,7 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
   ]);
 
   // Trusted Brands from DB
-  readonly trustedBrands = signal<{ name: string; logoUrl?: string | null }[]>([
-    { name: 'NovaTech', logoUrl: null },
-    { name: 'UrbanFit', logoUrl: null },
-    { name: 'PureCare', logoUrl: null },
-    { name: 'PlayZone', logoUrl: null }
-  ]);
+  readonly trustedBrands = signal<{ name: string; logoUrl?: string | null }[]>([]);
 
   // Testimonial from DB
   readonly testimonialsList = signal<any[]>([]);
@@ -213,28 +206,16 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     comment: string;
     avatarUrl: string;
   }>({
-    name: 'Emily R.',
-    role: 'Verified Customer',
+    name: 'Sarah Jenkins',
+    role: 'Verified Buyer',
     comment: 'Great quality, super fast delivery and an amazing shopping experience! Happy Steppy has become my go-to store.',
     avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80'
   });
 
-  // 5 Trending Products
+  // Trending Products (Only real products added via Admin / DB)
   readonly trendingProducts = signal<TrendingProduct[]>([
     {
       id: 1,
-      name: 'Bioray Belly Mend',
-      category: 'Supplements',
-      discount: 20,
-      rating: 5.0,
-      reviewCount: '1.2k',
-      price: 8200,
-      originalPrice: 10250,
-      imageUrl: 'assets/images/bioray-belly-mend.webp',
-      isWishlisted: false
-    },
-    {
-      id: 2,
       name: 'Nordic Naturals Omega-3 1560 mg 8 Oz Liquid',
       category: 'Supplements',
       discount: 15,
@@ -246,39 +227,15 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
       isWishlisted: false
     },
     {
-      id: 3,
-      name: 'Casual Sneakers',
-      category: 'Fashion',
-      discount: 30,
-      rating: 4.6,
-      reviewCount: '1.8k',
-      price: 49.99,
-      originalPrice: 69.99,
-      imageUrl: 'assets/images/prod-sneakers.jpg?v=5',
-      isWishlisted: false
-    },
-    {
-      id: 4,
-      name: 'Daily Laptop Backpack',
-      category: 'Accessories',
-      discount: 25,
-      rating: 4.8,
-      reviewCount: '897',
-      price: 44.99,
-      originalPrice: 59.99,
-      imageUrl: 'assets/images/prod-backpack.jpg?v=5',
-      isWishlisted: false
-    },
-    {
-      id: 5,
-      name: 'Insulated Water Bottle',
-      category: 'Sports & Fitness',
+      id: 2,
+      name: 'Bioray Belly Mend',
+      category: 'Supplements',
       discount: 20,
-      rating: 4.7,
+      rating: 5.0,
       reviewCount: '1.2k',
-      price: 19.99,
-      originalPrice: 24.99,
-      imageUrl: 'assets/images/prod-bottle.jpg?v=5',
+      price: 8200,
+      originalPrice: 10250,
+      imageUrl: 'assets/images/bioray-belly-mend.webp',
       isWishlisted: false
     }
   ]);
@@ -487,28 +444,46 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
           this.calculateFlashRemaining();
         }
 
-        // Dynamic Categories from DB (For Desktop Sidebar & Mobile Drawer - preserve defaults if DB has style seed only)
+        // Dynamic Categories from DB (Desktop Sidebar & Mobile Drawer)
         if (data.categories && data.categories.length > 0) {
-          const customCats = data.categories.filter((c: any) => c.showInSidebar !== false && c.iconName);
-          if (customCats.length >= 4) {
-            this.categories.set(customCats.map((c: any) => ({
+          const defaultIcons: { [key: string]: string } = {
+            'tech': 'fa-solid fa-laptop',
+            'fashion': 'fa-solid fa-shirt',
+            'home': 'fa-solid fa-couch',
+            'active': 'fa-solid fa-heart-pulse',
+            'supplement': 'fa-solid fa-pills',
+            'health': 'fa-solid fa-heart-pulse'
+          };
+          this.categories.set(data.categories.map((c: any) => {
+            const lower = (c.name || '').toLowerCase();
+            let icon = c.iconName;
+            if (!icon) {
+              for (const [k, v] of Object.entries(defaultIcons)) {
+                if (lower.includes(k)) { icon = v; break; }
+              }
+            }
+            return {
               name: c.name,
-              icon: c.iconName,
+              icon: icon || 'fa-solid fa-tag',
               imgUrl: c.imageUrl || ''
-            })));
-          }
+            };
+          }));
+        } else {
+          this.categories.set([]);
         }
 
-        // Dynamic Style Cards
+        // Dynamic Style Cards from DB
         if (data.styleCards && data.styleCards.length > 0) {
           this.styleCategories.set(data.styleCards.map((s: any) => ({
             title: s.title,
             subtitle: s.subtitle,
             imgUrl: s.imageUrl
           })));
+        } else {
+          this.styleCategories.set([]);
         }
 
-        // Dynamic Trending Products from DB
+        // Dynamic Trending Products directly from DB
         if (data.trendingProducts && data.trendingProducts.length > 0) {
           const mapped = data.trendingProducts.map((p: any, idx: number) => ({
             id: idx + 1,
@@ -519,10 +494,12 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
             reviewCount: p.reviewsCount > 0 ? (p.reviewsCount >= 1000 ? (p.reviewsCount / 1000).toFixed(1) + 'k' : p.reviewsCount.toString()) : '1.2k',
             price: p.price,
             originalPrice: p.compareAtPrice || Math.round(p.price * 1.2),
-            imageUrl: p.primaryImageUrl || 'assets/images/prod-headphones.jpg?v=5',
+            imageUrl: p.primaryImageUrl || 'assets/images/bioray-belly-mend.webp',
             isWishlisted: false
           }));
           this.trendingProducts.set(mapped);
+        } else {
+          this.trendingProducts.set([]);
         }
 
         // Dynamic Social Links
