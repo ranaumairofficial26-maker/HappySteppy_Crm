@@ -167,8 +167,24 @@ export class AdminComponent implements OnInit {
   editingSocialLink = signal<any>(null);
   isSocialLinkModalOpen = signal<boolean>(false);
 
-  // Toast / notification
-  toastMessage = signal<string | null>(null);
+  // Toast / notification state
+  toast = signal<{
+    message: string;
+    type: 'success' | 'delete' | 'error' | 'info';
+    title: string;
+  } | null>(null);
+  toastMessage = computed(() => this.toast()?.message ?? null);
+  private toastTimer: any = null;
+
+  // Custom Confirmation Modal
+  confirmModal = signal<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    itemName?: string;
+    confirmText?: string;
+    onConfirm: () => void;
+  } | null>(null);
 
   ngOnInit() {
     if (this.authService.isAuthenticated()) {
@@ -176,9 +192,61 @@ export class AdminComponent implements OnInit {
     }
   }
 
-  showToast(msg: string) {
-    this.toastMessage.set(msg);
-    setTimeout(() => this.toastMessage.set(null), 3500);
+  showToast(msg: string, type: 'success' | 'delete' | 'error' | 'info' = 'success', title?: string) {
+    if (this.toastTimer) {
+      clearTimeout(this.toastTimer);
+    }
+
+    const lower = msg.toLowerCase();
+    if (type === 'success') {
+      if (lower.includes('deleted') || lower.includes('removed') || lower.includes('delete')) {
+        type = 'delete';
+      } else if (lower.includes('failed') || lower.includes('error') || lower.includes('invalid')) {
+        type = 'error';
+      }
+    }
+
+    const defaultTitle = type === 'delete' ? 'Item Deleted' :
+                         type === 'error' ? 'Notice' :
+                         type === 'info' ? 'Information' : 'Action Completed';
+
+    this.toast.set({
+      message: msg,
+      type,
+      title: title || defaultTitle
+    });
+
+    this.toastTimer = setTimeout(() => {
+      this.toast.set(null);
+    }, 3800);
+  }
+
+  closeToast() {
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+    this.toast.set(null);
+  }
+
+  openConfirmModal(config: { title: string; message: string; itemName?: string; confirmText?: string; onConfirm: () => void }) {
+    this.confirmModal.set({
+      isOpen: true,
+      title: config.title,
+      message: config.message,
+      itemName: config.itemName,
+      confirmText: config.confirmText || 'Yes, Delete',
+      onConfirm: config.onConfirm
+    });
+  }
+
+  closeConfirmModal() {
+    this.confirmModal.set(null);
+  }
+
+  executeConfirmModal() {
+    const modal = this.confirmModal();
+    if (modal && modal.onConfirm) {
+      modal.onConfirm();
+    }
+    this.closeConfirmModal();
   }
 
   // Auth actions
@@ -289,11 +357,18 @@ export class AdminComponent implements OnInit {
   }
 
   deleteProduct(id: string) {
-    if (!confirm('Are you sure you want to delete this product?')) return;
-    this.api.deleteProduct(id).subscribe(() => {
-      this.showToast('Product deleted.');
-      this.loadProducts();
-      this.loadStats();
+    const prod = this.products().find(p => p.id === id);
+    this.openConfirmModal({
+      title: 'Delete Product',
+      message: 'Are you sure you want to permanently delete this product? It will be removed from your storefront.',
+      itemName: prod ? prod.name : undefined,
+      onConfirm: () => {
+        this.api.deleteProduct(id).subscribe(() => {
+          this.showToast('Product deleted successfully.', 'delete');
+          this.loadProducts();
+          this.loadStats();
+        });
+      }
     });
   }
 
@@ -332,10 +407,17 @@ export class AdminComponent implements OnInit {
   }
 
   deleteCategory(id: string) {
-    if (!confirm('Are you sure you want to delete this category?')) return;
-    this.api.deleteCategory(id).subscribe(() => {
-      this.showToast('Category deleted.');
-      this.loadCategories();
+    const cat = this.categories().find(c => c.id === id);
+    this.openConfirmModal({
+      title: 'Delete Category',
+      message: 'Are you sure you want to delete this category? Products inside may be unlinked.',
+      itemName: cat ? cat.name : undefined,
+      onConfirm: () => {
+        this.api.deleteCategory(id).subscribe(() => {
+          this.showToast('Category deleted successfully.', 'delete');
+          this.loadCategories();
+        });
+      }
     });
   }
 
@@ -376,10 +458,17 @@ export class AdminComponent implements OnInit {
   }
 
   deleteSlide(id: string) {
-    if (!confirm('Delete slide?')) return;
-    this.api.deleteHeroSlide(id).subscribe(() => {
-      this.showToast('Slide deleted.');
-      this.loadHeroSlides();
+    const slide = this.heroSlides().find(s => s.id === id);
+    this.openConfirmModal({
+      title: 'Delete Hero Slide',
+      message: 'Are you sure you want to delete this hero slider banner?',
+      itemName: slide ? slide.title : undefined,
+      onConfirm: () => {
+        this.api.deleteHeroSlide(id).subscribe(() => {
+          this.showToast('Hero slide deleted.', 'delete');
+          this.loadHeroSlides();
+        });
+      }
     });
   }
 
@@ -396,7 +485,7 @@ export class AdminComponent implements OnInit {
         this.showToast('Promotional Banner updated successfully!');
       },
       error: (err) => {
-        alert('Error saving promo banner: ' + (err.error?.message || err.message));
+        this.showToast('Error saving promo banner: ' + (err.error?.message || err.message), 'error');
       }
     });
   }
@@ -460,7 +549,7 @@ export class AdminComponent implements OnInit {
   saveTestimonial() {
     const t = this.editingTestimonial();
     if (!t.customerName || !t.comment) {
-      alert('Please fill customer name and review comment.');
+      this.showToast('Please fill customer name and review comment.', 'error');
       return;
     }
     t.isActive = true;
@@ -472,16 +561,23 @@ export class AdminComponent implements OnInit {
         this.loadTestimonials();
       },
       error: (err) => {
-        alert('Error saving testimonial: ' + (err.error?.message || err.message));
+        this.showToast('Error saving testimonial: ' + (err.error?.message || err.message), 'error');
       }
     });
   }
 
   deleteTestimonial(id: string) {
-    if (!confirm('Delete testimonial?')) return;
-    this.api.deleteTestimonial(id).subscribe(() => {
-      this.showToast('Testimonial deleted.');
-      this.loadTestimonials();
+    const t = this.testimonials().find(x => x.id === id);
+    this.openConfirmModal({
+      title: 'Delete Testimonial',
+      message: 'Are you sure you want to delete this customer review?',
+      itemName: t ? `${t.customerName}` : undefined,
+      onConfirm: () => {
+        this.api.deleteTestimonial(id).subscribe(() => {
+          this.showToast('Testimonial deleted.', 'delete');
+          this.loadTestimonials();
+        });
+      }
     });
   }
 
@@ -503,7 +599,7 @@ export class AdminComponent implements OnInit {
   saveBrand() {
     const brand = this.editingBrand();
     if (!brand || !brand.name || !brand.name.trim()) {
-      this.showToast('Please enter brand name');
+      this.showToast('Please enter brand name', 'error');
       return;
     }
     if (brand.isActive === undefined || brand.isActive === null) {
@@ -511,21 +607,28 @@ export class AdminComponent implements OnInit {
     }
     this.api.saveBrand(brand).subscribe({
       next: () => {
-        this.showToast(brand.id ? 'Brand updated!' : 'Brand added!');
+        this.showToast(brand.id ? 'Brand updated!' : 'Brand added successfully!');
         this.isBrandModalOpen.set(false);
         this.loadBrands();
       },
       error: () => {
-        this.showToast('Failed to save brand.');
+        this.showToast('Failed to save brand.', 'error');
       }
     });
   }
 
   deleteBrand(id: string) {
-    if (!confirm('Delete brand?')) return;
-    this.api.deleteBrand(id).subscribe(() => {
-      this.showToast('Brand deleted.');
-      this.loadBrands();
+    const b = this.brands().find(x => x.id === id);
+    this.openConfirmModal({
+      title: 'Delete Trusted Brand',
+      message: 'Are you sure you want to remove this brand from your storefront?',
+      itemName: b ? b.name : undefined,
+      onConfirm: () => {
+        this.api.deleteBrand(id).subscribe(() => {
+          this.showToast('Brand deleted.', 'delete');
+          this.loadBrands();
+        });
+      }
     });
   }
 
@@ -572,7 +675,7 @@ export class AdminComponent implements OnInit {
   saveFooterLink() {
     const link = this.editingFooterLink();
     if (!link.title) {
-      alert('Please enter a link title.');
+      this.showToast('Please enter a link title.', 'error');
       return;
     }
 
@@ -582,18 +685,25 @@ export class AdminComponent implements OnInit {
         this.isFooterLinkModalOpen.set(false);
         this.loadFooterData();
       },
-      error: () => this.showToast('Failed to save footer link.')
+      error: () => this.showToast('Failed to save footer link.', 'error')
     });
   }
 
   deleteFooterLink(id: string) {
-    if (!confirm('Are you sure you want to delete this footer link?')) return;
-    this.api.deleteFooterLink(id).subscribe({
-      next: () => {
-        this.showToast('Footer link removed.');
-        this.loadFooterData();
-      },
-      error: () => this.showToast('Failed to delete footer link.')
+    const link = this.footerLinks().find(l => l.id === id);
+    this.openConfirmModal({
+      title: 'Delete Footer Link',
+      message: 'Are you sure you want to delete this navigation footer link?',
+      itemName: link ? `${link.title} (${link.columnName})` : undefined,
+      onConfirm: () => {
+        this.api.deleteFooterLink(id).subscribe({
+          next: () => {
+            this.showToast('Footer link removed.', 'delete');
+            this.loadFooterData();
+          },
+          error: () => this.showToast('Failed to delete footer link.', 'error')
+        });
+      }
     });
   }
 
@@ -618,7 +728,7 @@ export class AdminComponent implements OnInit {
   saveSocialLink() {
     const s = this.editingSocialLink();
     if (!s.platform || !s.url) {
-      alert('Please enter platform and URL.');
+      this.showToast('Please enter platform and URL.', 'error');
       return;
     }
 
@@ -628,18 +738,25 @@ export class AdminComponent implements OnInit {
         this.isSocialLinkModalOpen.set(false);
         this.loadFooterData();
       },
-      error: () => this.showToast('Failed to save social link.')
+      error: () => this.showToast('Failed to save social link.', 'error')
     });
   }
 
   deleteSocialLink(id: string) {
-    if (!confirm('Delete this social link?')) return;
-    this.api.deleteSocialLink(id).subscribe({
-      next: () => {
-        this.showToast('Social link removed.');
-        this.loadFooterData();
-      },
-      error: () => this.showToast('Failed to delete social link.')
+    const s = this.socialLinks().find(x => x.id === id);
+    this.openConfirmModal({
+      title: 'Delete Social Link',
+      message: 'Are you sure you want to remove this official social network link?',
+      itemName: s ? s.platform : undefined,
+      onConfirm: () => {
+        this.api.deleteSocialLink(id).subscribe({
+          next: () => {
+            this.showToast('Social link removed.', 'delete');
+            this.loadFooterData();
+          },
+          error: () => this.showToast('Failed to delete social link.', 'error')
+        });
+      }
     });
   }
 

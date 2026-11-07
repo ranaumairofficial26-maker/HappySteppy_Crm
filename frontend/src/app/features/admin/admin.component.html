@@ -1,9 +1,39 @@
 <div class="admin-wrapper">
-  <!-- Toast message -->
-  @if (toastMessage()) {
-    <div class="admin-toast">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-      <span>{{ toastMessage() }}</span>
+  <!-- Ultra-Modern Floating Toast Notification -->
+  @if (toast(); as t) {
+    <div class="admin-toast-container" [class]="'toast-' + t.type">
+      <div class="admin-toast-card">
+        <div class="toast-indicator-strip"></div>
+        <div class="toast-icon-circle">
+          @if (t.type === 'delete') {
+            <!-- Trash Icon -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              <line x1="10" y1="11" x2="10" y2="17"/>
+              <line x1="14" y1="11" x2="14" y2="17"/>
+            </svg>
+          } @else if (t.type === 'error') {
+            <!-- Alert Circle -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          } @else {
+            <!-- Success Checkmark -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          }
+        </div>
+        <div class="toast-body">
+          <div class="toast-title-text">{{ t.title }}</div>
+          <div class="toast-msg-text">{{ t.message }}</div>
+        </div>
+        <button class="toast-dismiss-btn" (click)="closeToast()" title="Dismiss">&times;</button>
+        <div class="toast-timer-bar"></div>
+      </div>
     </div>
   }
 
@@ -1228,6 +1258,43 @@
         <div class="modal-footer">
           <button class="btn-secondary" (click)="isSocialLinkModalOpen.set(false)">Cancel</button>
           <button class="btn-primary-action" (click)="saveSocialLink()">Save Channel</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- CUSTOM CONFIRM DELETE MODAL -->
+  @if (confirmModal(); as modal) {
+    <div class="modal-overlay confirm-modal-overlay" (click)="closeConfirmModal()">
+      <div class="modal-box confirm-modal-box" (click)="$event.stopPropagation()">
+        <div class="confirm-icon-pulse">
+          <div class="confirm-icon-inner">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              <line x1="10" y1="11" x2="10" y2="17"/>
+              <line x1="14" y1="11" x2="14" y2="17"/>
+            </svg>
+          </div>
+        </div>
+        <div class="confirm-modal-content">
+          <h3 class="confirm-title">{{ modal.title }}</h3>
+          <p class="confirm-desc">{{ modal.message }}</p>
+          @if (modal.itemName) {
+            <div class="confirm-target-item">
+              <i class="fa-solid fa-trash-can"></i>
+              <span>{{ modal.itemName }}</span>
+            </div>
+          }
+        </div>
+        <div class="confirm-actions-row">
+          <button type="button" class="btn-cancel-action" (click)="closeConfirmModal()">
+            Cancel
+          </button>
+          <button type="button" class="btn-delete-action" (click)="executeConfirmModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            <span>{{ modal.confirmText || 'Yes, Delete' }}</span>
+          </button>
         </div>
       </div>
     </div>

@@ -881,3 +881,21 @@
   <i class="fa-brands fa-whatsapp"></i>
   <span class="whatsapp-tooltip">Chat on WhatsApp</span>
 </a>
+
+<!-- Floating Store Toast Notification -->
+@if (storeToast(); as st) {
+  <div class="storefront-toast-popup">
+    @if (st.image) {
+      <img [src]="st.image" [alt]="st.title" class="st-toast-img" />
+    } @else {
+      <div class="st-toast-icon">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+    }
+    <div class="st-toast-content">
+      <div class="st-toast-title">{{ st.title }}</div>
+      <div class="st-toast-desc">{{ st.message }}</div>
+    </div>
+    <button class="st-toast-close" (click)="storeToast.set(null)">&times;</button>
+  </div>
+}

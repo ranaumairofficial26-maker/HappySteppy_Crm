@@ -40,6 +40,16 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
   newsletterEmail = signal<string>('');
   isSubscribed = signal<boolean>(false);
 
+  // Store Toast Notification
+  storeToast = signal<{ message: string; title: string; image?: string } | null>(null);
+  private storeToastTimer: any = null;
+
+  showStoreToast(msg: string, title: string = 'Added to Cart', image?: string) {
+    if (this.storeToastTimer) clearTimeout(this.storeToastTimer);
+    this.storeToast.set({ message: msg, title, image });
+    this.storeToastTimer = setTimeout(() => this.storeToast.set(null), 3200);
+  }
+
   // Social Media Links (Official Happy Steppy Channels)
   socialLinks = signal<{ [key: string]: string }>({
     facebook: 'https://www.facebook.com/happysteppyltd',
@@ -491,11 +501,14 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     setTimeout(() => {
       btn.style.transform = 'scale(1)';
     }, 200);
+
+    this.showStoreToast(`${product.name} has been added to your shopping cart.`, 'Added to Cart 🛍️', product.imageUrl);
   }
 
   subscribeNewsletter() {
     if (this.newsletterEmail().trim()) {
       this.isSubscribed.set(true);
+      this.showStoreToast('Thank you for subscribing to Happy Steppy updates!', 'Subscribed 🎉');
       setTimeout(() => {
         this.newsletterEmail.set('');
         this.isSubscribed.set(false);
