@@ -509,24 +509,33 @@ namespace HappySteppy.Application.Services
 
         public async Task<PromotionalBannerDto> SaveBannerAsync(PromotionalBannerDto dto, CancellationToken ct = default)
         {
+            PromotionalBanner? b = null;
             if (dto.Id.HasValue && dto.Id.Value != Guid.Empty)
             {
-                var b = await _homepageRepo.GetBannerByIdAsync(dto.Id.Value, ct);
-                if (b != null)
-                {
-                    b.Title = dto.Title;
-                    b.Subtitle = dto.Subtitle;
-                    b.DiscountText = dto.DiscountText;
-                    b.ButtonText = dto.ButtonText;
-                    b.ButtonUrl = dto.ButtonUrl;
-                    b.ImageUrl = dto.ImageUrl;
-                    b.LocationKey = dto.LocationKey;
-                    b.SortOrder = dto.SortOrder;
-                    b.IsActive = dto.IsActive;
-                    b.UpdatedAtUtc = DateTime.UtcNow;
-                    await _homepageRepo.UpdateBannerAsync(b, ct);
-                    return dto;
-                }
+                b = await _homepageRepo.GetBannerByIdAsync(dto.Id.Value, ct);
+            }
+
+            if (b == null)
+            {
+                var existing = await _homepageRepo.GetBannersAsync(false, ct);
+                b = existing.FirstOrDefault();
+            }
+
+            if (b != null)
+            {
+                b.Title = dto.Title;
+                b.Subtitle = dto.Subtitle;
+                b.DiscountText = dto.DiscountText;
+                b.ButtonText = dto.ButtonText;
+                b.ButtonUrl = dto.ButtonUrl;
+                b.ImageUrl = dto.ImageUrl;
+                b.LocationKey = dto.LocationKey;
+                b.SortOrder = dto.SortOrder;
+                b.IsActive = dto.IsActive;
+                b.UpdatedAtUtc = DateTime.UtcNow;
+                await _homepageRepo.UpdateBannerAsync(b, ct);
+                dto.Id = b.Id;
+                return dto;
             }
 
             var newB = new PromotionalBanner
