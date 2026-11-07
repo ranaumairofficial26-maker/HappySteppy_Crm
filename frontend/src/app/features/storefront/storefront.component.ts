@@ -191,7 +191,14 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
   ]);
 
   // Trusted Brands from DB
-  readonly trustedBrands = signal<{ name: string; logoUrl?: string | null }[]>([]);
+  readonly trustedBrands = signal<{ name: string; logoUrl?: string | null }[]>([
+    { name: 'Nordic Naturals', logoUrl: null },
+    { name: 'Bioray', logoUrl: null },
+    { name: 'Puma', logoUrl: null },
+    { name: 'NovaTech', logoUrl: null },
+    { name: 'UrbanFit', logoUrl: null },
+    { name: 'PureCare', logoUrl: null }
+  ]);
 
   // Testimonial from DB
   readonly testimonialsList = signal<any[]>([]);

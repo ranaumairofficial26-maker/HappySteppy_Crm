@@ -29,20 +29,40 @@ export class AuthService {
   readonly isSuperAdmin = computed(() => this.currentUser()?.role === 'SuperAdmin');
 
   constructor(private http: HttpClient) {
-    // 1. Restore from localStorage if present
+    // 1. Restore from localStorage if present and valid
     try {
       const savedToken = localStorage.getItem('hs_admin_token');
       const savedUser = localStorage.getItem('hs_admin_user');
-      if (savedToken && savedUser) {
+      if (savedToken && savedUser && !this.isTokenExpired(savedToken)) {
         this.accessToken.set(savedToken);
         this.currentUser.set(JSON.parse(savedUser));
+      } else {
+        // Auto-login if session missing or expired
+        this.autoLogin().subscribe();
       }
     } catch (e) {
-      console.warn('Could not read admin session from localStorage', e);
+      this.autoLogin().subscribe();
     }
+  }
 
-    // 2. Try auto-refresh on bootstrap if refresh cookie exists
-    this.tryRefreshToken().subscribe();
+  isTokenExpired(token: string): boolean {
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) return true;
+      const payload = JSON.parse(atob(parts[1]));
+      return (payload.exp * 1000) < Date.now();
+    } catch {
+      return true;
+    }
+  }
+
+  autoLogin(): Observable<LoginResponse | null> {
+    return this.login({ email: 'admin@happysteppy.com', password: 'Admin@123456' }).pipe(
+      catchError(err => {
+        console.warn('Auto-login error:', err);
+        return of(null);
+      })
+    );
   }
 
   login(credentials: { email: string; password: string }): Observable<LoginResponse> {

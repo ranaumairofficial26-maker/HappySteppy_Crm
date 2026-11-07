@@ -846,7 +846,11 @@
                         <label>Secondary Image URL (Bottle)</label>
                         <span class="img-dim-pill">Recommended: <strong>400 × 400 px</strong></span>
                       </div>
+                      <input type="file" #flashSecPicInput (change)="uploadImageFromComputer($event, 'flashSecondary')" accept="image/*" style="display: none;" />
                       <input type="text" [(ngModel)]="flashSale().secondaryImageUrl" placeholder="assets/images/bioray-belly-mend-bottle.webp or https://..." />
+                      <button type="button" class="btn-change-pic" style="margin-top: 4px;" (click)="flashSecPicInput.click()">
+                        <i class="fa-solid fa-camera"></i> Choose from PC
+                      </button>
                     </div>
                   </div>
 
@@ -878,10 +882,10 @@
                 <div style="margin-top: 1.5rem; padding: 1.25rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px;">
                   <span style="font-size: 0.76rem; font-weight: 750; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 0.75rem;">Storefront Live Preview</span>
                   
-                  <div style="border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; background: #ffffff; max-width: 520px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-                    <div style="display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #ffffff; padding: 10px 16px;">
-                      <div style="display: flex; align-items: center; gap: 8px; font-weight: 750; font-size: 0.95rem;">
-                        <i class="fa-solid fa-bolt" style="color: #fef08a;"></i>
+                  <div style="border-radius: 20px; overflow: hidden; border: 2px solid #5cae1d; background: #ffffff; max-width: 520px; box-shadow: 0 4px 15px rgba(92,174,29,0.1);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: #5cae1d; color: #ffffff; padding: 12px 18px;">
+                      <div style="display: flex; align-items: center; gap: 8px; font-weight: 850; font-size: 1.05rem;">
+                        <i class="fa-solid fa-bolt" style="color: #ffffff;"></i>
                         <span>{{ flashSale().title || 'Sale' }}</span>
                       </div>
                       <div style="font-size: 0.8rem; font-weight: 600; opacity: 0.95;">
@@ -889,31 +893,31 @@
                       </div>
                     </div>
 
-                    <div style="display: flex; padding: 16px; gap: 16px; align-items: center;">
+                    <div style="display: flex; padding: 18px; gap: 18px; align-items: center;">
                       <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
-                        <img [src]="flashSale().imageUrl || 'assets/images/bioray-belly-mend.webp'" style="width: 80px; height: 80px; object-fit: contain; border-radius: 10px; background: #f8fafc; border: 1px solid #e2e8f0;" alt="Preview" />
+                        <img [src]="flashSale().imageUrl || 'assets/images/bioray-belly-mend.webp'" style="width: 85px; height: 85px; object-fit: contain; border-radius: 10px; background: #ffffff;" alt="Preview" />
                         <div *ngIf="flashSale().secondaryImageUrl" style="display: flex; gap: 4px;">
-                          <img [src]="flashSale().imageUrl || 'assets/images/bioray-belly-mend.webp'" style="width: 22px; height: 22px; object-fit: contain; border-radius: 4px; border: 1.5px solid #10b981; padding: 1px;" alt="View 1" />
-                          <img [src]="flashSale().secondaryImageUrl || 'assets/images/bioray-belly-mend-bottle.webp'" style="width: 22px; height: 22px; object-fit: contain; border-radius: 4px; border: 1.5px solid #cbd5e1; padding: 1px;" alt="View 2" />
+                          <img [src]="flashSale().imageUrl || 'assets/images/bioray-belly-mend.webp'" style="width: 24px; height: 24px; object-fit: contain; border-radius: 4px; border: 1.5px solid #5cae1d; padding: 1px;" alt="View 1" />
+                          <img [src]="flashSale().secondaryImageUrl || 'assets/images/bioray-belly-mend-bottle.webp'" style="width: 24px; height: 24px; object-fit: contain; border-radius: 4px; border: 1.5px solid #cbd5e1; padding: 1px;" alt="View 2" />
                         </div>
                       </div>
                       <div style="flex: 1; min-width: 0;">
-                        <h4 style="margin: 0 0 4px; font-size: 1rem; font-weight: 700; color: #0f172a;">{{ flashSale().productName || 'Bioray Belly Mend' }}</h4>
-                        <div style="font-size: 0.8rem; color: #eab308; font-weight: 600; margin-bottom: 6px;">
+                        <h4 style="margin: 0 0 4px; font-size: 1.05rem; font-weight: 800; color: #0f172a;">{{ flashSale().productName || 'Bioray Belly Mend' }}</h4>
+                        <div style="font-size: 0.82rem; color: #f59e0b; font-weight: 600; margin-bottom: 6px;">
                           ⭐ {{ flashSale().ratingText || '5.0 (1.2k)' }}
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                          <span style="font-size: 1.15rem; font-weight: 800; color: #0f172a;">{{ flashSale().salePrice || '₨8,200' }}</span>
+                          <span style="font-size: 1.25rem; font-weight: 900; color: #0f172a;">{{ flashSale().salePrice || '₨8,200' }}</span>
                           <span style="font-size: 0.85rem; color: #94a3b8; text-decoration: line-through;">{{ flashSale().originalPrice || '₨10,250' }}</span>
-                          <span style="background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; font-size: 0.75rem; font-weight: 800; padding: 2px 8px; border-radius: 999px;">
+                          <span style="background: #5cae1d; color: #ffffff; font-size: 0.76rem; font-weight: 800; padding: 3px 10px; border-radius: 999px;">
                             {{ flashSale().discountPercentage || 20 }}% OFF
                           </span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                          <span style="background: #0f172a; color: white; padding: 4px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;">
-                            {{ flashSale().buttonText || 'Grab the Deal' }}
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                          <span style="background: #5cae1d; color: white; padding: 6px 16px; border-radius: 999px; font-size: 0.82rem; font-weight: 750;">
+                            {{ flashSale().buttonText || 'Grab the Deal' }} &rarr;
                           </span>
-                          <span style="font-size: 0.75rem; color: #ef4444; font-weight: 700;">{{ flashSale().stockLeftText || 'Only 42 left!' }}</span>
+                          <span style="font-size: 0.8rem; color: #5cae1d; font-weight: 800;">{{ flashSale().stockLeftText || 'Only 15 left!' }}</span>
                         </div>
                       </div>
                     </div>

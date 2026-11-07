@@ -360,6 +360,10 @@ export class AdminComponent implements OnInit {
   ngOnInit() {
     if (this.authService.isAuthenticated()) {
       this.loadAllData();
+    } else {
+      this.authService.autoLogin().subscribe(() => {
+        this.loadAllData();
+      });
     }
   }
 
@@ -505,24 +509,34 @@ export class AdminComponent implements OnInit {
   saveProduct() {
     const p = this.editingProduct();
     if (!p.name || p.price <= 0) {
-      alert('Please fill product name and a valid price.');
+      this.showToast('Please fill product name and a valid price.', 'error');
       return;
     }
     p.sku = p.sku || ('HS-' + Math.floor(10000 + Math.random() * 90000));
 
     if (p.id) {
-      this.api.updateProduct(p.id, p).subscribe(() => {
-        this.showToast('Product updated successfully!');
-        this.isProductModalOpen.set(false);
-        this.loadProducts();
-        this.loadStats();
+      this.api.updateProduct(p.id, p).subscribe({
+        next: () => {
+          this.showToast('Product updated successfully!');
+          this.isProductModalOpen.set(false);
+          this.loadProducts();
+          this.loadStats();
+        },
+        error: (err: any) => {
+          this.showToast('Failed to update product: ' + (err.error?.message || 'Server error'), 'error');
+        }
       });
     } else {
-      this.api.createProduct(p).subscribe(() => {
-        this.showToast('Product created successfully!');
-        this.isProductModalOpen.set(false);
-        this.loadProducts();
-        this.loadStats();
+      this.api.createProduct(p).subscribe({
+        next: () => {
+          this.showToast('Product created successfully!');
+          this.isProductModalOpen.set(false);
+          this.loadProducts();
+          this.loadStats();
+        },
+        error: (err: any) => {
+          this.showToast('Failed to create product: ' + (err.error?.message || 'Server error'), 'error');
+        }
       });
     }
   }
@@ -534,10 +548,15 @@ export class AdminComponent implements OnInit {
       message: 'Are you sure you want to permanently delete this product? It will be removed from your storefront.',
       itemName: prod ? prod.name : undefined,
       onConfirm: () => {
-        this.api.deleteProduct(id).subscribe(() => {
-          this.showToast('Product deleted successfully.', 'delete');
-          this.loadProducts();
-          this.loadStats();
+        this.api.deleteProduct(id).subscribe({
+          next: () => {
+            this.showToast('Product deleted successfully.', 'delete');
+            this.loadProducts();
+            this.loadStats();
+          },
+          error: (err: any) => {
+            this.showToast('Failed to delete product: ' + (err.error?.message || 'Server error'), 'error');
+          }
         });
       }
     });
@@ -583,7 +602,7 @@ export class AdminComponent implements OnInit {
     });
   }
 
-  uploadImageFromComputer(event: Event, targetType: 'product' | 'flash' | 'category' | 'hero' | 'banner' | 'style') {
+  uploadImageFromComputer(event: Event, targetType: 'product' | 'flash' | 'flashSecondary' | 'category' | 'hero' | 'banner' | 'style') {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
 
@@ -598,6 +617,8 @@ export class AdminComponent implements OnInit {
         this.editingProduct.update(p => ({ ...p, primaryImageUrl: base64 }));
       } else if (targetType === 'flash') {
         this.flashSale.update(f => ({ ...f, imageUrl: base64 }));
+      } else if (targetType === 'flashSecondary') {
+        this.flashSale.update(f => ({ ...f, secondaryImageUrl: base64 }));
       } else if (targetType === 'category') {
         this.editingCategory.update(c => ({ ...c, imageUrl: base64 }));
       } else if (targetType === 'hero') {
@@ -620,6 +641,8 @@ export class AdminComponent implements OnInit {
             this.editingProduct.update(p => ({ ...p, primaryImageUrl: serverUrl }));
           } else if (targetType === 'flash') {
             this.flashSale.update(f => ({ ...f, imageUrl: serverUrl }));
+          } else if (targetType === 'flashSecondary') {
+            this.flashSale.update(f => ({ ...f, secondaryImageUrl: serverUrl }));
           } else if (targetType === 'category') {
             this.editingCategory.update(c => ({ ...c, imageUrl: serverUrl }));
           } else if (targetType === 'hero') {
@@ -662,16 +685,26 @@ export class AdminComponent implements OnInit {
     if (!c.name) return;
 
     if (c.id) {
-      this.api.updateCategory(c.id, c).subscribe(() => {
-        this.showToast('Category updated!');
-        this.isCategoryModalOpen.set(false);
-        this.loadCategories();
+      this.api.updateCategory(c.id, c).subscribe({
+        next: () => {
+          this.showToast('Category updated!');
+          this.isCategoryModalOpen.set(false);
+          this.loadCategories();
+        },
+        error: (err: any) => {
+          this.showToast('Failed to update category: ' + (err.error?.message || 'Server error'), 'error');
+        }
       });
     } else {
-      this.api.createCategory(c).subscribe(() => {
-        this.showToast('Category created!');
-        this.isCategoryModalOpen.set(false);
-        this.loadCategories();
+      this.api.createCategory(c).subscribe({
+        next: () => {
+          this.showToast('Category created!');
+          this.isCategoryModalOpen.set(false);
+          this.loadCategories();
+        },
+        error: (err: any) => {
+          this.showToast('Failed to create category: ' + (err.error?.message || 'Server error'), 'error');
+        }
       });
     }
   }
@@ -683,9 +716,14 @@ export class AdminComponent implements OnInit {
       message: 'Are you sure you want to delete this category? Products inside may be unlinked.',
       itemName: cat ? cat.name : undefined,
       onConfirm: () => {
-        this.api.deleteCategory(id).subscribe(() => {
-          this.showToast('Category deleted successfully.', 'delete');
-          this.loadCategories();
+        this.api.deleteCategory(id).subscribe({
+          next: () => {
+            this.showToast('Category deleted successfully.', 'delete');
+            this.loadCategories();
+          },
+          error: (err: any) => {
+            this.showToast('Failed to delete category: ' + (err.error?.message || 'Server error'), 'error');
+          }
         });
       }
     });
@@ -720,10 +758,15 @@ export class AdminComponent implements OnInit {
 
   saveSlide() {
     const s = this.editingSlide();
-    this.api.saveHeroSlide(s).subscribe(() => {
-      this.showToast('Hero slide saved!');
-      this.isSlideModalOpen.set(false);
-      this.loadHeroSlides();
+    this.api.saveHeroSlide(s).subscribe({
+      next: () => {
+        this.showToast('Hero slide saved!');
+        this.isSlideModalOpen.set(false);
+        this.loadHeroSlides();
+      },
+      error: (err: any) => {
+        this.showToast('Failed to save hero slide: ' + (err.error?.message || 'Server error'), 'error');
+      }
     });
   }
 
@@ -734,9 +777,14 @@ export class AdminComponent implements OnInit {
       message: 'Are you sure you want to delete this hero slider banner?',
       itemName: slide ? slide.title : undefined,
       onConfirm: () => {
-        this.api.deleteHeroSlide(id).subscribe(() => {
-          this.showToast('Hero slide deleted.', 'delete');
-          this.loadHeroSlides();
+        this.api.deleteHeroSlide(id).subscribe({
+          next: () => {
+            this.showToast('Hero slide deleted.', 'delete');
+            this.loadHeroSlides();
+          },
+          error: (err: any) => {
+            this.showToast('Failed to delete hero slide: ' + (err.error?.message || 'Server error'), 'error');
+          }
         });
       }
     });
@@ -935,9 +983,14 @@ export class AdminComponent implements OnInit {
       message: 'Are you sure you want to delete this customer review?',
       itemName: t ? `${t.customerName}` : undefined,
       onConfirm: () => {
-        this.api.deleteTestimonial(id).subscribe(() => {
-          this.showToast('Testimonial deleted.', 'delete');
-          this.loadTestimonials();
+        this.api.deleteTestimonial(id).subscribe({
+          next: () => {
+            this.showToast('Testimonial deleted.', 'delete');
+            this.loadTestimonials();
+          },
+          error: (err: any) => {
+            this.showToast('Failed to delete testimonial: ' + (err.error?.message || 'Server error'), 'error');
+          }
         });
       }
     });
@@ -986,9 +1039,14 @@ export class AdminComponent implements OnInit {
       message: 'Are you sure you want to remove this brand from your storefront?',
       itemName: b ? b.name : undefined,
       onConfirm: () => {
-        this.api.deleteBrand(id).subscribe(() => {
-          this.showToast('Brand deleted.', 'delete');
-          this.loadBrands();
+        this.api.deleteBrand(id).subscribe({
+          next: () => {
+            this.showToast('Brand deleted.', 'delete');
+            this.loadBrands();
+          },
+          error: (err: any) => {
+            this.showToast('Failed to delete brand: ' + (err.error?.message || 'Server error'), 'error');
+          }
         });
       }
     });

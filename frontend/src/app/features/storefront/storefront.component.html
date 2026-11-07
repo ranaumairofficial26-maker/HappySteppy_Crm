@@ -495,7 +495,7 @@
         <div class="flash-top-bar">
           <div class="flash-brand-title">
             <i class="fa-solid fa-bolt"></i>
-            <span>{{ flashSale().title || 'Flash Sale' }}</span>
+            <span>{{ flashSale().title || 'Sale' }}</span>
           </div>
 
           <div class="flash-timer-group">
@@ -681,13 +681,19 @@
       </div>
     </div>
 
-    <!-- 3. Trusted by Leading Brands -->
+    <!-- 3. Trusted by Leading Brands (Infinite Scrolling Marquee) -->
     @if (trustedBrands().length > 0) {
       <div class="proof-card proof-brands-card">
         <h4 class="brands-headline">Trusted by Leading Brands</h4>
         <div class="brands-ticker-wrap">
           <div class="brands-pills-list">
-            @for (brand of trustedBrands(); track brand.name) {
+            @for (brand of trustedBrands(); track $index) {
+              <div class="brand-item-pill">
+                <i class="fa-solid fa-circle-check brand-ico"></i>
+                <span>{{ brand.name }}</span>
+              </div>
+            }
+            @for (brand of trustedBrands(); track $index + '_loop') {
               <div class="brand-item-pill">
                 <i class="fa-solid fa-circle-check brand-ico"></i>
                 <span>{{ brand.name }}</span>
