@@ -19,15 +19,11 @@ export class AdminComponent implements OnInit {
   // Active navigation tab
   activeTab = signal<'dashboard' | 'products' | 'categories' | 'hero' | 'banners' | 'styles' | 'flash' | 'testimonials' | 'brands' | 'footer'>('dashboard');
 
-  // Homepage CMS collapsible menu state
-  isHomepageExpanded = signal<boolean>(true);
-
   isHomepageTab(): boolean {
     return ['hero', 'banners', 'styles', 'flash', 'testimonials', 'brands'].includes(this.activeTab());
   }
 
-  toggleHomepageMenu(): void {
-    this.isHomepageExpanded.update(v => !v);
+  selectHomepageTab(): void {
     if (!this.isHomepageTab()) {
       this.activeTab.set('hero');
     }
@@ -35,7 +31,6 @@ export class AdminComponent implements OnInit {
 
   selectHomepageSubTab(tab: 'hero' | 'banners' | 'styles' | 'flash' | 'testimonials' | 'brands'): void {
     this.activeTab.set(tab);
-    this.isHomepageExpanded.set(true);
   }
 
   getHomepageTabName(): string {
