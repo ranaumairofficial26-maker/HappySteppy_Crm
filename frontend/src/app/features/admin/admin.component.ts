@@ -587,7 +587,7 @@ export class AdminComponent implements OnInit {
   }
 
   openCreateBrand() {
-    this.editingBrand.set({ id: null, name: '', slug: '', logoUrl: '', isActive: true, sortOrder: this.brands().length + 1 });
+    this.editingBrand.set({ id: null, name: '', slug: '', logoUrl: null, isActive: true, sortOrder: this.brands().length + 1 });
     this.isBrandModalOpen.set(true);
   }
 

@@ -662,11 +662,7 @@
           <div class="brands-pills-list">
             @for (brand of trustedBrands(); track brand.name) {
               <div class="brand-item-pill">
-                @if (brand.logoUrl) {
-                  <img [src]="brand.logoUrl" [alt]="brand.name" class="brand-img" style="height: 18px; width: auto; object-fit: contain; margin-right: 4px;" />
-                } @else {
-                  <i class="fa-solid fa-circle-check brand-ico"></i>
-                }
+                <i class="fa-solid fa-circle-check brand-ico"></i>
                 <span>{{ brand.name }}</span>
               </div>
             }
