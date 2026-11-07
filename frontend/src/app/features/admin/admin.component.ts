@@ -19,6 +19,37 @@ export class AdminComponent implements OnInit {
   // Active navigation tab
   activeTab = signal<'dashboard' | 'products' | 'categories' | 'hero' | 'banners' | 'styles' | 'flash' | 'testimonials' | 'brands' | 'footer'>('dashboard');
 
+  // Homepage CMS collapsible menu state
+  isHomepageExpanded = signal<boolean>(true);
+
+  isHomepageTab(): boolean {
+    return ['hero', 'banners', 'styles', 'flash', 'testimonials', 'brands'].includes(this.activeTab());
+  }
+
+  toggleHomepageMenu(): void {
+    this.isHomepageExpanded.update(v => !v);
+    if (!this.isHomepageTab()) {
+      this.activeTab.set('hero');
+    }
+  }
+
+  selectHomepageSubTab(tab: 'hero' | 'banners' | 'styles' | 'flash' | 'testimonials' | 'brands'): void {
+    this.activeTab.set(tab);
+    this.isHomepageExpanded.set(true);
+  }
+
+  getHomepageTabName(): string {
+    switch (this.activeTab()) {
+      case 'hero': return 'Hero Slider';
+      case 'banners': return 'Promo Banner';
+      case 'styles': return 'Style Cards';
+      case 'flash': return 'Flash Sale';
+      case 'testimonials': return 'Testimonials';
+      case 'brands': return 'Trusted Brands';
+      default: return 'Homepage';
+    }
+  }
+
   // Login form state
   loginEmail = signal<string>('admin@happysteppy.com');
   loginPassword = signal<string>('Admin@123456');
