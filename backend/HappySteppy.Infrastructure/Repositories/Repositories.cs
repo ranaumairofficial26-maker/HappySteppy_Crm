@@ -89,13 +89,13 @@ namespace HappySteppy.Infrastructure.Repositories
             => _db.Products.Include(p => p.Brand).Include(p => p.Images)
                            .FirstOrDefaultAsync(p => p.Slug.ToLower() == slug.ToLower(), ct);
 
-        public Task<List<Product>> GetTrendingAsync(int count = 4, CancellationToken ct = default)
+        public Task<List<Product>> GetTrendingAsync(int count = 6, CancellationToken ct = default)
             => _db.Products.Where(p => p.IsActive && p.IsTrending)
-                           .OrderBy(p => p.SortOrder).Take(count).ToListAsync(ct);
+                           .OrderBy(p => p.SortOrder).ThenByDescending(p => p.CreatedAtUtc).Take(count).ToListAsync(ct);
 
-        public Task<List<Product>> GetFeaturedAsync(int count = 4, CancellationToken ct = default)
+        public Task<List<Product>> GetFeaturedAsync(int count = 6, CancellationToken ct = default)
             => _db.Products.Where(p => p.IsActive && p.IsFeatured)
-                           .OrderBy(p => p.SortOrder).Take(count).ToListAsync(ct);
+                           .OrderBy(p => p.SortOrder).ThenByDescending(p => p.CreatedAtUtc).Take(count).ToListAsync(ct);
 
         public async Task AddAsync(Product product, CancellationToken ct = default)
         {

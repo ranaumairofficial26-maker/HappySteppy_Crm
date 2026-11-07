@@ -248,7 +248,7 @@ namespace HappySteppy.Application.Services
             var slides = await _homepageRepo.GetHeroSlidesAsync(true, ct);
             var categories = await _categoryRepo.GetAllAsync(true, ct);
             var benefits = await _homepageRepo.GetBenefitCardsAsync(true, ct);
-            var trending = await _productRepo.GetTrendingAsync(4, ct);
+            var trending = await _productRepo.GetTrendingAsync(6, ct);
             var banners = await _homepageRepo.GetBannersAsync(true, ct);
             var styles = await _homepageRepo.GetStyleCardsAsync(true, ct);
             var flashSale = await _homepageRepo.GetActiveFlashSaleAsync(ct);

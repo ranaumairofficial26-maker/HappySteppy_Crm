@@ -79,14 +79,15 @@ export class ProductService {
       brand: 'Nordic Naturals',
       category: 'Supplements',
       price: 9800,
-      salePrice: undefined,
+      salePrice: 9800,
       rating: 5.0,
       reviewCount: 49,
       stockQuantity: 12,
-      imageUrl: 'https://happysteppy.pk/wp-content/uploads/2021/03/02763RL1-Omega3_8oz_3D_Front-500x500.webp',
+      imageUrl: 'assets/images/nordic-naturals-omega-3.jpg',
       shortDescription: 'Great-tasting lemon-flavored liquid omega-3 delivering 1560 mg EPA & DHA per serving.',
       isFeatured: true,
-      isDealOfTheDay: false
+      isDealOfTheDay: false,
+      discountPercent: 15
     },
     {
       id: 6,

@@ -235,14 +235,14 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     },
     {
       id: 2,
-      name: 'Smartwatch Pro',
-      category: 'Electronics',
-      discount: 20,
-      rating: 4.7,
-      reviewCount: '2.9k',
-      price: 79.99,
-      originalPrice: 99.99,
-      imageUrl: 'assets/images/prod-smartwatch.jpg?v=5',
+      name: 'Nordic Naturals Omega-3 1560 mg 8 Oz Liquid',
+      category: 'Supplements',
+      discount: 15,
+      rating: 5.0,
+      reviewCount: '2.4k',
+      price: 9800,
+      originalPrice: 11500,
+      imageUrl: 'assets/images/nordic-naturals-omega-3.jpg',
       isWishlisted: false
     },
     {
@@ -513,12 +513,12 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
           const mapped = data.trendingProducts.map((p: any, idx: number) => ({
             id: idx + 1,
             name: p.name,
-            category: p.brandName || 'General',
-            discount: p.compareAtPrice ? Math.round(((p.compareAtPrice - p.price) / p.compareAtPrice) * 100) : 20,
-            rating: p.rating || 4.8,
-            reviewCount: (p.reviewsCount || 150).toString(),
+            category: p.brandName || (p.categoryNames && p.categoryNames.length ? p.categoryNames[0] : 'Supplements'),
+            discount: p.compareAtPrice && p.compareAtPrice > p.price ? Math.round(((p.compareAtPrice - p.price) / p.compareAtPrice) * 100) : 15,
+            rating: p.rating || 5.0,
+            reviewCount: p.reviewsCount > 0 ? (p.reviewsCount >= 1000 ? (p.reviewsCount / 1000).toFixed(1) + 'k' : p.reviewsCount.toString()) : '1.2k',
             price: p.price,
-            originalPrice: p.compareAtPrice || p.price * 1.25,
+            originalPrice: p.compareAtPrice || Math.round(p.price * 1.2),
             imageUrl: p.primaryImageUrl || 'assets/images/prod-headphones.jpg?v=5',
             isWishlisted: false
           }));
