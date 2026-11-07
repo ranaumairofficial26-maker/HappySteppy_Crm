@@ -37,12 +37,28 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     discountPercentage: number;
     endsAtUtc: string;
     isActive: boolean;
+    productName: string;
+    imageUrl: string;
+    ratingText: string;
+    salePrice: string;
+    originalPrice: string;
+    stockLeftText: string;
+    buttonText: string;
+    buttonUrl: string;
   }>({
     title: 'Flash Sale',
     subtitle: 'Limited Time Offer',
     discountPercentage: 25,
     endsAtUtc: new Date(Date.now() + 12 * 3600 * 1000).toISOString(),
-    isActive: true
+    isActive: true,
+    productName: 'Wireless Headphones',
+    imageUrl: 'assets/images/flash-headphones.jpg?v=6',
+    ratingText: '4.8 (3.5k)',
+    salePrice: '$79.99',
+    originalPrice: '$99.99',
+    stockLeftText: 'Only 42 left!',
+    buttonText: 'Grab the Deal',
+    buttonUrl: '#trending-products'
   });
   flashHours = signal<number>(12);
   flashMinutes = signal<number>(24);
@@ -423,7 +439,15 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
             subtitle: fs.subtitle || 'Limited Time Offer',
             discountPercentage: fs.discountPercentage || 25,
             endsAtUtc: fs.endsAtUtc || new Date(Date.now() + 12 * 3600 * 1000).toISOString(),
-            isActive: fs.isActive ?? true
+            isActive: fs.isActive ?? true,
+            productName: fs.productName || 'Wireless Headphones',
+            imageUrl: fs.imageUrl || 'assets/images/flash-headphones.jpg?v=6',
+            ratingText: fs.ratingText || '4.8 (3.5k)',
+            salePrice: fs.salePrice || '$79.99',
+            originalPrice: fs.originalPrice || '$99.99',
+            stockLeftText: fs.stockLeftText || 'Only 42 left!',
+            buttonText: fs.buttonText || 'Grab the Deal',
+            buttonUrl: fs.buttonUrl || '#trending-products'
           });
           this.calculateFlashRemaining();
         }

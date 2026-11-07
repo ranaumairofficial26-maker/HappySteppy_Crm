@@ -512,8 +512,8 @@
         <div class="flash-inner-body">
           <div class="flash-left-img">
             <img
-              src="assets/images/flash-headphones.jpg?v=6"
-              alt="Wireless Headphones Flash Sale"
+              [src]="flashSale().imageUrl || 'assets/images/flash-headphones.jpg?v=6'"
+              [alt]="flashSale().productName || 'Flash Sale Product'"
               class="flash-hd-img"
             />
           </div>
@@ -521,7 +521,7 @@
           <div class="flash-v-divider"></div>
 
           <div class="flash-right-details">
-            <h3 class="flash-product-name">Wireless Headphones</h3>
+            <h3 class="flash-product-name">{{ flashSale().productName || 'Wireless Headphones' }}</h3>
 
             <div class="flash-stars-row">
               <div class="stars-gold">
@@ -531,13 +531,13 @@
                 <i class="fa-solid fa-star"></i>
                 <i class="fa-solid fa-star-half-stroke"></i>
               </div>
-              <span class="stars-val">4.8 (3.5k)</span>
+              <span class="stars-val">{{ flashSale().ratingText || '4.8 (3.5k)' }}</span>
             </div>
 
             <div class="flash-pricing-badge-row">
               <div class="flash-prices">
-                <span class="flash-now">$79.99</span>
-                <span class="flash-was">$99.99</span>
+                <span class="flash-now">{{ flashSale().salePrice || '$79.99' }}</span>
+                <span class="flash-was">{{ flashSale().originalPrice || '$99.99' }}</span>
               </div>
               <span class="flash-discount-pill">{{ flashSale().discountPercentage || 25 }}% OFF</span>
             </div>
@@ -547,13 +547,13 @@
                 class="btn-flash-grab"
                 (click)="scrollToSection('trending-products')"
               >
-                <span>Grab the Deal</span>
+                <span>{{ flashSale().buttonText || 'Grab the Deal' }}</span>
                 <i class="fa-solid fa-arrow-right"></i>
               </button>
 
               <div class="flash-sub-divider"></div>
 
-              <span class="flash-stock-left-tag">Only 42 left!</span>
+              <span class="flash-stock-left-tag">{{ flashSale().stockLeftText || 'Only 42 left!' }}</span>
             </div>
           </div>
         </div>

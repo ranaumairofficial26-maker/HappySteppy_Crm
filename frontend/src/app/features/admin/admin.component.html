@@ -603,19 +603,89 @@
                   </div>
                 </div>
 
+                <!-- Section 2: Featured Flash Product Details -->
+                <div style="border-top: 1px solid #e2e8f0; padding-top: 1.5rem; margin-top: 1.5rem;">
+                  <h3 style="font-size: 1.05rem; font-weight: 750; color: #0f172a; margin-bottom: 0.25rem;">
+                    Featured Flash Product
+                  </h3>
+                  <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">
+                    Customize the product image, title, prices, customer rating, and stock urgency tag.
+                  </p>
+
+                  <div class="form-row">
+                    <div class="form-group flex-1">
+                      <label>Product Name</label>
+                      <input type="text" [(ngModel)]="flashSale().productName" placeholder="e.g. Wireless Headphones" />
+                    </div>
+                    <div class="form-group flex-1">
+                      <div class="label-with-dimension">
+                        <label>Product Image URL</label>
+                        <span class="img-dim-pill">Recommended: <strong>400 × 400 px</strong></span>
+                      </div>
+                      <input type="text" [(ngModel)]="flashSale().imageUrl" placeholder="assets/images/flash-headphones.jpg or https://..." />
+                    </div>
+                  </div>
+
+                  <div class="form-row" style="margin-top: 1rem;">
+                    <div class="form-group">
+                      <label>Sale Price (Discounted)</label>
+                      <input type="text" [(ngModel)]="flashSale().salePrice" placeholder="e.g. $79.99" />
+                    </div>
+                    <div class="form-group">
+                      <label>Original Price (Was Price)</label>
+                      <input type="text" [(ngModel)]="flashSale().originalPrice" placeholder="e.g. $99.99" />
+                    </div>
+                    <div class="form-group">
+                      <label>Rating & Reviews</label>
+                      <input type="text" [(ngModel)]="flashSale().ratingText" placeholder="e.g. 4.8 (3.5k)" />
+                    </div>
+                    <div class="form-group">
+                      <label>Stock Left Tag</label>
+                      <input type="text" [(ngModel)]="flashSale().stockLeftText" placeholder="e.g. Only 42 left!" />
+                    </div>
+                    <div class="form-group">
+                      <label>Button Action Text</label>
+                      <input type="text" [(ngModel)]="flashSale().buttonText" placeholder="e.g. Grab the Deal" />
+                    </div>
+                  </div>
+                </div>
+
                 <!-- Live Preview Bar -->
                 <div style="margin-top: 1.5rem; padding: 1.25rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px;">
                   <span style="font-size: 0.76rem; font-weight: 750; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 0.75rem;">Storefront Live Preview</span>
-                  <div style="display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #ffffff; padding: 12px 18px; border-radius: 12px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);">
-                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 750; font-size: 1.05rem;">
-                      <i class="fa-solid fa-bolt" style="color: #fef08a;"></i>
-                      <span>{{ flashSale().title || 'Flash Sale' }}</span>
-                      <span style="background: rgba(255,255,255,0.25); padding: 3px 9px; border-radius: 999px; font-size: 0.8rem; font-weight: 800; margin-left: 6px;">
-                        {{ flashSale().discountPercentage || 25 }}% OFF
-                      </span>
+                  
+                  <div style="border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; background: #ffffff; max-width: 520px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #ffffff; padding: 10px 16px;">
+                      <div style="display: flex; align-items: center; gap: 8px; font-weight: 750; font-size: 0.95rem;">
+                        <i class="fa-solid fa-bolt" style="color: #fef08a;"></i>
+                        <span>{{ flashSale().title || 'Flash Sale' }}</span>
+                      </div>
+                      <div style="font-size: 0.8rem; font-weight: 600; opacity: 0.95;">
+                        Expires: <strong>{{ flashSaleEndDateFormatted }}</strong>
+                      </div>
                     </div>
-                    <div style="font-size: 0.85rem; font-weight: 600; opacity: 0.95;">
-                      Expires: <strong>{{ flashSaleEndDateFormatted }}</strong>
+
+                    <div style="display: flex; padding: 16px; gap: 16px; align-items: center;">
+                      <img [src]="flashSale().imageUrl || 'assets/images/flash-headphones.jpg?v=6'" style="width: 90px; height: 90px; object-fit: cover; border-radius: 12px; background: #f1f5f9; border: 1px solid #e2e8f0;" alt="Preview" />
+                      <div style="flex: 1; min-width: 0;">
+                        <h4 style="margin: 0 0 4px; font-size: 1rem; font-weight: 700; color: #0f172a;">{{ flashSale().productName || 'Wireless Headphones' }}</h4>
+                        <div style="font-size: 0.8rem; color: #eab308; font-weight: 600; margin-bottom: 6px;">
+                          ⭐ {{ flashSale().ratingText || '4.8 (3.5k)' }}
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                          <span style="font-size: 1.15rem; font-weight: 800; color: #0f172a;">{{ flashSale().salePrice || '$79.99' }}</span>
+                          <span style="font-size: 0.85rem; color: #94a3b8; text-decoration: line-through;">{{ flashSale().originalPrice || '$99.99' }}</span>
+                          <span style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; font-size: 0.75rem; font-weight: 800; padding: 2px 8px; border-radius: 999px;">
+                            {{ flashSale().discountPercentage || 25 }}% OFF
+                          </span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <span style="background: #0f172a; color: white; padding: 4px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;">
+                            {{ flashSale().buttonText || 'Grab the Deal' }}
+                          </span>
+                          <span style="font-size: 0.75rem; color: #ef4444; font-weight: 700;">{{ flashSale().stockLeftText || 'Only 42 left!' }}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

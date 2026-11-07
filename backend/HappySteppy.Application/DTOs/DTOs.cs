@@ -165,6 +165,14 @@ namespace HappySteppy.Application.DTOs
         public int DiscountPercentage { get; set; }
         public DateTime EndsAtUtc { get; set; }
         public bool IsActive { get; set; } = true;
+        public string ProductName { get; set; } = "Wireless Headphones";
+        public string ImageUrl { get; set; } = "assets/images/flash-headphones.jpg?v=6";
+        public string RatingText { get; set; } = "4.8 (3.5k)";
+        public string SalePrice { get; set; } = "$79.99";
+        public string OriginalPrice { get; set; } = "$99.99";
+        public string StockLeftText { get; set; } = "Only 42 left!";
+        public string ButtonText { get; set; } = "Grab the Deal";
+        public string ButtonUrl { get; set; } = "#trending-products";
         public List<ProductDto> Products { get; set; } = new();
     }
 

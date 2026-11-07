@@ -138,7 +138,15 @@ export class AdminComponent implements OnInit {
     subtitle: 'Limited Time Deal',
     discountPercentage: 50,
     endsAtUtc: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
-    isActive: true
+    isActive: true,
+    productName: 'Wireless Headphones',
+    imageUrl: 'assets/images/flash-headphones.jpg?v=6',
+    ratingText: '4.8 (3.5k)',
+    salePrice: '$79.99',
+    originalPrice: '$99.99',
+    stockLeftText: 'Only 42 left!',
+    buttonText: 'Grab the Deal',
+    buttonUrl: '#trending-products'
   });
   flashSaleEndDate: string = '';
 

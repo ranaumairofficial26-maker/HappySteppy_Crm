@@ -257,7 +257,8 @@ namespace HappySteppy.Application.Services
             var brands = await _homepageRepo.GetBrandsAsync(true, ct);
             var footerLinks = await _settingsRepo.GetFooterLinksAsync(true, ct);
             var socialLinks = await _settingsRepo.GetSocialLinksAsync(true, ct);
-            var settings = await _settingsRepo.GetAllSettingsAsync(ct);
+            var settingsList = await _settingsRepo.GetAllSettingsAsync(ct);
+            var settings = settingsList.ToDictionary(s => s.Key, s => s.Value);
 
             return new HomepagePayloadDto
             {
@@ -347,7 +348,15 @@ namespace HappySteppy.Application.Services
                     Subtitle = flashSale.Subtitle,
                     DiscountPercentage = flashSale.DiscountPercentage,
                     EndsAtUtc = flashSale.EndsAtUtc,
-                    IsActive = flashSale.IsActive
+                    IsActive = flashSale.IsActive,
+                    ProductName = settings.GetValueOrDefault("FlashSale_ProductName", "Wireless Headphones"),
+                    ImageUrl = settings.GetValueOrDefault("FlashSale_ImageUrl", "assets/images/flash-headphones.jpg?v=6"),
+                    RatingText = settings.GetValueOrDefault("FlashSale_RatingText", "4.8 (3.5k)"),
+                    SalePrice = settings.GetValueOrDefault("FlashSale_SalePrice", "$79.99"),
+                    OriginalPrice = settings.GetValueOrDefault("FlashSale_OriginalPrice", "$99.99"),
+                    StockLeftText = settings.GetValueOrDefault("FlashSale_StockLeftText", "Only 42 left!"),
+                    ButtonText = settings.GetValueOrDefault("FlashSale_ButtonText", "Grab the Deal"),
+                    ButtonUrl = settings.GetValueOrDefault("FlashSale_ButtonUrl", "#trending-products")
                 } : null,
 
                 Testimonials = testimonials.Select(t => new TestimonialDto
@@ -403,7 +412,7 @@ namespace HappySteppy.Application.Services
                     IsActive = sl.IsActive
                 }).ToList(),
 
-                Settings = settings.ToDictionary(s => s.Key, s => s.Value)
+                Settings = settings
             };
         }
 
@@ -603,6 +612,9 @@ namespace HappySteppy.Application.Services
         {
             var f = await _homepageRepo.GetActiveFlashSaleAsync(ct);
             if (f == null) return null;
+            var settingsList = await _settingsRepo.GetAllSettingsAsync(ct);
+            var settings = settingsList.ToDictionary(s => s.Key, s => s.Value);
+
             return new FlashSaleDto
             {
                 Id = f.Id,
@@ -610,7 +622,15 @@ namespace HappySteppy.Application.Services
                 Subtitle = f.Subtitle,
                 DiscountPercentage = f.DiscountPercentage,
                 EndsAtUtc = f.EndsAtUtc,
-                IsActive = f.IsActive
+                IsActive = f.IsActive,
+                ProductName = settings.GetValueOrDefault("FlashSale_ProductName", "Wireless Headphones"),
+                ImageUrl = settings.GetValueOrDefault("FlashSale_ImageUrl", "assets/images/flash-headphones.jpg?v=6"),
+                RatingText = settings.GetValueOrDefault("FlashSale_RatingText", "4.8 (3.5k)"),
+                SalePrice = settings.GetValueOrDefault("FlashSale_SalePrice", "$79.99"),
+                OriginalPrice = settings.GetValueOrDefault("FlashSale_OriginalPrice", "$99.99"),
+                StockLeftText = settings.GetValueOrDefault("FlashSale_StockLeftText", "Only 42 left!"),
+                ButtonText = settings.GetValueOrDefault("FlashSale_ButtonText", "Grab the Deal"),
+                ButtonUrl = settings.GetValueOrDefault("FlashSale_ButtonUrl", "#trending-products")
             };
         }
 
@@ -624,6 +644,16 @@ namespace HappySteppy.Application.Services
             f.IsActive = dto.IsActive;
             await _homepageRepo.SaveFlashSaleAsync(f, ct);
             dto.Id = f.Id;
+
+            if (!string.IsNullOrEmpty(dto.ProductName)) await _settingsRepo.SaveSettingAsync("FlashSale_ProductName", dto.ProductName, "FlashSale", null, ct);
+            if (!string.IsNullOrEmpty(dto.ImageUrl)) await _settingsRepo.SaveSettingAsync("FlashSale_ImageUrl", dto.ImageUrl, "FlashSale", null, ct);
+            if (!string.IsNullOrEmpty(dto.RatingText)) await _settingsRepo.SaveSettingAsync("FlashSale_RatingText", dto.RatingText, "FlashSale", null, ct);
+            if (!string.IsNullOrEmpty(dto.SalePrice)) await _settingsRepo.SaveSettingAsync("FlashSale_SalePrice", dto.SalePrice, "FlashSale", null, ct);
+            if (!string.IsNullOrEmpty(dto.OriginalPrice)) await _settingsRepo.SaveSettingAsync("FlashSale_OriginalPrice", dto.OriginalPrice, "FlashSale", null, ct);
+            if (!string.IsNullOrEmpty(dto.StockLeftText)) await _settingsRepo.SaveSettingAsync("FlashSale_StockLeftText", dto.StockLeftText, "FlashSale", null, ct);
+            if (!string.IsNullOrEmpty(dto.ButtonText)) await _settingsRepo.SaveSettingAsync("FlashSale_ButtonText", dto.ButtonText, "FlashSale", null, ct);
+            if (!string.IsNullOrEmpty(dto.ButtonUrl)) await _settingsRepo.SaveSettingAsync("FlashSale_ButtonUrl", dto.ButtonUrl, "FlashSale", null, ct);
+
             return dto;
         }
 
