@@ -165,11 +165,12 @@ namespace HappySteppy.Application.DTOs
         public int DiscountPercentage { get; set; }
         public DateTime EndsAtUtc { get; set; }
         public bool IsActive { get; set; } = true;
-        public string ProductName { get; set; } = "Wireless Headphones";
-        public string ImageUrl { get; set; } = "assets/images/flash-headphones.jpg?v=6";
-        public string RatingText { get; set; } = "4.8 (3.5k)";
-        public string SalePrice { get; set; } = "$79.99";
-        public string OriginalPrice { get; set; } = "$99.99";
+        public string ProductName { get; set; } = "Bioray Belly Mend";
+        public string ImageUrl { get; set; } = "assets/images/bioray-belly-mend.webp";
+        public string? SecondaryImageUrl { get; set; } = "assets/images/bioray-belly-mend-bottle.webp";
+        public string RatingText { get; set; } = "5.0 (1.2k)";
+        public string SalePrice { get; set; } = "₨8,200";
+        public string OriginalPrice { get; set; } = "₨10,250";
         public string StockLeftText { get; set; } = "Only 42 left!";
         public string ButtonText { get; set; } = "Grab the Deal";
         public string ButtonUrl { get; set; } = "#trending-products";

@@ -41,19 +41,21 @@ export class ProductService {
     },
     {
       id: 3,
-      name: 'Bioray CALM 2 Fl Oz',
+      name: 'Bioray Belly Mend',
       brand: 'Bioray',
       category: 'Supplements',
-      price: 10500,
-      salePrice: 7400,
+      price: 8200,
+      salePrice: 8200,
       rating: 5.0,
       reviewCount: 36,
-      stockQuantity: 9,
-      imageUrl: 'https://happysteppy.pk/wp-content/uploads/2021/10/calm-500x500.jpg',
-      shortDescription: 'Natural herbal tonic to nourish liver and adrenal function, soothing anxiousness and mood swings.',
+      stockQuantity: 15,
+      imageUrl: 'assets/images/bioray-belly-mend.webp',
+      secondaryImageUrl: 'assets/images/bioray-belly-mend-bottle.webp',
+      images: ['assets/images/bioray-belly-mend.webp', 'assets/images/bioray-belly-mend-bottle.webp'],
+      shortDescription: 'Bioray Daily Belly Mend Gut Support 11-Strain Probiotic Blend with Medicinal Mushrooms & Micronized Chlorella 60 ml (2 fl oz).',
       isFeatured: true,
       isDealOfTheDay: true,
-      discountPercent: 30
+      discountPercent: 0
     },
     {
       id: 4,

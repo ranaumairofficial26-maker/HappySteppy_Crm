@@ -211,17 +211,18 @@ export class AdminComponent implements OnInit {
 
   // Flash Sale state
   flashSale = signal<any>({
-    title: 'Flash Sale',
-    subtitle: 'Limited Time Deal',
-    discountPercentage: 50,
+    title: 'Sale',
+    subtitle: 'Gut Support & Immunity',
+    discountPercentage: 20,
     endsAtUtc: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
     isActive: true,
-    productName: 'Wireless Headphones',
-    imageUrl: 'assets/images/flash-headphones.jpg?v=6',
-    ratingText: '4.8 (3.5k)',
-    salePrice: '$79.99',
-    originalPrice: '$99.99',
-    stockLeftText: 'Only 42 left!',
+    productName: 'Bioray Belly Mend',
+    imageUrl: 'assets/images/bioray-belly-mend.webp',
+    secondaryImageUrl: 'assets/images/bioray-belly-mend-bottle.webp',
+    ratingText: '5.0 (1.2k)',
+    salePrice: '₨8,200',
+    originalPrice: '₨10,250',
+    stockLeftText: 'Only 15 left!',
     buttonText: 'Grab the Deal',
     buttonUrl: '#trending-products'
   });

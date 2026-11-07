@@ -510,18 +510,45 @@
 
         <!-- Flash Body -->
         <div class="flash-inner-body">
-          <div class="flash-left-img">
-            <img
-              [src]="flashSale().imageUrl || 'assets/images/flash-headphones.jpg?v=6'"
-              [alt]="flashSale().productName || 'Flash Sale Product'"
-              class="flash-hd-img"
-            />
+          <div
+            class="flash-left-img"
+            (mouseenter)="setFlashHover(true)"
+            (mouseleave)="setFlashHover(false)"
+          >
+            <div class="flash-img-wrapper">
+              <img
+                [src]="currentFlashImg()"
+                [alt]="flashSale().productName || 'Bioray Belly Mend'"
+                class="flash-hd-img"
+              />
+            </div>
+            <!-- Dual picture switcher for single product -->
+            <div class="flash-view-thumbs" *ngIf="flashSale().secondaryImageUrl">
+              <button
+                type="button"
+                class="flash-thumb-btn"
+                [class.active]="activeFlashImgIndex() === 0"
+                (click)="selectFlashImgIndex(0); $event.stopPropagation()"
+                title="Box & Dropper Bottle"
+              >
+                <img [src]="flashSale().imageUrl || 'assets/images/bioray-belly-mend.webp'" alt="Box & Bottle" />
+              </button>
+              <button
+                type="button"
+                class="flash-thumb-btn"
+                [class.active]="activeFlashImgIndex() === 1"
+                (click)="selectFlashImgIndex(1); $event.stopPropagation()"
+                title="Dropper Bottle"
+              >
+                <img [src]="flashSale().secondaryImageUrl || 'assets/images/bioray-belly-mend-bottle.webp'" alt="Dropper Bottle" />
+              </button>
+            </div>
           </div>
 
           <div class="flash-v-divider"></div>
 
           <div class="flash-right-details">
-            <h3 class="flash-product-name">{{ flashSale().productName || 'Wireless Headphones' }}</h3>
+            <h3 class="flash-product-name">{{ flashSale().productName || 'Bioray Belly Mend' }}</h3>
 
             <div class="flash-stars-row">
               <div class="stars-gold">
@@ -529,23 +556,23 @@
                 <i class="fa-solid fa-star"></i>
                 <i class="fa-solid fa-star"></i>
                 <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star-half-stroke"></i>
+                <i class="fa-solid fa-star"></i>
               </div>
-              <span class="stars-val">{{ flashSale().ratingText || '4.8 (3.5k)' }}</span>
+              <span class="stars-val">{{ flashSale().ratingText || '5.0 (1.2k)' }}</span>
             </div>
 
             <div class="flash-pricing-badge-row">
               <div class="flash-prices">
-                <span class="flash-now">{{ flashSale().salePrice || '$79.99' }}</span>
-                <span class="flash-was">{{ flashSale().originalPrice || '$99.99' }}</span>
+                <span class="flash-now">{{ flashSale().salePrice || '₨8,200' }}</span>
+                <span class="flash-was">{{ flashSale().originalPrice || '₨10,250' }}</span>
               </div>
-              <span class="flash-discount-pill">{{ flashSale().discountPercentage || 25 }}% OFF</span>
+              <span class="flash-discount-pill">{{ flashSale().discountPercentage || 20 }}% OFF</span>
             </div>
 
             <div class="flash-cta-stock-row">
               <button
                 class="btn-flash-grab"
-                (click)="scrollToSection('trending-products')"
+                (click)="onFlashSaleCta()"
               >
                 <span>{{ flashSale().buttonText || 'Grab the Deal' }}</span>
                 <i class="fa-solid fa-arrow-right"></i>
@@ -553,7 +580,7 @@
 
               <div class="flash-sub-divider"></div>
 
-              <span class="flash-stock-left-tag">{{ flashSale().stockLeftText || 'Only 42 left!' }}</span>
+              <span class="flash-stock-left-tag">{{ flashSale().stockLeftText || 'Only 15 left!' }}</span>
             </div>
           </div>
         </div>

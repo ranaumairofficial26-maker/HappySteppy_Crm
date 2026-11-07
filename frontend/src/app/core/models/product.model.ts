@@ -9,6 +9,8 @@ export interface Product {
   reviewCount: number;
   stockQuantity: number;
   imageUrl: string;
+  secondaryImageUrl?: string;
+  images?: string[];
   shortDescription: string;
   isFeatured: boolean;
   isDealOfTheDay: boolean;

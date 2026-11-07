@@ -39,6 +39,7 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     isActive: boolean;
     productName: string;
     imageUrl: string;
+    secondaryImageUrl?: string;
     ratingText: string;
     salePrice: string;
     originalPrice: string;
@@ -46,17 +47,18 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     buttonText: string;
     buttonUrl: string;
   }>({
-    title: 'Flash Sale',
-    subtitle: 'Limited Time Offer',
-    discountPercentage: 25,
+    title: 'Sale',
+    subtitle: 'Gut Support & Immunity',
+    discountPercentage: 20,
     endsAtUtc: new Date(Date.now() + 12 * 3600 * 1000).toISOString(),
     isActive: true,
-    productName: 'Wireless Headphones',
-    imageUrl: 'assets/images/flash-headphones.jpg?v=6',
-    ratingText: '4.8 (3.5k)',
-    salePrice: '$79.99',
-    originalPrice: '$99.99',
-    stockLeftText: 'Only 42 left!',
+    productName: 'Bioray Belly Mend',
+    imageUrl: 'assets/images/bioray-belly-mend.webp',
+    secondaryImageUrl: 'assets/images/bioray-belly-mend-bottle.webp',
+    ratingText: '5.0 (1.2k)',
+    salePrice: '₨8,200',
+    originalPrice: '₨10,250',
+    stockLeftText: 'Only 15 left!',
     buttonText: 'Grab the Deal',
     buttonUrl: '#trending-products'
   });
@@ -64,6 +66,38 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
   flashMinutes = signal<number>(24);
   flashSeconds = signal<number>(36);
   private timerInterval: any;
+
+  // Flash Sale Interactive Images (Box + Bottle)
+  activeFlashImgIndex = signal<number>(0);
+  isFlashImgHovered = signal<boolean>(false);
+
+  setFlashHover(hovered: boolean) {
+    this.isFlashImgHovered.set(hovered);
+  }
+
+  selectFlashImgIndex(index: number) {
+    this.activeFlashImgIndex.set(index);
+  }
+
+  currentFlashImg(): string {
+    const fs = this.flashSale();
+    if (this.isFlashImgHovered() && fs.secondaryImageUrl) {
+      return fs.secondaryImageUrl;
+    }
+    if (this.activeFlashImgIndex() === 1 && fs.secondaryImageUrl) {
+      return fs.secondaryImageUrl;
+    }
+    return fs.imageUrl || 'assets/images/bioray-belly-mend.webp';
+  }
+
+  onFlashSaleCta() {
+    this.cartCount.update(c => c + 1);
+    this.showStoreToast(
+      `${this.flashSale().productName} (₨8,200) added to cart!`,
+      '⚡ Flash Deal Claimed',
+      this.currentFlashImg()
+    );
+  }
 
   // Newsletter
   newsletterEmail = signal<string>('');
@@ -189,14 +223,14 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
   readonly trendingProducts = signal<TrendingProduct[]>([
     {
       id: 1,
-      name: 'Wireless Headphones',
-      category: 'Electronics',
-      discount: 25,
-      rating: 4.8,
-      reviewCount: '3.5k',
-      price: 59.99,
-      originalPrice: 79.99,
-      imageUrl: 'assets/images/prod-headphones.jpg?v=5',
+      name: 'Bioray Belly Mend',
+      category: 'Supplements',
+      discount: 20,
+      rating: 5.0,
+      reviewCount: '1.2k',
+      price: 8200,
+      originalPrice: 10250,
+      imageUrl: 'assets/images/bioray-belly-mend.webp',
       isWishlisted: false
     },
     {
@@ -435,17 +469,18 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
         if (data.flashSale) {
           const fs = data.flashSale;
           this.flashSale.set({
-            title: fs.title || 'Flash Sale',
-            subtitle: fs.subtitle || 'Limited Time Offer',
-            discountPercentage: fs.discountPercentage || 25,
+            title: fs.title || 'Sale',
+            subtitle: fs.subtitle || 'Gut Support & Immunity',
+            discountPercentage: fs.discountPercentage || 20,
             endsAtUtc: fs.endsAtUtc || new Date(Date.now() + 12 * 3600 * 1000).toISOString(),
             isActive: fs.isActive ?? true,
-            productName: fs.productName || 'Wireless Headphones',
-            imageUrl: fs.imageUrl || 'assets/images/flash-headphones.jpg?v=6',
-            ratingText: fs.ratingText || '4.8 (3.5k)',
-            salePrice: fs.salePrice || '$79.99',
-            originalPrice: fs.originalPrice || '$99.99',
-            stockLeftText: fs.stockLeftText || 'Only 42 left!',
+            productName: fs.productName || 'Bioray Belly Mend',
+            imageUrl: fs.imageUrl || 'assets/images/bioray-belly-mend.webp',
+            secondaryImageUrl: fs.secondaryImageUrl || 'assets/images/bioray-belly-mend-bottle.webp',
+            ratingText: fs.ratingText || '5.0 (1.2k)',
+            salePrice: fs.salePrice || '₨8,200',
+            originalPrice: fs.originalPrice || '₨10,250',
+            stockLeftText: fs.stockLeftText || 'Only 15 left!',
             buttonText: fs.buttonText || 'Grab the Deal',
             buttonUrl: fs.buttonUrl || '#trending-products'
           });

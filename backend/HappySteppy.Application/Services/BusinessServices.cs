@@ -349,12 +349,13 @@ namespace HappySteppy.Application.Services
                     DiscountPercentage = flashSale.DiscountPercentage,
                     EndsAtUtc = flashSale.EndsAtUtc,
                     IsActive = flashSale.IsActive,
-                    ProductName = settings.GetValueOrDefault("FlashSale_ProductName", "Wireless Headphones"),
-                    ImageUrl = settings.GetValueOrDefault("FlashSale_ImageUrl", "assets/images/flash-headphones.jpg?v=6"),
-                    RatingText = settings.GetValueOrDefault("FlashSale_RatingText", "4.8 (3.5k)"),
-                    SalePrice = settings.GetValueOrDefault("FlashSale_SalePrice", "$79.99"),
-                    OriginalPrice = settings.GetValueOrDefault("FlashSale_OriginalPrice", "$99.99"),
-                    StockLeftText = settings.GetValueOrDefault("FlashSale_StockLeftText", "Only 42 left!"),
+                    ProductName = settings.GetValueOrDefault("FlashSale_ProductName", "Bioray Belly Mend"),
+                    ImageUrl = settings.GetValueOrDefault("FlashSale_ImageUrl", "assets/images/bioray-belly-mend.webp"),
+                    SecondaryImageUrl = settings.GetValueOrDefault("FlashSale_SecondaryImageUrl", "assets/images/bioray-belly-mend-bottle.webp"),
+                    RatingText = settings.GetValueOrDefault("FlashSale_RatingText", "5.0 (1.2k)"),
+                    SalePrice = settings.GetValueOrDefault("FlashSale_SalePrice", "₨8,200"),
+                    OriginalPrice = settings.GetValueOrDefault("FlashSale_OriginalPrice", "₨10,250"),
+                    StockLeftText = settings.GetValueOrDefault("FlashSale_StockLeftText", "Only 15 left!"),
                     ButtonText = settings.GetValueOrDefault("FlashSale_ButtonText", "Grab the Deal"),
                     ButtonUrl = settings.GetValueOrDefault("FlashSale_ButtonUrl", "#trending-products")
                 } : null,
@@ -632,12 +633,13 @@ namespace HappySteppy.Application.Services
                 DiscountPercentage = f.DiscountPercentage,
                 EndsAtUtc = f.EndsAtUtc,
                 IsActive = f.IsActive,
-                ProductName = settings.GetValueOrDefault("FlashSale_ProductName", "Wireless Headphones"),
-                ImageUrl = settings.GetValueOrDefault("FlashSale_ImageUrl", "assets/images/flash-headphones.jpg?v=6"),
-                RatingText = settings.GetValueOrDefault("FlashSale_RatingText", "4.8 (3.5k)"),
-                SalePrice = settings.GetValueOrDefault("FlashSale_SalePrice", "$79.99"),
-                OriginalPrice = settings.GetValueOrDefault("FlashSale_OriginalPrice", "$99.99"),
-                StockLeftText = settings.GetValueOrDefault("FlashSale_StockLeftText", "Only 42 left!"),
+                ProductName = settings.GetValueOrDefault("FlashSale_ProductName", "Bioray Belly Mend"),
+                ImageUrl = settings.GetValueOrDefault("FlashSale_ImageUrl", "assets/images/bioray-belly-mend.webp"),
+                SecondaryImageUrl = settings.GetValueOrDefault("FlashSale_SecondaryImageUrl", "assets/images/bioray-belly-mend-bottle.webp"),
+                RatingText = settings.GetValueOrDefault("FlashSale_RatingText", "5.0 (1.2k)"),
+                SalePrice = settings.GetValueOrDefault("FlashSale_SalePrice", "₨8,200"),
+                OriginalPrice = settings.GetValueOrDefault("FlashSale_OriginalPrice", "₨10,250"),
+                StockLeftText = settings.GetValueOrDefault("FlashSale_StockLeftText", "Only 15 left!"),
                 ButtonText = settings.GetValueOrDefault("FlashSale_ButtonText", "Grab the Deal"),
                 ButtonUrl = settings.GetValueOrDefault("FlashSale_ButtonUrl", "#trending-products")
             };
@@ -656,6 +658,7 @@ namespace HappySteppy.Application.Services
 
             if (!string.IsNullOrEmpty(dto.ProductName)) await _settingsRepo.SaveSettingAsync("FlashSale_ProductName", dto.ProductName, "FlashSale", null, ct);
             if (!string.IsNullOrEmpty(dto.ImageUrl)) await _settingsRepo.SaveSettingAsync("FlashSale_ImageUrl", dto.ImageUrl, "FlashSale", null, ct);
+            if (!string.IsNullOrEmpty(dto.SecondaryImageUrl)) await _settingsRepo.SaveSettingAsync("FlashSale_SecondaryImageUrl", dto.SecondaryImageUrl, "FlashSale", null, ct);
             if (!string.IsNullOrEmpty(dto.RatingText)) await _settingsRepo.SaveSettingAsync("FlashSale_RatingText", dto.RatingText, "FlashSale", null, ct);
             if (!string.IsNullOrEmpty(dto.SalePrice)) await _settingsRepo.SaveSettingAsync("FlashSale_SalePrice", dto.SalePrice, "FlashSale", null, ct);
             if (!string.IsNullOrEmpty(dto.OriginalPrice)) await _settingsRepo.SaveSettingAsync("FlashSale_OriginalPrice", dto.OriginalPrice, "FlashSale", null, ct);

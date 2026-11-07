@@ -805,33 +805,40 @@
                   <div class="form-row">
                     <div class="form-group flex-1">
                       <label>Product Name</label>
-                      <input type="text" [(ngModel)]="flashSale().productName" placeholder="e.g. Wireless Headphones" />
+                      <input type="text" [(ngModel)]="flashSale().productName" placeholder="e.g. Bioray Belly Mend" />
                     </div>
                     <div class="form-group flex-1">
                       <div class="label-with-dimension">
-                        <label>Product Image URL</label>
+                        <label>Primary Image URL (Box & Bottle)</label>
                         <span class="img-dim-pill">Recommended: <strong>400 × 400 px</strong></span>
                       </div>
-                      <input type="text" [(ngModel)]="flashSale().imageUrl" placeholder="assets/images/flash-headphones.jpg or https://..." />
+                      <input type="text" [(ngModel)]="flashSale().imageUrl" placeholder="assets/images/bioray-belly-mend.webp or https://..." />
+                    </div>
+                    <div class="form-group flex-1">
+                      <div class="label-with-dimension">
+                        <label>Secondary Image URL (Bottle)</label>
+                        <span class="img-dim-pill">Recommended: <strong>400 × 400 px</strong></span>
+                      </div>
+                      <input type="text" [(ngModel)]="flashSale().secondaryImageUrl" placeholder="assets/images/bioray-belly-mend-bottle.webp or https://..." />
                     </div>
                   </div>
 
                   <div class="form-row" style="margin-top: 1rem;">
                     <div class="form-group">
                       <label>Sale Price (Discounted)</label>
-                      <input type="text" [(ngModel)]="flashSale().salePrice" placeholder="e.g. $79.99" />
+                      <input type="text" [(ngModel)]="flashSale().salePrice" placeholder="e.g. ₨8,200" />
                     </div>
                     <div class="form-group">
                       <label>Original Price (Was Price)</label>
-                      <input type="text" [(ngModel)]="flashSale().originalPrice" placeholder="e.g. $99.99" />
+                      <input type="text" [(ngModel)]="flashSale().originalPrice" placeholder="e.g. ₨10,250" />
                     </div>
                     <div class="form-group">
                       <label>Rating & Reviews</label>
-                      <input type="text" [(ngModel)]="flashSale().ratingText" placeholder="e.g. 4.8 (3.5k)" />
+                      <input type="text" [(ngModel)]="flashSale().ratingText" placeholder="e.g. 5.0 (1.2k)" />
                     </div>
                     <div class="form-group">
                       <label>Stock Left Tag</label>
-                      <input type="text" [(ngModel)]="flashSale().stockLeftText" placeholder="e.g. Only 42 left!" />
+                      <input type="text" [(ngModel)]="flashSale().stockLeftText" placeholder="e.g. Only 15 left!" />
                     </div>
                     <div class="form-group">
                       <label>Button Action Text</label>
@@ -848,7 +855,7 @@
                     <div style="display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #ffffff; padding: 10px 16px;">
                       <div style="display: flex; align-items: center; gap: 8px; font-weight: 750; font-size: 0.95rem;">
                         <i class="fa-solid fa-bolt" style="color: #fef08a;"></i>
-                        <span>{{ flashSale().title || 'Flash Sale' }}</span>
+                        <span>{{ flashSale().title || 'Sale' }}</span>
                       </div>
                       <div style="font-size: 0.8rem; font-weight: 600; opacity: 0.95;">
                         Expires: <strong>{{ flashSaleEndDateFormatted }}</strong>
@@ -856,17 +863,23 @@
                     </div>
 
                     <div style="display: flex; padding: 16px; gap: 16px; align-items: center;">
-                      <img [src]="flashSale().imageUrl || 'assets/images/flash-headphones.jpg?v=6'" style="width: 90px; height: 90px; object-fit: cover; border-radius: 12px; background: #f1f5f9; border: 1px solid #e2e8f0;" alt="Preview" />
+                      <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                        <img [src]="flashSale().imageUrl || 'assets/images/bioray-belly-mend.webp'" style="width: 80px; height: 80px; object-fit: contain; border-radius: 10px; background: #f8fafc; border: 1px solid #e2e8f0;" alt="Preview" />
+                        <div *ngIf="flashSale().secondaryImageUrl" style="display: flex; gap: 4px;">
+                          <img [src]="flashSale().imageUrl || 'assets/images/bioray-belly-mend.webp'" style="width: 22px; height: 22px; object-fit: contain; border-radius: 4px; border: 1.5px solid #10b981; padding: 1px;" alt="View 1" />
+                          <img [src]="flashSale().secondaryImageUrl || 'assets/images/bioray-belly-mend-bottle.webp'" style="width: 22px; height: 22px; object-fit: contain; border-radius: 4px; border: 1.5px solid #cbd5e1; padding: 1px;" alt="View 2" />
+                        </div>
+                      </div>
                       <div style="flex: 1; min-width: 0;">
-                        <h4 style="margin: 0 0 4px; font-size: 1rem; font-weight: 700; color: #0f172a;">{{ flashSale().productName || 'Wireless Headphones' }}</h4>
+                        <h4 style="margin: 0 0 4px; font-size: 1rem; font-weight: 700; color: #0f172a;">{{ flashSale().productName || 'Bioray Belly Mend' }}</h4>
                         <div style="font-size: 0.8rem; color: #eab308; font-weight: 600; margin-bottom: 6px;">
-                          ⭐ {{ flashSale().ratingText || '4.8 (3.5k)' }}
+                          ⭐ {{ flashSale().ratingText || '5.0 (1.2k)' }}
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                          <span style="font-size: 1.15rem; font-weight: 800; color: #0f172a;">{{ flashSale().salePrice || '$79.99' }}</span>
-                          <span style="font-size: 0.85rem; color: #94a3b8; text-decoration: line-through;">{{ flashSale().originalPrice || '$99.99' }}</span>
-                          <span style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; font-size: 0.75rem; font-weight: 800; padding: 2px 8px; border-radius: 999px;">
-                            {{ flashSale().discountPercentage || 25 }}% OFF
+                          <span style="font-size: 1.15rem; font-weight: 800; color: #0f172a;">{{ flashSale().salePrice || '₨8,200' }}</span>
+                          <span style="font-size: 0.85rem; color: #94a3b8; text-decoration: line-through;">{{ flashSale().originalPrice || '₨10,250' }}</span>
+                          <span style="background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; font-size: 0.75rem; font-weight: 800; padding: 2px 8px; border-radius: 999px;">
+                            {{ flashSale().discountPercentage || 20 }}% OFF
                           </span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px;">
