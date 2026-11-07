@@ -1,9 +1,12 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { ApiService } from '../../core/services/api.service';
+
+export type AdminTab = 'dashboard' | 'products' | 'categories' | 'homepage' | 'hero' | 'banners' | 'styles' | 'flash' | 'testimonials' | 'brands' | 'footer';
+export type HomepageSubTab = 'hero' | 'banners' | 'styles' | 'flash' | 'testimonials' | 'brands';
 
 @Component({
   selector: 'app-admin',
@@ -16,25 +19,80 @@ export class AdminComponent implements OnInit {
   readonly authService = inject(AuthService);
   private readonly api = inject(ApiService);
 
-  // Active navigation tab
-  activeTab = signal<'dashboard' | 'products' | 'categories' | 'hero' | 'banners' | 'styles' | 'flash' | 'testimonials' | 'brands' | 'footer'>('dashboard');
+  private getSavedHomepageSubTab(): HomepageSubTab {
+    try {
+      const savedSub = localStorage.getItem('hs_admin_homepage_subtab');
+      const validSubTabs: HomepageSubTab[] = ['hero', 'banners', 'styles', 'flash', 'testimonials', 'brands'];
+      if (savedSub && validSubTabs.includes(savedSub as HomepageSubTab)) {
+        return savedSub as HomepageSubTab;
+      }
+      const savedMain = localStorage.getItem('hs_admin_tab');
+      if (savedMain && validSubTabs.includes(savedMain as HomepageSubTab)) {
+        return savedMain as HomepageSubTab;
+      }
+    } catch {}
+    return 'hero';
+  }
+
+  private getSavedTab(): AdminTab {
+    try {
+      const saved = localStorage.getItem('hs_admin_tab');
+      const validTabs: AdminTab[] = [
+        'dashboard', 'products', 'categories', 'homepage',
+        'hero', 'banners', 'styles', 'flash', 'testimonials', 'brands', 'footer'
+      ];
+      if (saved && validTabs.includes(saved as AdminTab)) {
+        if (saved === 'homepage') {
+          return this.getSavedHomepageSubTab();
+        }
+        return saved as AdminTab;
+      }
+    } catch {}
+    return 'dashboard';
+  }
+
+  // Active navigation tab & homepage subtab
+  activeTab = signal<AdminTab>(this.getSavedTab());
+  homepageSubTab = signal<HomepageSubTab>(this.getSavedHomepageSubTab());
 
   isHomepageTab(): boolean {
-    return ['hero', 'banners', 'styles', 'flash', 'testimonials', 'brands'].includes(this.activeTab());
+    const tab = this.activeTab();
+    return tab === 'homepage' || ['hero', 'banners', 'styles', 'flash', 'testimonials', 'brands'].includes(tab);
   }
 
   selectHomepageTab(): void {
-    if (!this.isHomepageTab()) {
-      this.activeTab.set('hero');
-    }
+    const target = this.homepageSubTab() || 'hero';
+    this.setTab(target);
   }
 
-  selectHomepageSubTab(tab: 'hero' | 'banners' | 'styles' | 'flash' | 'testimonials' | 'brands'): void {
-    this.activeTab.set(tab);
+  selectHomepageSubTab(tab: HomepageSubTab): void {
+    this.homepageSubTab.set(tab);
+    try {
+      localStorage.setItem('hs_admin_homepage_subtab', tab);
+    } catch {}
+    this.setTab(tab);
+  }
+
+  setTab(tab: AdminTab): void {
+    let resolved = tab;
+    if (resolved === 'homepage') {
+      resolved = this.homepageSubTab() || 'hero';
+    }
+    this.activeTab.set(resolved);
+    if (['hero', 'banners', 'styles', 'flash', 'testimonials', 'brands'].includes(resolved)) {
+      this.homepageSubTab.set(resolved as HomepageSubTab);
+      try {
+        localStorage.setItem('hs_admin_homepage_subtab', resolved);
+      } catch {}
+    }
+    try {
+      localStorage.setItem('hs_admin_tab', resolved);
+    } catch {}
   }
 
   getHomepageTabName(): string {
-    switch (this.activeTab()) {
+    const tab = this.activeTab() === 'homepage' ? this.homepageSubTab() : this.activeTab();
+    switch (tab) {
       case 'hero': return 'Hero Slider';
       case 'banners': return 'Promo Banner';
       case 'styles': return 'Style Cards';
@@ -100,7 +158,21 @@ export class AdminComponent implements OnInit {
   });
 
   // Hero Slides state
-  heroSlides = signal<any[]>([]);
+  heroSlides = signal<any[]>([
+    {
+      id: 'default-hero-1',
+      title: 'Upgrade Your Lifestyle',
+      subtitle: 'Discover top picks for home, tech, fashion and more',
+      description: 'Discover top picks for home, tech, fashion and more — all in one place.',
+      desktopImageUrl: 'assets/images/hero-upgrade-lifestyle.jpg?v=2',
+      primaryButtonText: 'Shop the Collection',
+      primaryButtonUrl: '/products',
+      secondaryButtonText: 'Explore Deals',
+      secondaryButtonUrl: '/deals',
+      badgeText: 'LIMITED TIME OFFER',
+      isActive: true
+    }
+  ]);
   isSlideModalOpen = signal<boolean>(false);
   editingSlide = signal<any>({
     id: null,
@@ -128,7 +200,12 @@ export class AdminComponent implements OnInit {
   });
 
   // Style Cards state
-  styleCards = signal<any[]>([]);
+  styleCards = signal<any[]>([
+    { id: '1', title: 'Tech Lover', subtitle: 'Smart & connected', imageUrl: 'assets/images/style-tech.jpg' },
+    { id: '2', title: 'Modern Fashion', subtitle: 'Trendy & versatile', imageUrl: 'assets/images/style-fashion.jpg' },
+    { id: '3', title: 'Home Vibes', subtitle: 'Cozy & stylish', imageUrl: 'assets/images/style-home.jpg' },
+    { id: '4', title: 'Active Life', subtitle: 'Fit, strong & healthy', imageUrl: 'assets/images/style-active.jpg' }
+  ]);
   editingStyleCard = signal<any>(null);
   isStyleModalOpen = signal<boolean>(false);
 
@@ -187,12 +264,36 @@ export class AdminComponent implements OnInit {
   }
 
   // Testimonials state
-  testimonials = signal<any[]>([]);
+  testimonials = signal<any[]>([
+    {
+      id: 'test-1',
+      customerName: 'Sarah Jenkins',
+      customerRole: 'Verified Buyer',
+      rating: 5,
+      comment: 'Best customer service and fastest delivery! Super satisfied with Happy Steppy.',
+      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+      isActive: true
+    },
+    {
+      id: 'test-2',
+      customerName: 'Emily R.',
+      customerRole: 'Verified Customer',
+      rating: 5,
+      comment: 'Great quality, super fast delivery and an amazing shopping experience!',
+      avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
+      isActive: true
+    }
+  ]);
   editingTestimonial = signal<any>(null);
   isTestimonialModalOpen = signal<boolean>(false);
 
   // Brands state
-  brands = signal<any[]>([]);
+  brands = signal<any[]>([
+    { id: 'b1', name: 'Puma', logoUrl: '', isActive: true },
+    { id: 'b2', name: 'NovaTech', logoUrl: '', isActive: true },
+    { id: 'b3', name: 'UrbanFit', logoUrl: '', isActive: true },
+    { id: 'b4', name: 'Nova', logoUrl: '', isActive: true }
+  ]);
   editingBrand = signal<any>(null);
   isBrandModalOpen = signal<boolean>(false);
 
@@ -230,6 +331,21 @@ export class AdminComponent implements OnInit {
     confirmText?: string;
     onConfirm: () => void;
   } | null>(null);
+
+  constructor() {
+    effect(() => {
+      const tab = this.activeTab();
+      try {
+        localStorage.setItem('hs_admin_tab', tab);
+      } catch {}
+    });
+
+    effect(() => {
+      if (this.authService.isAuthenticated()) {
+        this.loadAllData();
+      }
+    });
+  }
 
   ngOnInit() {
     if (this.authService.isAuthenticated()) {

@@ -452,17 +452,15 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
           this.calculateFlashRemaining();
         }
 
-        // Dynamic Categories from DB (For Desktop Sidebar & Mobile Drawer)
+        // Dynamic Categories from DB (For Desktop Sidebar & Mobile Drawer - preserve defaults if DB has style seed only)
         if (data.categories && data.categories.length > 0) {
-          const mappedCats = data.categories
-            .filter((c: any) => c.showInSidebar !== false)
-            .map((c: any) => ({
+          const customCats = data.categories.filter((c: any) => c.showInSidebar !== false && c.iconName);
+          if (customCats.length >= 4) {
+            this.categories.set(customCats.map((c: any) => ({
               name: c.name,
-              icon: c.iconName || 'fa-solid fa-layer-group',
+              icon: c.iconName,
               imgUrl: c.imageUrl || ''
-            }));
-          if (mappedCats.length > 0) {
-            this.categories.set(mappedCats);
+            })));
           }
         }
 
