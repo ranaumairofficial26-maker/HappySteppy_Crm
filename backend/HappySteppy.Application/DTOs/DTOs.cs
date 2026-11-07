@@ -51,7 +51,7 @@ namespace HappySteppy.Application.DTOs
         public bool IsFeatured { get; set; }
         public bool IsTrending { get; set; }
         public bool IsBestSeller { get; set; }
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
         public int SortOrder { get; set; }
         public Guid? BrandId { get; set; }
         public string? BrandName { get; set; }
@@ -89,7 +89,7 @@ namespace HappySteppy.Application.DTOs
         public int SortOrder { get; set; }
         public bool ShowInSidebar { get; set; }
         public bool ShowOnHomepage { get; set; }
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
         public Guid? ParentCategoryId { get; set; }
     }
 
@@ -100,7 +100,7 @@ namespace HappySteppy.Application.DTOs
         public string Slug { get; set; } = string.Empty;
         public string? LogoUrl { get; set; }
         public int SortOrder { get; set; }
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 
     // Homepage DTOs
@@ -118,7 +118,7 @@ namespace HappySteppy.Application.DTOs
         public string? SecondaryButtonUrl { get; set; }
         public string? BadgeText { get; set; }
         public int SortOrder { get; set; }
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 
     public class BenefitCardDto
@@ -128,7 +128,7 @@ namespace HappySteppy.Application.DTOs
         public string Description { get; set; } = string.Empty;
         public string IconName { get; set; } = string.Empty;
         public int SortOrder { get; set; }
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 
     public class PromotionalBannerDto
@@ -143,7 +143,7 @@ namespace HappySteppy.Application.DTOs
         public string ImageUrl { get; set; } = "assets/images/home-refresh-banner-clean.jpg?v=4";
         public string LocationKey { get; set; } = "home-refresh";
         public int SortOrder { get; set; }
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 
     public class StyleCardDto
@@ -154,7 +154,7 @@ namespace HappySteppy.Application.DTOs
         public string ImageUrl { get; set; } = string.Empty;
         public string LinkUrl { get; set; } = "/products";
         public int SortOrder { get; set; }
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 
     public class FlashSaleDto
@@ -164,7 +164,7 @@ namespace HappySteppy.Application.DTOs
         public string? Subtitle { get; set; }
         public int DiscountPercentage { get; set; }
         public DateTime EndsAtUtc { get; set; }
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
         public List<ProductDto> Products { get; set; } = new();
     }
 
@@ -178,7 +178,7 @@ namespace HappySteppy.Application.DTOs
         public string? AvatarUrl { get; set; }
         public bool IsVerified { get; set; }
         public int SortOrder { get; set; }
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 
     public class TrustStatisticDto
@@ -189,7 +189,7 @@ namespace HappySteppy.Application.DTOs
         public string Label { get; set; } = "Happy Shoppers";
         public string? IconName { get; set; } = "laurel-wreath";
         public int SortOrder { get; set; }
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 
     public class HomepagePayloadDto
@@ -216,7 +216,7 @@ namespace HappySteppy.Application.DTOs
         public string Title { get; set; } = string.Empty;
         public string Url { get; set; } = "#";
         public int SortOrder { get; set; }
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 
     public class SocialLinkDto
@@ -226,7 +226,7 @@ namespace HappySteppy.Application.DTOs
         public string Url { get; set; } = "#";
         public string IconName { get; set; } = string.Empty;
         public int SortOrder { get; set; }
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 
     public class SettingItemDto

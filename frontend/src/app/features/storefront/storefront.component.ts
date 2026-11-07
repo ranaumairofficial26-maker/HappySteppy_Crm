@@ -120,12 +120,11 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
   ]);
 
   // Trusted Brands from DB
-  readonly trustedBrands = signal<string[]>([
-    'NovaTech',
-    'UrbanFit',
-    'HomeNest',
-    'PureCare',
-    'PlayZone'
+  readonly trustedBrands = signal<{ name: string; logoUrl?: string | null }[]>([
+    { name: 'NovaTech', logoUrl: null },
+    { name: 'UrbanFit', logoUrl: null },
+    { name: 'PureCare', logoUrl: null },
+    { name: 'PlayZone', logoUrl: null }
   ]);
 
   // Testimonial from DB
@@ -364,7 +363,7 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
 
         // Dynamic Brands
         if (data.brands && data.brands.length > 0) {
-          this.trustedBrands.set(data.brands.map((b: any) => b.name));
+          this.trustedBrands.set(data.brands.map((b: any) => ({ name: b.name, logoUrl: b.logoUrl })));
         }
 
         // Dynamic Testimonials

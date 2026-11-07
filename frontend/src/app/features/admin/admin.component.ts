@@ -491,15 +491,33 @@ export class AdminComponent implements OnInit {
   }
 
   openCreateBrand() {
-    this.editingBrand.set({ id: null, name: '', slug: '', logoUrl: '' });
+    this.editingBrand.set({ id: null, name: '', slug: '', logoUrl: '', isActive: true, sortOrder: this.brands().length + 1 });
+    this.isBrandModalOpen.set(true);
+  }
+
+  openEditBrand(b: any) {
+    this.editingBrand.set({ ...b, isActive: b.isActive ?? true });
     this.isBrandModalOpen.set(true);
   }
 
   saveBrand() {
-    this.api.saveBrand(this.editingBrand()).subscribe(() => {
-      this.showToast('Brand saved!');
-      this.isBrandModalOpen.set(false);
-      this.loadBrands();
+    const brand = this.editingBrand();
+    if (!brand || !brand.name || !brand.name.trim()) {
+      this.showToast('Please enter brand name');
+      return;
+    }
+    if (brand.isActive === undefined || brand.isActive === null) {
+      brand.isActive = true;
+    }
+    this.api.saveBrand(brand).subscribe({
+      next: () => {
+        this.showToast(brand.id ? 'Brand updated!' : 'Brand added!');
+        this.isBrandModalOpen.set(false);
+        this.loadBrands();
+      },
+      error: () => {
+        this.showToast('Failed to save brand.');
+      }
     });
   }
 

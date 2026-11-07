@@ -655,19 +655,25 @@
     </div>
 
     <!-- 3. Trusted by Leading Brands -->
-    <div class="proof-card proof-brands-card">
-      <h4 class="brands-headline">Trusted by Leading Brands</h4>
-      <div class="brands-ticker-wrap">
-        <div class="brands-pills-list">
-          @for (brand of trustedBrands(); track brand) {
-            <div class="brand-item-pill">
-              <i class="fa-solid fa-circle-check brand-ico"></i>
-              <span>{{ brand }}</span>
-            </div>
-          }
+    @if (trustedBrands().length > 0) {
+      <div class="proof-card proof-brands-card">
+        <h4 class="brands-headline">Trusted by Leading Brands</h4>
+        <div class="brands-ticker-wrap">
+          <div class="brands-pills-list">
+            @for (brand of trustedBrands(); track brand.name) {
+              <div class="brand-item-pill">
+                @if (brand.logoUrl) {
+                  <img [src]="brand.logoUrl" [alt]="brand.name" class="brand-img" style="height: 18px; width: auto; object-fit: contain; margin-right: 4px;" />
+                } @else {
+                  <i class="fa-solid fa-circle-check brand-ico"></i>
+                }
+                <span>{{ brand.name }}</span>
+              </div>
+            }
+          </div>
         </div>
       </div>
-    </div>
+    }
   </section>
   </main>
 
