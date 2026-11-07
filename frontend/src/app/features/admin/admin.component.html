@@ -564,15 +564,59 @@
                 <div class="form-row">
                   <div class="form-group">
                     <label>Flash Sale Title</label>
-                    <input type="text" [(ngModel)]="flashSale().title" />
+                    <input type="text" [(ngModel)]="flashSale().title" placeholder="e.g. Flash Sale, Weekend Deals" />
                   </div>
                   <div class="form-group">
-                    <label>Subtitle</label>
-                    <input type="text" [(ngModel)]="flashSale().subtitle" />
+                    <label>Subtitle / Tagline</label>
+                    <input type="text" [(ngModel)]="flashSale().subtitle" placeholder="e.g. Limited Time Offer" />
                   </div>
                   <div class="form-group">
-                    <label>Discount %</label>
-                    <input type="number" [(ngModel)]="flashSale().discountPercentage" />
+                    <label>Discount Badge (%)</label>
+                    <input type="number" [(ngModel)]="flashSale().discountPercentage" min="1" max="99" placeholder="e.g. 50" />
+                  </div>
+                </div>
+
+                <div class="form-row" style="margin-top: 1.25rem;">
+                  <div class="form-group flex-1">
+                    <label>Countdown Expiry Date & Time</label>
+                    <input type="datetime-local" [(ngModel)]="flashSaleEndDate" (change)="onFlashDateChange()" />
+                    <small style="color: #64748b; font-size: 0.8rem; margin-top: 4px; display: block;">
+                      Storefront countdown timer will synchronously count down to this exact date and time.
+                    </small>
+                  </div>
+
+                  <div class="form-group flex-1">
+                    <label>Quick Preset Timer</label>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+                      <button type="button" class="btn-preset-pill" (click)="setFlashPresetHours(6)">+6 Hours</button>
+                      <button type="button" class="btn-preset-pill" (click)="setFlashPresetHours(12)">+12 Hours</button>
+                      <button type="button" class="btn-preset-pill" (click)="setFlashPresetHours(24)">+24 Hours</button>
+                      <button type="button" class="btn-preset-pill" (click)="setFlashPresetHours(48)">+48 Hours</button>
+                    </div>
+                  </div>
+
+                  <div class="form-group checkbox-group" style="display: flex; align-items: flex-end; padding-bottom: 8px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; color: #1e293b;">
+                      <input type="checkbox" [(ngModel)]="flashSale().isActive" />
+                      <span>Visible on Storefront</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Live Preview Bar -->
+                <div style="margin-top: 1.5rem; padding: 1.25rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px;">
+                  <span style="font-size: 0.76rem; font-weight: 750; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 0.75rem;">Storefront Live Preview</span>
+                  <div style="display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #ffffff; padding: 12px 18px; border-radius: 12px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);">
+                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 750; font-size: 1.05rem;">
+                      <i class="fa-solid fa-bolt" style="color: #fef08a;"></i>
+                      <span>{{ flashSale().title || 'Flash Sale' }}</span>
+                      <span style="background: rgba(255,255,255,0.25); padding: 3px 9px; border-radius: 999px; font-size: 0.8rem; font-weight: 800; margin-left: 6px;">
+                        {{ flashSale().discountPercentage || 25 }}% OFF
+                      </span>
+                    </div>
+                    <div style="font-size: 0.85rem; font-weight: 600; opacity: 0.95;">
+                      Expires: <strong>{{ flashSaleEndDateFormatted }}</strong>
+                    </div>
                   </div>
                 </div>
               </div>

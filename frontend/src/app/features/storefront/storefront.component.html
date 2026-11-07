@@ -495,7 +495,7 @@
         <div class="flash-top-bar">
           <div class="flash-brand-title">
             <i class="fa-solid fa-bolt"></i>
-            <span>Flash Sale</span>
+            <span>{{ flashSale().title || 'Flash Sale' }}</span>
           </div>
 
           <div class="flash-timer-group">
@@ -536,10 +536,10 @@
 
             <div class="flash-pricing-badge-row">
               <div class="flash-prices">
-                <span class="flash-now">.99</span>
-                <span class="flash-was">.99</span>
+                <span class="flash-now">$79.99</span>
+                <span class="flash-was">$99.99</span>
               </div>
-              <span class="flash-discount-pill">25% OFF</span>
+              <span class="flash-discount-pill">{{ flashSale().discountPercentage || 25 }}% OFF</span>
             </div>
 
             <div class="flash-cta-stock-row">

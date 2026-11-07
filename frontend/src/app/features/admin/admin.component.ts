@@ -135,11 +135,48 @@ export class AdminComponent implements OnInit {
   // Flash Sale state
   flashSale = signal<any>({
     title: 'Flash Sale',
-    subtitle: 'Ends in: 12 h 24 m 28 s',
+    subtitle: 'Limited Time Deal',
     discountPercentage: 50,
-    endsAtUtc: new Date(Date.now() + 12 * 3600 * 1000).toISOString(),
+    endsAtUtc: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
     isActive: true
   });
+  flashSaleEndDate: string = '';
+
+  get flashSaleEndDateFormatted(): string {
+    const ends = this.flashSale()?.endsAtUtc;
+    if (!ends) return 'Not set';
+    try {
+      return new Date(ends).toLocaleString();
+    } catch {
+      return 'Not set';
+    }
+  }
+
+  onFlashDateChange() {
+    if (this.flashSaleEndDate) {
+      const d = new Date(this.flashSaleEndDate);
+      this.flashSale.update(f => ({ ...f, endsAtUtc: d.toISOString() }));
+    }
+  }
+
+  setFlashPresetHours(hours: number) {
+    const d = new Date(Date.now() + hours * 3600 * 1000);
+    this.flashSale.update(f => ({ ...f, endsAtUtc: d.toISOString() }));
+    this.updateFlashDateInput();
+  }
+
+  updateFlashDateInput() {
+    const f = this.flashSale();
+    if (f && f.endsAtUtc) {
+      const d = new Date(f.endsAtUtc);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const hours = String(d.getHours()).padStart(2, '0');
+      const mins = String(d.getMinutes()).padStart(2, '0');
+      this.flashSaleEndDate = `${year}-${month}-${day}T${hours}:${mins}`;
+    }
+  }
 
   // Testimonials state
   testimonials = signal<any[]>([]);
@@ -511,13 +548,35 @@ export class AdminComponent implements OnInit {
   // Flash Sale
   loadFlashSale() {
     this.api.getFlashSale().subscribe(res => {
-      if (res) this.flashSale.set(res);
+      if (res) {
+        this.flashSale.set(res);
+        this.updateFlashDateInput();
+      } else {
+        this.setFlashPresetHours(24);
+      }
     });
   }
 
   saveFlashSale() {
-    this.api.saveFlashSale(this.flashSale()).subscribe(() => {
-      this.showToast('Flash Sale updated!');
+    const f = this.flashSale();
+    if (!f || !f.title || !f.title.trim()) {
+      this.showToast('Please enter flash sale title', 'error');
+      return;
+    }
+    if (!f.endsAtUtc) {
+      f.endsAtUtc = new Date(Date.now() + 24 * 3600 * 1000).toISOString();
+    }
+    if (f.isActive === undefined || f.isActive === null) {
+      f.isActive = true;
+    }
+    this.api.saveFlashSale(f).subscribe({
+      next: () => {
+        this.showToast('Flash Sale settings saved successfully!');
+        this.loadFlashSale();
+      },
+      error: () => {
+        this.showToast('Failed to save flash sale settings.', 'error');
+      }
     });
   }
 

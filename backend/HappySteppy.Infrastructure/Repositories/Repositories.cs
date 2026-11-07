@@ -218,11 +218,21 @@ namespace HappySteppy.Infrastructure.Repositories
         public async Task DeleteStyleCardAsync(Guid id, CancellationToken ct = default) { var s = await GetStyleCardByIdAsync(id, ct); if (s != null) { s.IsDeleted = true; await _db.SaveChangesAsync(ct); } }
 
         // Flash Sale
-        public Task<FlashSale?> GetActiveFlashSaleAsync(CancellationToken ct = default)
-            => _db.FlashSales.Include(f => f.Products).ThenInclude(fp => fp.Product)
-                             .Where(f => f.IsActive && f.EndsAtUtc > DateTime.UtcNow)
-                             .OrderByDescending(f => f.CreatedAtUtc)
-                             .FirstOrDefaultAsync(ct);
+        public async Task<FlashSale?> GetActiveFlashSaleAsync(CancellationToken ct = default)
+        {
+            var sale = await _db.FlashSales.Include(f => f.Products).ThenInclude(fp => fp.Product)
+                                 .Where(f => f.IsActive && f.EndsAtUtc > DateTime.UtcNow)
+                                 .OrderByDescending(f => f.CreatedAtUtc)
+                                 .FirstOrDefaultAsync(ct);
+            if (sale == null)
+            {
+                sale = await _db.FlashSales.Include(f => f.Products).ThenInclude(fp => fp.Product)
+                                 .Where(f => f.IsActive)
+                                 .OrderByDescending(f => f.CreatedAtUtc)
+                                 .FirstOrDefaultAsync(ct);
+            }
+            return sale;
+        }
 
         public Task<FlashSale?> GetFlashSaleByIdAsync(Guid id, CancellationToken ct = default)
             => _db.FlashSales.Include(f => f.Products).ThenInclude(fp => fp.Product).FirstOrDefaultAsync(f => f.Id == id, ct);

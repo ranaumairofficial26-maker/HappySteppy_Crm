@@ -620,7 +620,7 @@ namespace HappySteppy.Application.Services
             f.Title = dto.Title;
             f.Subtitle = dto.Subtitle;
             f.DiscountPercentage = dto.DiscountPercentage;
-            f.EndsAtUtc = dto.EndsAtUtc;
+            f.EndsAtUtc = dto.EndsAtUtc.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(dto.EndsAtUtc, DateTimeKind.Utc) : dto.EndsAtUtc.ToUniversalTime();
             f.IsActive = dto.IsActive;
             await _homepageRepo.SaveFlashSaleAsync(f, ct);
             dto.Id = f.Id;

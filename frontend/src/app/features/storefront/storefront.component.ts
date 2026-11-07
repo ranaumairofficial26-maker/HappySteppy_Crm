@@ -30,7 +30,20 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
   activeMenu = signal<string>('Home');
   activeSidebarCat = signal<string>('Electronics');
 
-  // Flash Sale Countdown
+  // Flash Sale Dynamic State & Countdown
+  flashSale = signal<{
+    title: string;
+    subtitle: string;
+    discountPercentage: number;
+    endsAtUtc: string;
+    isActive: boolean;
+  }>({
+    title: 'Flash Sale',
+    subtitle: 'Limited Time Offer',
+    discountPercentage: 25,
+    endsAtUtc: new Date(Date.now() + 12 * 3600 * 1000).toISOString(),
+    isActive: true
+  });
   flashHours = signal<number>(12);
   flashMinutes = signal<number>(24);
   flashSeconds = signal<number>(36);
@@ -402,6 +415,19 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
           });
         }
 
+        // Dynamic Flash Sale
+        if (data.flashSale) {
+          const fs = data.flashSale;
+          this.flashSale.set({
+            title: fs.title || 'Flash Sale',
+            subtitle: fs.subtitle || 'Limited Time Offer',
+            discountPercentage: fs.discountPercentage || 25,
+            endsAtUtc: fs.endsAtUtc || new Date(Date.now() + 12 * 3600 * 1000).toISOString(),
+            isActive: fs.isActive ?? true
+          });
+          this.calculateFlashRemaining();
+        }
+
         // Dynamic Style Cards
         if (data.styleCards && data.styleCards.length >= 4) {
           this.styleCategories.set(data.styleCards.slice(0, 4).map((s: any) => ({
@@ -458,27 +484,28 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  private calculateFlashRemaining() {
+    const endsStr = this.flashSale().endsAtUtc;
+    if (!endsStr) return;
+    const ends = new Date(endsStr).getTime();
+    const now = Date.now();
+    const diff = Math.max(0, ends - now);
+
+    const totalSeconds = Math.floor(diff / 1000);
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+
+    this.flashHours.set(h);
+    this.flashMinutes.set(m);
+    this.flashSeconds.set(s);
+  }
+
   private startCountdown() {
+    if (this.timerInterval) clearInterval(this.timerInterval);
+    this.calculateFlashRemaining();
     this.timerInterval = setInterval(() => {
-      let s = this.flashSeconds() - 1;
-      let m = this.flashMinutes();
-      let h = this.flashHours();
-
-      if (s < 0) {
-        s = 59;
-        m -= 1;
-        if (m < 0) {
-          m = 59;
-          h -= 1;
-          if (h < 0) {
-            h = 12;
-          }
-        }
-      }
-
-      this.flashSeconds.set(s);
-      this.flashMinutes.set(m);
-      this.flashHours.set(h);
+      this.calculateFlashRemaining();
     }, 1000);
   }
 
