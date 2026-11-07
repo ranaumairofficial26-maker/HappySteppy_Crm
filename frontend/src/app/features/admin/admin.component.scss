@@ -689,11 +689,15 @@
     }
 
     &.active {
-      background: #ecfccb;
-      color: #365314;
-      svg { color: #65a30d; }
+      background: #ecfdf5;
+      color: #047857;
+      font-weight: 750;
+      svg {
+        color: #10b981;
+        stroke: #10b981;
+      }
       .counter-badge {
-        background: #65a30d;
+        background: #10b981;
         color: #fff;
       }
     }

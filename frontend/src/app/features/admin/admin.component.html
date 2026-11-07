@@ -145,19 +145,29 @@
           </button>
 
           <div class="sidebar-section-title">HOMEPAGE CMS</div>
-          <button
-            class="nav-tab"
-            [class.active]="isHomepageTab()"
-            (click)="selectHomepageTab()"
-            title="Homepage CMS Management"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="7" height="7"/>
-              <rect x="14" y="3" width="7" height="7"/>
-              <rect x="14" y="14" width="7" height="7"/>
-              <rect x="3" y="14" width="7" height="7"/>
-            </svg>
-            <span>Homepage CMS</span>
+          <button class="nav-tab" [class.active]="activeTab() === 'hero'" (click)="activeTab.set('hero')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <span>Hero Slider</span>
+          </button>
+          <button class="nav-tab" [class.active]="activeTab() === 'banners'" (click)="activeTab.set('banners')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            <span>Promo Banner</span>
+          </button>
+          <button class="nav-tab" [class.active]="activeTab() === 'styles'" (click)="activeTab.set('styles')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Style Cards</span>
+          </button>
+          <button class="nav-tab" [class.active]="activeTab() === 'flash'" (click)="activeTab.set('flash')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span>Flash Sale</span>
+          </button>
+          <button class="nav-tab" [class.active]="activeTab() === 'testimonials'" (click)="activeTab.set('testimonials')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span>Testimonials</span>
+          </button>
+          <button class="nav-tab" [class.active]="activeTab() === 'brands'" (click)="activeTab.set('brands')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            <span>Trusted Brands</span>
           </button>
 
           <div class="sidebar-section-title">FOOTER & SETTINGS</div>
