@@ -24,6 +24,7 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
   private scrollObserver: IntersectionObserver | null = null;
 
   searchQuery = signal<string>('');
+  isMobileMenuOpen = signal<boolean>(false);
   cartCount = signal<number>(2);
   wishlistCount = signal<number>(0);
   activeMenu = signal<string>('Home');
@@ -508,5 +509,13 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
     }
+  }
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen.update(v => !v);
+  }
+
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen.set(false);
   }
 }

@@ -28,6 +28,20 @@
   }
 }
 
+/* Mobile Menu Toggle Button (Desktop: Hidden) */
+.mobile-menu-toggle-btn {
+  display: none;
+}
+
+/* Mobile Slide-out Drawer (Desktop: Hidden) */
+.mobile-drawer-backdrop {
+  display: none;
+}
+
+.mobile-nav-drawer {
+  display: none;
+}
+
 /* Brand Logo (Happy Steppy) */
 .brand-logo {
   display: flex;
@@ -2248,17 +2262,49 @@
       width: 100%;
     }
 
-    .brand-logo {
+    /* Mobile Hamburger Menu Button (Matches uploaded Image 1) */
+    .mobile-menu-toggle-btn {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      background: transparent;
+      border: none;
+      cursor: pointer;
       order: 1;
+      margin-right: 6px;
+      -webkit-tap-highlight-color: transparent;
+
+      .hamburger-bar {
+        display: block;
+        width: 21px;
+        height: 2.2px;
+        background: #111827;
+        border-radius: 2px;
+        transition: all 0.2s ease;
+      }
+
+      &:active .hamburger-bar {
+        background: #65a30d;
+      }
+    }
+
+    .brand-logo {
+      order: 2;
+      flex: 1;
 
       .brand-logo-img {
-        height: 38px;
+        height: 36px;
         width: auto;
       }
     }
 
     .header-actions {
-      order: 2;
+      order: 3;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -2275,7 +2321,7 @@
     }
 
     .search-wrapper {
-      order: 3;
+      order: 4;
       width: 100%;
       max-width: 100%;
       margin: 4px 0 0;
@@ -2299,38 +2345,222 @@
     }
 
     .header-nav {
-      order: 4;
-      width: 100%;
-      display: flex;
-      overflow-x: auto;
-      white-space: nowrap;
-      gap: 8px;
-      padding: 6px 0 2px;
-      margin: 2px 0 0;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
+      display: none; /* Moved to slide-out navigation drawer */
+    }
+  }
 
-      &::-webkit-scrollbar {
-        display: none;
+  /* ==========================================================================
+     MOBILE SLIDE-OUT NAVIGATION DRAWER (Matches uploaded Image 2)
+     ========================================================================== */
+  .mobile-drawer-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(2px);
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+
+    &.open {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  .mobile-nav-drawer {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 86%;
+    max-width: 340px;
+    background: #ffffff;
+    z-index: 10001;
+    transform: translateX(-100%);
+    transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 6px 0 30px rgba(0, 0, 0, 0.16);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 16px 16px 32px;
+
+    &.open {
+      transform: translateX(0);
+    }
+
+    /* Drawer Top Row: Circular Close 'X' Button on Left, Logo Centered */
+    .drawer-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+
+      .drawer-close-circle-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #1f1f1f;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+        border: none;
+        cursor: pointer;
+        transition: transform 0.15s ease, background-color 0.2s ease;
+
+        &:active {
+          transform: scale(0.92);
+          background: #334155;
+        }
       }
 
-      .nav-link {
-        font-size: 0.82rem;
-        padding: 5px 12px;
-        background: #f8fafc;
-        border-radius: 16px;
-        border: 1px solid #edf2f7;
-        flex-shrink: 0;
+      .drawer-logo-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-        &.active {
-          background: #ecfccb;
+        .drawer-logo-img {
+          height: 34px;
+          width: auto;
+          object-fit: contain;
+        }
+      }
+
+      .drawer-header-spacer {
+        width: 32px; /* Mirrors close button for centered logo balance */
+      }
+    }
+
+    /* Drawer Search Bar: Pill Input with "What are you looking for today?" */
+    .drawer-search-wrap {
+      margin-bottom: 18px;
+
+      .drawer-search-input-box {
+        display: flex;
+        align-items: center;
+        background: #ffffff;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0 14px;
+        height: 44px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+
+        &:focus-within {
           border-color: #65a30d;
-          color: #365314;
+          box-shadow: 0 0 0 2px rgba(101, 163, 13, 0.12);
+        }
 
-          &::after {
-            display: none;
+        .drawer-search-icon {
+          color: #94a3b8;
+          font-size: 0.92rem;
+          margin-right: 10px;
+        }
+
+        input {
+          flex: 1;
+          border: none;
+          outline: none;
+          font-size: 0.88rem;
+          color: #1e293b;
+          font-family: inherit;
+          background: transparent;
+
+          &::placeholder {
+            color: #94a3b8;
           }
         }
+      }
+    }
+
+    /* Drawer Navigation Menu & Links */
+    .drawer-nav-menu {
+      flex: 1;
+
+      .drawer-links-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .drawer-link-item {
+        width: 100%;
+      }
+
+      .drawer-nav-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 13px 4px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #111827;
+        text-decoration: none;
+        transition: color 0.15s ease;
+        border-bottom: 1px solid #f1f5f9;
+
+        &.bold {
+          font-weight: 800;
+          font-size: 1.08rem;
+        }
+
+        &:active,
+        &:hover {
+          color: #478401;
+        }
+
+        .drawer-cat-left {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+
+          .drawer-cat-icon {
+            font-size: 0.95rem;
+            color: #65a30d;
+            width: 20px;
+            text-align: center;
+          }
+
+          .drawer-link-text {
+            font-size: 1.02rem;
+            font-weight: 650;
+          }
+        }
+
+        .drawer-chevron {
+          font-size: 0.82rem;
+          color: #64748b;
+          transition: transform 0.15s ease;
+        }
+
+        &.drawer-admin-link {
+          color: #0f172a;
+          margin-top: 10px;
+          padding: 12px 14px;
+          background: #f8fafc;
+          border-radius: 12px;
+          border: 1px solid #e2e8f0;
+
+          .drawer-admin-badge {
+            font-size: 0.65rem;
+            font-weight: 800;
+            background: #65a30d;
+            color: #ffffff;
+            padding: 2px 7px;
+            border-radius: 6px;
+          }
+        }
+      }
+
+      .drawer-link-divider {
+        height: 1px;
+        background: #f1f5f9;
+        margin: 10px 0;
       }
     }
   }

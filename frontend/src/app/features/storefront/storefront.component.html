@@ -1,6 +1,19 @@
 <!-- Top Main Header (Exact match to uploaded design with Happy Steppy branding) -->
 <header class="shopora-header">
   <div class="container header-inner">
+    <!-- Mobile Hamburger Toggle Button (Shown on Mobile/Tablet matching user image) -->
+    <button
+      type="button"
+      class="mobile-menu-toggle-btn"
+      (click)="toggleMobileMenu()"
+      aria-label="Open navigation menu"
+      title="Open Menu"
+    >
+      <span class="hamburger-bar"></span>
+      <span class="hamburger-bar"></span>
+      <span class="hamburger-bar"></span>
+    </button>
+
     <!-- Brand Logo (Happy Steppy) -->
     <a routerLink="/" class="brand-logo" title="Happy Steppy">
       <img src="assets/images/logo.png" alt="Happy Steppy" class="brand-logo-img" />
@@ -94,6 +107,109 @@
     </div>
   </div>
 </header>
+
+<!-- Mobile Slide-out Navigation Drawer (Matches media_1794030377089_c2e06d45.png) -->
+<div
+  class="mobile-drawer-backdrop"
+  [class.open]="isMobileMenuOpen()"
+  (click)="closeMobileMenu()"
+  aria-hidden="true"
+></div>
+
+<aside class="mobile-nav-drawer" [class.open]="isMobileMenuOpen()">
+  <!-- Drawer Header: Close 'X' Button on Left + Happy Steppy Logo Centered -->
+  <div class="drawer-header-row">
+    <button
+      type="button"
+      class="drawer-close-circle-btn"
+      (click)="closeMobileMenu()"
+      aria-label="Close menu"
+      title="Close Menu"
+    >
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div class="drawer-logo-wrap">
+      <img src="assets/images/logo.png" alt="Happy Steppy" class="drawer-logo-img" />
+    </div>
+
+    <!-- Spacer to keep logo centered -->
+    <div class="drawer-header-spacer"></div>
+  </div>
+
+  <!-- Drawer Search Bar: Pill Input with "What are you looking for today?" -->
+  <div class="drawer-search-wrap">
+    <div class="drawer-search-input-box">
+      <i class="fa-solid fa-magnifying-glass drawer-search-icon"></i>
+      <input
+        type="text"
+        placeholder="What are you looking for today?"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+      />
+    </div>
+  </div>
+
+  <!-- Drawer Navigation Links (Home, Shop, Categories with Chevrons) -->
+  <nav class="drawer-nav-menu">
+    <ul class="drawer-links-list">
+      <li class="drawer-link-item">
+        <a routerLink="/" (click)="closeMobileMenu()" class="drawer-nav-link bold">
+          <span>Home</span>
+        </a>
+      </li>
+
+      <li class="drawer-link-item">
+        <a routerLink="/" (click)="scrollToSection('trending-products'); closeMobileMenu()" class="drawer-nav-link bold">
+          <span>Shop</span>
+        </a>
+      </li>
+
+      <!-- Dynamic Categories with Chevron '>' -->
+      @for (cat of categories(); track cat.name) {
+        <li class="drawer-link-item">
+          <a
+            routerLink="/"
+            class="drawer-nav-link"
+            (click)="activeSidebarCat.set(cat.name); scrollToSection('trending-products'); closeMobileMenu()"
+          >
+            <div class="drawer-cat-left">
+              @if (cat.icon) {
+                <i [class]="cat.icon + ' drawer-cat-icon'"></i>
+              }
+              <span class="drawer-link-text">{{ cat.name }}</span>
+            </div>
+            <i class="fa-solid fa-chevron-right drawer-chevron"></i>
+          </a>
+        </li>
+      }
+
+      <li class="drawer-link-divider"></li>
+
+      <li class="drawer-link-item">
+        <a routerLink="/deals" (click)="closeMobileMenu()" class="drawer-nav-link">
+          <span>Today's Deals</span>
+        </a>
+      </li>
+
+      <li class="drawer-link-item">
+        <a routerLink="/new" (click)="closeMobileMenu()" class="drawer-nav-link">
+          <span>New Arrivals</span>
+        </a>
+      </li>
+
+      <li class="drawer-link-item">
+        <a routerLink="/admin" (click)="closeMobileMenu()" class="drawer-nav-link drawer-admin-link">
+          <div class="drawer-cat-left">
+            <i class="fa-solid fa-lock drawer-cat-icon"></i>
+            <span>Admin Panel</span>
+          </div>
+          <span class="drawer-admin-badge">CMS</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</aside>
 
 <main class="shopora-main">
   <!-- 1. Hero Layout: Left Sidebar + Hero Banner & Trust Badges -->
