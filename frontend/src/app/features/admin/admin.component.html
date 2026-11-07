@@ -170,75 +170,102 @@
         <!-- Dynamic Content Canvas -->
         <main class="admin-main">
 
-          <!-- TAB: DASHBOARD (Clean, Crystal-Clear High-Contrast Store Dashboard) -->
+          <!-- TAB: DASHBOARD (Vibrant, Colorful High-End Store Dashboard) -->
           @if (activeTab() === 'dashboard') {
             <div class="tab-panel">
-              <!-- Header with Welcome Greeting -->
-              <div class="panel-header dashboard-header">
-                <div>
-                  <h1 class="panel-title">Welcome back, Admin 👋</h1>
-                  <p class="panel-desc">Real-time overview of Happy Steppy store, products, orders, and homepage management.</p>
+              <!-- Colorful Welcome Banner -->
+              <div class="dashboard-welcome-banner">
+                <div class="welcome-banner-left">
+                  <div class="welcome-badge">
+                    <span class="live-dot"></span>
+                    <span>Store Cockpit &middot; Real-Time Operations</span>
+                  </div>
+                  <h1 class="welcome-heading">Welcome back, Admin 👋</h1>
+                  <p class="welcome-subtext">Manage your product catalog, launch high-impact flash promotions, and customize storefront visual elements.</p>
                 </div>
-                <div class="dash-header-actions">
-                  <a routerLink="/" target="_blank" class="btn-store-preview">
+                <div class="welcome-banner-actions">
+                  <a routerLink="/" target="_blank" class="btn-banner-outline">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                     <span>View Storefront</span>
                   </a>
-                  <button type="button" class="btn-primary-action" (click)="activeTab.set('products'); openCreateProduct()">
+                  <button type="button" class="btn-banner-green" (click)="activeTab.set('products'); openCreateProduct()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                     <span>+ Add Product</span>
                   </button>
                 </div>
               </div>
 
-              <!-- Stat Cards Grid (Clean, High-Contrast & Perfectly Aligned) -->
+              <!-- Stat Cards Grid (Rich Colored Gradients & Glowing Badges) -->
               <div class="stats-grid">
-                <div class="stat-card" (click)="activeTab.set('products')">
-                  <div class="stat-meta">
-                    <span class="stat-label">Total Products</span>
-                    <span class="stat-val">{{ stats().totalProducts }}</span>
-                    <span class="stat-sub">Active in store catalog</span>
+                <div class="stat-card stat-emerald" (click)="activeTab.set('products')">
+                  <div class="stat-accent-bar"></div>
+                  <div class="stat-body">
+                    <div class="stat-meta">
+                      <span class="stat-label">Total Products</span>
+                      <span class="stat-val">{{ stats().totalProducts }}</span>
+                      <span class="stat-sub-pill">Active in store</span>
+                    </div>
+                    <div class="stat-icon-wrap emerald">
+                      <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
                   </div>
-                  <div class="stat-icon green-bg">🛍️</div>
                 </div>
 
-                <div class="stat-card" (click)="activeTab.set('categories')">
-                  <div class="stat-meta">
-                    <span class="stat-label">Categories</span>
-                    <span class="stat-val">{{ stats().totalCategories }}</span>
-                    <span class="stat-sub">Store departments & menu</span>
+                <div class="stat-card stat-blue" (click)="activeTab.set('categories')">
+                  <div class="stat-accent-bar"></div>
+                  <div class="stat-body">
+                    <div class="stat-meta">
+                      <span class="stat-label">Categories</span>
+                      <span class="stat-val">{{ stats().totalCategories }}</span>
+                      <span class="stat-sub-pill">Store departments</span>
+                    </div>
+                    <div class="stat-icon-wrap blue">
+                      <i class="fa-solid fa-layer-group"></i>
+                    </div>
                   </div>
-                  <div class="stat-icon blue-bg">📑</div>
                 </div>
 
-                <div class="stat-card" (click)="selectHomepageSubTab('hero')">
-                  <div class="stat-meta">
-                    <span class="stat-label">Hero Slides</span>
-                    <span class="stat-val">{{ stats().totalHeroSlides }}</span>
-                    <span class="stat-sub">Storefront banner slides</span>
+                <div class="stat-card stat-amber" (click)="selectHomepageSubTab('flash')">
+                  <div class="stat-accent-bar"></div>
+                  <div class="stat-body">
+                    <div class="stat-meta">
+                      <span class="stat-label">Campaigns</span>
+                      <span class="stat-val">{{ stats().totalHeroSlides + 2 }}</span>
+                      <span class="stat-sub-pill">Hero & flash deals</span>
+                    </div>
+                    <div class="stat-icon-wrap amber">
+                      <i class="fa-solid fa-bolt-lightning"></i>
+                    </div>
                   </div>
-                  <div class="stat-icon purple-bg">🖼️</div>
                 </div>
 
-                <div class="stat-card" (click)="selectHomepageSubTab('brands')">
-                  <div class="stat-meta">
-                    <span class="stat-label">Partner Brands</span>
-                    <span class="stat-val">{{ stats().totalBrands }}</span>
-                    <span class="stat-sub">Verified brand ticker</span>
+                <div class="stat-card stat-purple" (click)="selectHomepageSubTab('brands')">
+                  <div class="stat-accent-bar"></div>
+                  <div class="stat-body">
+                    <div class="stat-meta">
+                      <span class="stat-label">Partner Brands</span>
+                      <span class="stat-val">{{ stats().totalBrands }}</span>
+                      <span class="stat-sub-pill">Verified partners</span>
+                    </div>
+                    <div class="stat-icon-wrap purple">
+                      <i class="fa-solid fa-handshake"></i>
+                    </div>
                   </div>
-                  <div class="stat-icon orange-bg">🤝</div>
                 </div>
               </div>
 
-              <!-- Quick Management Shortcuts (High-Contrast Solid Cards) -->
+              <!-- Quick Management Shortcuts (Colorful Vibrant Tiles) -->
               <div class="admin-quick-links">
                 <div class="quick-links-heading">
-                  <h2>Quick Management Shortcuts</h2>
-                  <p>Click any shortcut to instantly jump to its configuration section.</p>
+                  <div>
+                    <h2>Quick Management Shortcuts</h2>
+                    <p>Click any colored card to configure products, campaigns, or store layouts.</p>
+                  </div>
+                  <span class="quick-counter-pill">6 Modules</span>
                 </div>
 
                 <div class="quick-grid">
-                  <div class="quick-card" (click)="activeTab.set('products'); openCreateProduct()">
+                  <div class="quick-card card-green" (click)="activeTab.set('products'); openCreateProduct()">
                     <div class="quick-card-top">
                       <div class="quick-pill green">
                         <i class="fa-solid fa-plus"></i>
@@ -249,18 +276,21 @@
                     <span class="quick-arrow-link">Open Catalog &rarr;</span>
                   </div>
 
-                  <div class="quick-card" (click)="selectHomepageSubTab('flash')">
+                  <div class="quick-card card-amber" (click)="selectHomepageSubTab('flash')">
                     <div class="quick-card-top">
                       <div class="quick-pill amber">
                         <i class="fa-solid fa-bolt"></i>
                       </div>
-                      <h3>Update Flash Sale</h3>
+                      <div class="quick-title-wrap">
+                        <h3>Update Flash Sale</h3>
+                        <span class="quick-tag-hot">Hot</span>
+                      </div>
                     </div>
-                    <p>Configure flash discount, countdown timer, and featured sale product deal.</p>
+                    <p>Configure flash discount %, countdown timer, and featured sale product deal.</p>
                     <span class="quick-arrow-link">Configure Deal &rarr;</span>
                   </div>
 
-                  <div class="quick-card" (click)="selectHomepageSubTab('hero')">
+                  <div class="quick-card card-blue" (click)="selectHomepageSubTab('hero')">
                     <div class="quick-card-top">
                       <div class="quick-pill blue">
                         <i class="fa-solid fa-panorama"></i>
@@ -271,7 +301,7 @@
                     <span class="quick-arrow-link">Edit Slides &rarr;</span>
                   </div>
 
-                  <div class="quick-card" (click)="selectHomepageSubTab('banners')">
+                  <div class="quick-card card-orange" (click)="selectHomepageSubTab('banners')">
                     <div class="quick-card-top">
                       <div class="quick-pill orange">
                         <i class="fa-solid fa-bullhorn"></i>
@@ -282,7 +312,7 @@
                     <span class="quick-arrow-link">Edit Banner &rarr;</span>
                   </div>
 
-                  <div class="quick-card" (click)="selectHomepageSubTab('styles')">
+                  <div class="quick-card card-purple" (click)="selectHomepageSubTab('styles')">
                     <div class="quick-card-top">
                       <div class="quick-pill purple">
                         <i class="fa-solid fa-palette"></i>
@@ -293,7 +323,7 @@
                     <span class="quick-arrow-link">Edit Styles &rarr;</span>
                   </div>
 
-                  <div class="quick-card" (click)="selectHomepageSubTab('testimonials')">
+                  <div class="quick-card card-teal" (click)="selectHomepageSubTab('testimonials')">
                     <div class="quick-card-top">
                       <div class="quick-pill teal">
                         <i class="fa-solid fa-star"></i>
@@ -357,7 +387,8 @@
                             }
                           </td>
                           <td>
-                            <span class="status-pill" [class.active]="p.isActive !== false">
+                            <span class="status-pill active">
+                              <span class="status-dot-mini"></span>
                               {{ p.isActive !== false ? 'Active' : 'Draft' }}
                             </span>
                           </td>
