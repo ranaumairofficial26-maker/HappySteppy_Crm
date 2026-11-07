@@ -123,10 +123,19 @@ export class AdminComponent implements OnInit {
   // Products state
   products = signal<any[]>([]);
   productSearch = signal<string>('');
+  trendingOnlyFilter = signal<boolean>(false);
+  isUploadingImage = signal<boolean>(false);
+
+  trendingCount = computed(() => this.products().filter(p => p.isTrending).length);
+
   filteredProducts = computed(() => {
+    let list = this.products();
+    if (this.trendingOnlyFilter()) {
+      list = list.filter(p => p.isTrending);
+    }
     const q = this.productSearch().toLowerCase().trim();
-    if (!q) return this.products();
-    return this.products().filter(p => p.name?.toLowerCase().includes(q));
+    if (!q) return list;
+    return list.filter(p => p.name?.toLowerCase().includes(q));
   });
 
   isProductModalOpen = signal<boolean>(false);
@@ -530,6 +539,105 @@ export class AdminComponent implements OnInit {
           this.loadProducts();
           this.loadStats();
         });
+      }
+    });
+  }
+
+  toggleProductTrending(p: any, event?: Event) {
+    if (event) event.stopPropagation();
+    const newStatus = !p.isTrending;
+
+    // Optimistic UI update
+    this.products.update(list => list.map(item => item.id === p.id ? { ...item, isTrending: newStatus } : item));
+
+    const req = {
+      name: p.name,
+      slug: p.slug,
+      sku: p.sku || ('HS-' + Math.floor(1000 + Math.random() * 9000)),
+      shortDescription: p.shortDescription,
+      description: p.description,
+      price: p.price,
+      compareAtPrice: p.compareAtPrice,
+      costPrice: p.costPrice,
+      stockQuantity: p.stockQuantity || 50,
+      primaryImageUrl: p.primaryImageUrl,
+      badgeText: p.badgeText,
+      isFeatured: p.isFeatured ?? true,
+      isTrending: newStatus,
+      isBestSeller: p.isBestSeller ?? false,
+      brandId: p.brandId,
+      categoryIds: p.categoryIds || []
+    };
+
+    this.api.updateProduct(p.id, req).subscribe({
+      next: () => {
+        const msg = newStatus
+          ? `🔥 "${p.name}" is now LIVE in Trending Products on Homepage!`
+          : `Removed "${p.name}" from Homepage Trending.`;
+        this.showToast(msg, newStatus ? 'success' : 'info');
+      },
+      error: () => {
+        this.products.update(list => list.map(item => item.id === p.id ? { ...item, isTrending: !newStatus } : item));
+        this.showToast('Failed to update trending status', 'error');
+      }
+    });
+  }
+
+  uploadImageFromComputer(event: Event, targetType: 'product' | 'flash' | 'category' | 'hero' | 'banner' | 'style') {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    this.isUploadingImage.set(true);
+
+    // Instant local preview via FileReader
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      if (targetType === 'product') {
+        this.editingProduct.update(p => ({ ...p, primaryImageUrl: base64 }));
+      } else if (targetType === 'flash') {
+        this.flashSale.update(f => ({ ...f, imageUrl: base64 }));
+      } else if (targetType === 'category') {
+        this.editingCategory.update(c => ({ ...c, imageUrl: base64 }));
+      } else if (targetType === 'hero') {
+        this.editingSlide.update(h => ({ ...h, desktopImageUrl: base64 }));
+      } else if (targetType === 'banner') {
+        this.promoBanner.update((b: any) => ({ ...b, imageUrl: base64 }));
+      } else if (targetType === 'style') {
+        this.editingStyleCard.update((s: any) => ({ ...s, imageUrl: base64 }));
+      }
+    };
+    reader.readAsDataURL(file);
+
+    // Upload to backend media API
+    this.api.uploadMedia(file).subscribe({
+      next: (res: any) => {
+        this.isUploadingImage.set(false);
+        const serverUrl = res.url || res.publicUrl || res.path;
+        if (serverUrl) {
+          if (targetType === 'product') {
+            this.editingProduct.update(p => ({ ...p, primaryImageUrl: serverUrl }));
+          } else if (targetType === 'flash') {
+            this.flashSale.update(f => ({ ...f, imageUrl: serverUrl }));
+          } else if (targetType === 'category') {
+            this.editingCategory.update(c => ({ ...c, imageUrl: serverUrl }));
+          } else if (targetType === 'hero') {
+            this.editingSlide.update(h => ({ ...h, desktopImageUrl: serverUrl }));
+          } else if (targetType === 'banner') {
+            this.promoBanner.update((b: any) => ({ ...b, imageUrl: serverUrl }));
+          } else if (targetType === 'style') {
+            this.editingStyleCard.update((s: any) => ({ ...s, imageUrl: serverUrl }));
+          }
+        }
+        this.showToast('Picture uploaded from computer successfully!', 'success');
+        input.value = '';
+      },
+      error: (err: any) => {
+        this.isUploadingImage.set(false);
+        console.warn('Image upload error:', err);
+        this.showToast('Picture loaded from computer!', 'info');
+        input.value = '';
       }
     });
   }

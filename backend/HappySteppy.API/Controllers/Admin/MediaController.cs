@@ -54,7 +54,18 @@ namespace HappySteppy.API.Controllers.Admin
                 await file.CopyToAsync(stream, ct);
             }
 
-            var publicUrl = $"/uploads/{uniqueFileName}";
+            var publicUrl = $"assets/uploads/{uniqueFileName}";
+            try
+            {
+                var frontendDir = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "frontend", "public", "assets", "uploads"));
+                if (!Directory.Exists(frontendDir)) Directory.CreateDirectory(frontendDir);
+                System.IO.File.Copy(filePath, Path.Combine(frontendDir, uniqueFileName), true);
+            }
+            catch
+            {
+                publicUrl = $"/uploads/{uniqueFileName}";
+            }
+
             var asset = new MediaAsset
             {
                 FileName = file.FileName,

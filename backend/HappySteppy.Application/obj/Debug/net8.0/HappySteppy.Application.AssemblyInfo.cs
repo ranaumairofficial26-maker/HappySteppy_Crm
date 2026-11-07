@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HappySteppy.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6d1708eacdf771ee5f9c34c52520446c062f9baf")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cd30d19fab61a99bfa55be5f5d7cf55389e515b9")]
 [assembly: System.Reflection.AssemblyProductAttribute("HappySteppy.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HappySteppy.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
