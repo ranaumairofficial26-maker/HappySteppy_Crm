@@ -17,3 +17,4 @@ D:\Zero Pixel\Happy Steppy\backend\HappySteppy.Infrastructure\obj\Debug\net8.0\H
 D:\Zero Pixel\Happy Steppy\backend\HappySteppy.Infrastructure\obj\Debug\net8.0\ref\HappySteppy.Infrastructure.dll
 D:\Zero Pixel\Happy Steppy\backend\HappySteppy.Infrastructure\bin\Debug\net8.0\HappySteppy.Infrastructure.runtimeconfig.json
 D:\Zero Pixel\Happy Steppy\backend\HappySteppy.Infrastructure\obj\Debug\net8.0\HappySteppy.Infrastructure.genruntimeconfig.cache
+D:\Zero Pixel\Happy Steppy\backend\HappySteppy.Infrastructure\obj\Debug\net8.0\HappySteppy.Infrastructure.sourcelink.json

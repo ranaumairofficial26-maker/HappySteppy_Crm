@@ -9,3 +9,4 @@ D:\Zero Pixel\Happy Steppy\backend\HappySteppy.Domain\obj\Debug\net8.0\HappyStep
 D:\Zero Pixel\Happy Steppy\backend\HappySteppy.Domain\obj\Debug\net8.0\refint\HappySteppy.Domain.dll
 D:\Zero Pixel\Happy Steppy\backend\HappySteppy.Domain\obj\Debug\net8.0\HappySteppy.Domain.pdb
 D:\Zero Pixel\Happy Steppy\backend\HappySteppy.Domain\obj\Debug\net8.0\ref\HappySteppy.Domain.dll
+D:\Zero Pixel\Happy Steppy\backend\HappySteppy.Domain\obj\Debug\net8.0\HappySteppy.Domain.sourcelink.json

@@ -13,3 +13,4 @@ D:\Zero Pixel\Happy Steppy\backend\HappySteppy.Application\obj\Debug\net8.0\Happ
 D:\Zero Pixel\Happy Steppy\backend\HappySteppy.Application\obj\Debug\net8.0\refint\HappySteppy.Application.dll
 D:\Zero Pixel\Happy Steppy\backend\HappySteppy.Application\obj\Debug\net8.0\HappySteppy.Application.pdb
 D:\Zero Pixel\Happy Steppy\backend\HappySteppy.Application\obj\Debug\net8.0\ref\HappySteppy.Application.dll
+D:\Zero Pixel\Happy Steppy\backend\HappySteppy.Application\obj\Debug\net8.0\HappySteppy.Application.sourcelink.json
