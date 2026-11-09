@@ -74,7 +74,7 @@
     <!-- Divider Bar -->
     <div class="header-divider"></div>
 
-    <!-- Header Actions (Admin, Account, Wishlist, Cart) -->
+    <!-- Header Actions (Admin, Wishlist, Cart) -->
     <div class="header-actions">
       <!-- Admin Option -->
       <div
@@ -89,78 +89,6 @@
           <span class="admin-dot-badge"></span>
         </div>
         <span class="action-label admin-label">Admin</span>
-      </div>
-
-      <!-- Account Option with Dropdown -->
-      <div
-        class="action-btn-dropdown-wrap"
-        (mouseenter)="isAccountDropdownOpen.set(true)"
-        (mouseleave)="isAccountDropdownOpen.set(false)"
-      >
-        <div
-          class="action-btn"
-          (click)="toggleAccountDropdown()"
-          title="My Account"
-          role="button"
-          tabindex="0"
-        >
-          <i class="fa-regular fa-user action-icon"></i>
-          <span class="action-label">
-            Account
-            <i class="fa-solid fa-chevron-down caret-icon"></i>
-          </span>
-        </div>
-
-        @if (isAccountDropdownOpen()) {
-          <div class="account-menu-dropdown">
-            <a
-              href="javascript:void(0)"
-              class="account-menu-item admin-menu-item"
-              (click)="openAdminOption()"
-            >
-              <div class="menu-icon-box admin-badge-icon">
-                <i class="fa-solid fa-user-shield"></i>
-              </div>
-              <div class="menu-text-box">
-                <div class="menu-title-row">
-                  <span class="menu-title">Admin Portal</span>
-                  <span class="admin-pill-tag">Owner</span>
-                </div>
-                <span class="menu-desc">Store dashboard & controls</span>
-              </div>
-            </a>
-
-            <div class="account-menu-divider"></div>
-
-            <a
-              href="javascript:void(0)"
-              class="account-menu-item"
-              (click)="onCustomerAccountClick()"
-            >
-              <div class="menu-icon-box">
-                <i class="fa-regular fa-user"></i>
-              </div>
-              <div class="menu-text-box">
-                <span class="menu-title">My Profile</span>
-                <span class="menu-desc">Manage customer account</span>
-              </div>
-            </a>
-
-            <a
-              href="javascript:void(0)"
-              class="account-menu-item"
-              (click)="onOrdersClick()"
-            >
-              <div class="menu-icon-box">
-                <i class="fa-solid fa-box-open"></i>
-              </div>
-              <div class="menu-text-box">
-                <span class="menu-title">My Orders</span>
-                <span class="menu-desc">Track and view history</span>
-              </div>
-            </a>
-          </div>
-        }
       </div>
 
       <div class="action-btn" title="Wishlist">

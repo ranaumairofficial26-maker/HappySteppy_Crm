@@ -28,9 +28,8 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
   activeMenu = signal<string>('Home');
   activeSidebarCat = signal<string>('Bioray');
 
-  // Admin & Account State
+  // Admin State
   isAdminModalOpen = signal<boolean>(false);
-  isAccountDropdownOpen = signal<boolean>(false);
 
   // Flash Sale Dynamic State & Countdown
   flashSale = signal<{
@@ -115,33 +114,14 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     this.storeToastTimer = setTimeout(() => this.storeToast.set(null), 3200);
   }
 
-  // Admin & Account Handlers
+  // Admin Handlers
   openAdminOption() {
-    this.isAccountDropdownOpen.set(false);
     this.isAdminModalOpen.set(true);
     this.showStoreToast('Admin Portal accessed', '🔒 Admin Access');
   }
 
   closeAdminModal() {
     this.isAdminModalOpen.set(false);
-  }
-
-  toggleAccountDropdown() {
-    this.isAccountDropdownOpen.update(v => !v);
-  }
-
-  closeAccountDropdown() {
-    this.isAccountDropdownOpen.set(false);
-  }
-
-  onCustomerAccountClick() {
-    this.closeAccountDropdown();
-    this.showStoreToast('Customer profile and settings', '👤 My Account');
-  }
-
-  onOrdersClick() {
-    this.closeAccountDropdown();
-    this.showStoreToast('Track your existing orders', '📦 My Orders');
   }
 
   // Social Media Links (Official Happy Steppy Channels)
