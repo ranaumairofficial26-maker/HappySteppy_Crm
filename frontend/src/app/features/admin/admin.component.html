@@ -128,45 +128,11 @@
             <button
               type="button"
               class="sidebar-nav-item"
-              [class.active]="activeTab() === 'products'"
-              (click)="setActiveTab('products')"
+              [class.active]="activeTab() === 'homepage'"
+              (click)="setActiveTab('homepage')"
             >
-              <i class="fa-solid fa-box-open"></i>
-              <span>Products</span>
-              <span class="nav-tag">Ready</span>
-            </button>
-
-            <button
-              type="button"
-              class="sidebar-nav-item"
-              [class.active]="activeTab() === 'brands'"
-              (click)="setActiveTab('brands')"
-            >
-              <i class="fa-solid fa-tags"></i>
-              <span>Top Brands</span>
-              <span class="nav-tag">Ready</span>
-            </button>
-
-            <button
-              type="button"
-              class="sidebar-nav-item"
-              [class.active]="activeTab() === 'banners'"
-              (click)="setActiveTab('banners')"
-            >
-              <i class="fa-regular fa-images"></i>
-              <span>Banners & Hero</span>
-              <span class="nav-tag">Ready</span>
-            </button>
-
-            <button
-              type="button"
-              class="sidebar-nav-item"
-              [class.active]="activeTab() === 'settings'"
-              (click)="setActiveTab('settings')"
-            >
-              <i class="fa-solid fa-sliders"></i>
-              <span>Settings</span>
-              <span class="nav-tag">Ready</span>
+              <i class="fa-solid fa-house"></i>
+              <span>Home Page</span>
             </button>
           </nav>
 
@@ -263,20 +229,66 @@
             </div>
           }
 
-          <!-- Other Tabs (Placeholders waiting for instructions) -->
-          @if (activeTab() !== 'overview') {
-            <div class="admin-placeholder-card tab-placeholder">
-              <div class="placeholder-icon-box">
-                <i class="fa-solid fa-layer-group"></i>
+          <!-- Home Page Management Tab -->
+          @if (activeTab() === 'homepage') {
+            <div class="admin-homepage-section">
+              <div class="section-header-row">
+                <div>
+                  <h2 class="section-heading">Home Page Management</h2>
+                  <p class="section-subheading">Storefront homepage ke tamam sections yahan se configure aur manage honge.</p>
+                </div>
+                <button type="button" class="back-overview-btn" (click)="setActiveTab('overview')">
+                  <i class="fa-solid fa-arrow-left"></i>
+                  <span>Back to Overview</span>
+                </button>
               </div>
-              <h3 style="text-transform: capitalize;">{{ activeTab() }} Section</h3>
-              <p>
-                Yeh section tayyar hai. Jab aap kahenge, is section mein exact required controls aur options add kar diye jayenge.
-              </p>
-              <button type="button" class="back-overview-btn" (click)="setActiveTab('overview')">
-                <i class="fa-solid fa-arrow-left"></i>
-                <span>Back to Overview</span>
-              </button>
+
+              <!-- Homepage Sections Grid -->
+              <div class="homepage-cards-grid">
+                <div class="hp-section-card">
+                  <div class="hp-card-icon green">
+                    <i class="fa-regular fa-image"></i>
+                  </div>
+                  <div class="hp-card-info">
+                    <h3>Hero Banner & Slider</h3>
+                    <p>Main store title, promotional banner graphic, discount badge aur CTA button.</p>
+                  </div>
+                  <span class="hp-status-tag">Ready</span>
+                </div>
+
+                <div class="hp-section-card">
+                  <div class="hp-card-icon emerald">
+                    <i class="fa-solid fa-bolt"></i>
+                  </div>
+                  <div class="hp-card-info">
+                    <h3>Flash Sale & Countdown</h3>
+                    <p>Featured discount product, live reverse timer, sale & original price, stock alert.</p>
+                  </div>
+                  <span class="hp-status-tag">Ready</span>
+                </div>
+
+                <div class="hp-section-card">
+                  <div class="hp-card-icon blue">
+                    <i class="fa-solid fa-tags"></i>
+                  </div>
+                  <div class="hp-card-info">
+                    <h3>Top Brands (Sidebar)</h3>
+                    <p>Left sidebar ke 9 health brands ki list aur navigation categories control.</p>
+                  </div>
+                  <span class="hp-status-tag">Ready</span>
+                </div>
+
+                <div class="hp-section-card">
+                  <div class="hp-card-icon purple">
+                    <i class="fa-solid fa-fire"></i>
+                  </div>
+                  <div class="hp-card-info">
+                    <h3>Trending Products</h3>
+                    <p>Homepage par show hone wale store supplements aur health products grid.</p>
+                  </div>
+                  <span class="hp-status-tag">Ready</span>
+                </div>
+              </div>
             </div>
           }
         </main>
