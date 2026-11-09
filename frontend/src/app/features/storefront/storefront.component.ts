@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CategoryItem, TrendingProduct } from '../../core/models/shopora.model';
-import { ApiService } from '../../core/services/api.service';
 
 export interface StyleCategory {
   title: string;
@@ -19,7 +18,6 @@ export interface StyleCategory {
   styleUrl: './storefront.component.scss'
 })
 export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
-  private readonly api = inject(ApiService);
   private readonly host = inject(ElementRef);
   private scrollObserver: IntersectionObserver | null = null;
 
@@ -28,7 +26,7 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
   cartCount = signal<number>(2);
   wishlistCount = signal<number>(0);
   activeMenu = signal<string>('Home');
-  activeSidebarCat = signal<string>('Electronics');
+  activeSidebarCat = signal<string>('Tech Lover');
 
   // Flash Sale Dynamic State & Countdown
   flashSale = signal<{
@@ -62,9 +60,9 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     buttonText: 'Grab the Deal',
     buttonUrl: '#trending-products'
   });
-  flashHours = signal<number>(12);
-  flashMinutes = signal<number>(24);
-  flashSeconds = signal<number>(36);
+  flashHours = signal<number>(10);
+  flashMinutes = signal<number>(39);
+  flashSeconds = signal<number>(30);
   private timerInterval: any;
 
   // Flash Sale Interactive Images (Box + Bottle)
@@ -124,14 +122,28 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
   });
 
   // Footer Links & Settings
-  footerLinks = signal<any[]>([]);
+  footerLinks = signal<any[]>([
+    { columnName: 'customer care', label: 'Help Center & FAQ', url: '#' },
+    { columnName: 'customer care', label: 'Track Your Order', url: '#' },
+    { columnName: 'customer care', label: 'Returns & Refunds', url: '#' },
+    { columnName: 'customer care', label: 'Shipping & Delivery', url: '#' },
+    { columnName: 'shop categories', label: 'Supplements', url: '#trending-products' },
+    { columnName: 'shop categories', label: 'Tech Lover', url: '#style-categories' },
+    { columnName: 'shop categories', label: 'Modern Fashion', url: '#style-categories' },
+    { columnName: 'shop categories', label: 'Home Vibes', url: '#style-categories' },
+    { columnName: 'shop categories', label: 'Active Life', url: '#style-categories' },
+    { columnName: 'about happy steppy', label: 'Our Story', url: '#' },
+    { columnName: 'about happy steppy', label: 'Authentic Quality', url: '#' },
+    { columnName: 'about happy steppy', label: 'Contact Us', url: '#' }
+  ]);
+
   footerSettings = signal<{ [key: string]: string }>({
     CopyrightText: '© 2026 Happy Steppy. All rights reserved.',
     ContactPhone: '+92 317 4641903',
     ContactEmail: 'support@happysteppy.com',
-    FooterAbout: 'Your one-stop shop for lifestyle, tech, home and more.',
+    FooterAbout: 'Your one-stop shop for health supplements, sensory care, tech, and lifestyle essentials.',
     NewsletterTitle: 'Stay in the Loop',
-    NewsletterSubtitle: 'Get the latest deals, new arrivals and more.'
+    NewsletterSubtitle: 'Get the latest deals, new arrivals and exclusive store discounts.'
   });
 
   // Hero Slide
@@ -151,13 +163,13 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     description: 'Discover top picks for home, tech, fashion and more — all in one place.',
     badgeText: 'LIMITED TIME OFFER',
     primaryButtonText: 'Shop the Collection',
-    primaryButtonUrl: '/products',
+    primaryButtonUrl: '#trending-products',
     secondaryButtonText: 'Explore Deals',
-    secondaryButtonUrl: '/deals',
+    secondaryButtonUrl: '#trending-products',
     desktopImageUrl: 'assets/images/hero-upgrade-lifestyle.jpg?v=2'
   });
 
-  // Dynamic Promotional Banner
+  // Promotional Banner
   promoBanner = signal<{
     title: string;
     subtitle: string;
@@ -166,15 +178,15 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     buttonUrl: string;
     imageUrl: string;
   }>({
-    title: 'Modern Living Essentials',
-    subtitle: 'Stylish, functional and made for everyday comfort.',
-    discountText: '50% OFF',
+    title: 'Refresh Your Space',
+    subtitle: 'Discover modern essentials for every corner of your home.',
+    discountText: 'Up to 40% OFF',
     buttonText: 'Discover Now',
-    buttonUrl: '/products',
+    buttonUrl: '#trending-products',
     imageUrl: 'assets/images/home-refresh-banner.jpg'
   });
 
-  // Sidebar Categories (synced with Admin Panel)
+  // Sidebar Categories
   readonly categories = signal<CategoryItem[]>([
     { name: 'Tech Lover', icon: 'fa-solid fa-laptop', imgUrl: '' },
     { name: 'Modern Fashion', icon: 'fa-solid fa-shirt', imgUrl: '' },
@@ -190,18 +202,37 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     { title: 'Active Life', subtitle: 'Fit, strong & healthy', imgUrl: 'assets/images/style-active.jpg' }
   ]);
 
-  // Trusted Brands from DB
+  // Trusted by Leading Brands (Clean, Compact, Original)
   readonly trustedBrands = signal<{ name: string; logoUrl?: string | null }[]>([
-    { name: 'Nordic Naturals', logoUrl: null },
-    { name: 'Bioray', logoUrl: null },
     { name: 'Puma', logoUrl: null },
+    { name: 'Nordic Naturals', logoUrl: null },
     { name: 'NovaTech', logoUrl: null },
     { name: 'UrbanFit', logoUrl: null },
-    { name: 'PureCare', logoUrl: null }
+    { name: 'Bioray', logoUrl: null },
+    { name: 'Nova', logoUrl: null }
   ]);
 
-  // Testimonial from DB
-  readonly testimonialsList = signal<any[]>([]);
+  // Testimonials Auto-Slider (Every 3 seconds)
+  readonly testimonialsList = signal<any[]>([
+    {
+      customerName: 'Emily R.',
+      customerRole: 'Verified Customer',
+      comment: 'The quality of products exceeded my expectations! Fast delivery and great customer support.',
+      avatarUrl: 'assets/images/avatar-emily.jpg'
+    },
+    {
+      customerName: 'Marcus K.',
+      customerRole: 'Verified Buyer',
+      comment: 'Exceptional service and authentic supplements. Happy Steppy is my go-to store!',
+      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80'
+    },
+    {
+      customerName: 'Sarah T.',
+      customerRole: 'Health Enthusiast',
+      comment: 'Noticeable results with Belly Mend within days. Highly recommended!',
+      avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80'
+    }
+  ]);
   readonly currentTestimonialIndex = signal<number>(0);
   readonly isTestimonialSliding = signal<boolean>(false);
   private testimonialInterval: any;
@@ -213,13 +244,13 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     comment: string;
     avatarUrl: string;
   }>({
-    name: 'Sarah Jenkins',
-    role: 'Verified Buyer',
-    comment: 'Great quality, super fast delivery and an amazing shopping experience! Happy Steppy has become my go-to store.',
-    avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80'
+    name: 'Emily R.',
+    role: 'Verified Customer',
+    comment: 'The quality of products exceeded my expectations! Fast delivery and great customer support.',
+    avatarUrl: 'assets/images/avatar-emily.jpg'
   });
 
-  // Trending Products (Only real products added via Admin / DB)
+  // Trending Products (Pure store products requested by owner)
   readonly trendingProducts = signal<TrendingProduct[]>([
     {
       id: 1,
@@ -254,7 +285,7 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     this.startCountdown();
-    this.loadHomepageFromApi();
+    this.startTestimonialRotation();
   }
 
   ngAfterViewInit() {
@@ -307,7 +338,6 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
 
   startTestimonialRotation() {
     if (this.testimonialInterval) clearInterval(this.testimonialInterval);
-    // Auto-slide every 3 seconds (3000ms)
     this.testimonialInterval = setInterval(() => {
       if (this.isTestimonialsPaused) return;
       this.nextTestimonial();
@@ -325,7 +355,7 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
         name: t.customerName,
         role: t.customerRole,
         comment: t.comment,
-        avatarUrl: t.avatarUrl || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80'
+        avatarUrl: t.avatarUrl || 'assets/images/avatar-emily.jpg'
       });
       setTimeout(() => {
         this.isTestimonialSliding.set(false);
@@ -344,7 +374,7 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
         name: t.customerName,
         role: t.customerRole,
         comment: t.comment,
-        avatarUrl: t.avatarUrl || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80'
+        avatarUrl: t.avatarUrl || 'assets/images/avatar-emily.jpg'
       });
       setTimeout(() => {
         this.isTestimonialSliding.set(false);
@@ -363,7 +393,7 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
         name: t.customerName,
         role: t.customerRole,
         comment: t.comment,
-        avatarUrl: t.avatarUrl || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80'
+        avatarUrl: t.avatarUrl || 'assets/images/avatar-emily.jpg'
       });
       setTimeout(() => {
         this.isTestimonialSliding.set(false);
@@ -379,237 +409,91 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isTestimonialsPaused = false;
   }
 
-  private loadHomepageFromApi() {
-    this.api.getPublicHomepage().subscribe({
-      next: (data: any) => {
-        // Dynamic Hero Slide
-        if (data.heroSlides && data.heroSlides.length > 0) {
-          const s = data.heroSlides[0];
-          this.heroSlide.set({
-            title: s.title || this.heroSlide().title,
-            subtitle: s.subtitle || this.heroSlide().subtitle,
-            description: s.description || this.heroSlide().description,
-            badgeText: s.badgeText || this.heroSlide().badgeText,
-            primaryButtonText: s.primaryButtonText || this.heroSlide().primaryButtonText,
-            primaryButtonUrl: s.primaryButtonUrl || this.heroSlide().primaryButtonUrl,
-            secondaryButtonText: s.secondaryButtonText || this.heroSlide().secondaryButtonText,
-            secondaryButtonUrl: s.secondaryButtonUrl || this.heroSlide().secondaryButtonUrl,
-            desktopImageUrl: s.desktopImageUrl || this.heroSlide().desktopImageUrl
-          });
-        }
+  // Countdown Timer
+  private startCountdown() {
+    this.calculateFlashRemaining();
+    this.timerInterval = setInterval(() => {
+      let s = this.flashSeconds() - 1;
+      let m = this.flashMinutes();
+      let h = this.flashHours();
 
-        // Dynamic Brands
-        if (data.brands && data.brands.length > 0) {
-          this.trustedBrands.set(data.brands.map((b: any) => ({ name: b.name, logoUrl: b.logoUrl })));
-        }
-
-        // Dynamic Testimonials
-        if (data.testimonials && data.testimonials.length > 0) {
-          this.testimonialsList.set(data.testimonials);
-          const t = data.testimonials[0];
-          this.testimonial.set({
-            name: t.customerName,
-            role: t.customerRole,
-            comment: t.comment,
-            avatarUrl: t.avatarUrl || this.testimonial().avatarUrl
-          });
-          this.startTestimonialRotation();
-        }
-
-        // Dynamic Promo Banner
-        if (data.promotionalBanner) {
-          const b = data.promotionalBanner;
-          this.promoBanner.set({
-            title: b.title || this.promoBanner().title,
-            subtitle: b.subtitle || this.promoBanner().subtitle,
-            discountText: b.discountText || this.promoBanner().discountText,
-            buttonText: b.buttonText || this.promoBanner().buttonText,
-            buttonUrl: b.buttonUrl || this.promoBanner().buttonUrl,
-            imageUrl: b.imageUrl || this.promoBanner().imageUrl
-          });
-        }
-
-        // Dynamic Flash Sale
-        if (data.flashSale) {
-          const fs = data.flashSale;
-          this.flashSale.set({
-            title: fs.title || 'Sale',
-            subtitle: fs.subtitle || 'Gut Support & Immunity',
-            discountPercentage: fs.discountPercentage || 20,
-            endsAtUtc: fs.endsAtUtc || new Date(Date.now() + 12 * 3600 * 1000).toISOString(),
-            isActive: fs.isActive ?? true,
-            productName: fs.productName || 'Bioray Belly Mend',
-            imageUrl: fs.imageUrl || 'assets/images/bioray-belly-mend.webp',
-            secondaryImageUrl: fs.secondaryImageUrl || 'assets/images/bioray-belly-mend-bottle.webp',
-            ratingText: fs.ratingText || '5.0 (1.2k)',
-            salePrice: fs.salePrice || '₨8,200',
-            originalPrice: fs.originalPrice || '₨10,250',
-            stockLeftText: fs.stockLeftText || 'Only 15 left!',
-            buttonText: fs.buttonText || 'Grab the Deal',
-            buttonUrl: fs.buttonUrl || '#trending-products'
-          });
-          this.calculateFlashRemaining();
-        }
-
-        // Dynamic Categories from DB (Desktop Sidebar & Mobile Drawer)
-        if (data.categories && data.categories.length > 0) {
-          const defaultIcons: { [key: string]: string } = {
-            'tech': 'fa-solid fa-laptop',
-            'fashion': 'fa-solid fa-shirt',
-            'home': 'fa-solid fa-couch',
-            'active': 'fa-solid fa-heart-pulse',
-            'supplement': 'fa-solid fa-pills',
-            'health': 'fa-solid fa-heart-pulse'
-          };
-          this.categories.set(data.categories.map((c: any) => {
-            const lower = (c.name || '').toLowerCase();
-            let icon = c.iconName;
-            if (!icon) {
-              for (const [k, v] of Object.entries(defaultIcons)) {
-                if (lower.includes(k)) { icon = v; break; }
-              }
-            }
-            return {
-              name: c.name,
-              icon: icon || 'fa-solid fa-tag',
-              imgUrl: c.imageUrl || ''
-            };
-          }));
-        } else {
-          this.categories.set([]);
-        }
-
-        // Dynamic Style Cards from DB
-        if (data.styleCards && data.styleCards.length > 0) {
-          this.styleCategories.set(data.styleCards.map((s: any) => ({
-            title: s.title,
-            subtitle: s.subtitle,
-            imgUrl: s.imageUrl
-          })));
-        } else {
-          this.styleCategories.set([]);
-        }
-
-        // Dynamic Trending Products directly from DB
-        if (data.trendingProducts && data.trendingProducts.length > 0) {
-          const mapped = data.trendingProducts.map((p: any, idx: number) => ({
-            id: idx + 1,
-            name: p.name,
-            category: p.brandName || (p.categoryNames && p.categoryNames.length ? p.categoryNames[0] : 'Supplements'),
-            discount: p.compareAtPrice && p.compareAtPrice > p.price ? Math.round(((p.compareAtPrice - p.price) / p.compareAtPrice) * 100) : 15,
-            rating: p.rating || 5.0,
-            reviewCount: p.reviewsCount > 0 ? (p.reviewsCount >= 1000 ? (p.reviewsCount / 1000).toFixed(1) + 'k' : p.reviewsCount.toString()) : '1.2k',
-            price: p.price,
-            originalPrice: p.compareAtPrice || Math.round(p.price * 1.2),
-            imageUrl: p.primaryImageUrl || 'assets/images/bioray-belly-mend.webp',
-            isWishlisted: false
-          }));
-          this.trendingProducts.set(mapped);
-        } else {
-          this.trendingProducts.set([]);
-        }
-
-        // Dynamic Social Links
-        if (data.socialLinks && data.socialLinks.length > 0) {
-          const map = { ...this.socialLinks() };
-          for (const s of data.socialLinks) {
-            if (s.platform && s.url) {
-              const key = s.platform.toLowerCase();
-              map[key] = s.url;
-            }
+      if (s < 0) {
+        s = 59;
+        m--;
+        if (m < 0) {
+          m = 59;
+          h--;
+          if (h < 0) {
+            h = 10;
+            m = 39;
+            s = 30;
           }
-          this.socialLinks.set(map);
         }
-
-        // Dynamic Footer Links
-        if (data.footerLinks && data.footerLinks.length > 0) {
-          this.footerLinks.set(data.footerLinks);
-        }
-
-        // Dynamic Footer Settings (Copyright, Tagline, Contact)
-        if (data.settings) {
-          this.footerSettings.update(curr => ({ ...curr, ...data.settings }));
-        }
-
-        this.observeElements();
-      },
-      error: (err) => {
-        console.warn('API connection offline, using cached storefront assets', err);
       }
-    });
+
+      this.flashSeconds.set(s);
+      this.flashMinutes.set(m);
+      this.flashHours.set(h);
+    }, 1000);
   }
 
   private calculateFlashRemaining() {
-    const endsStr = this.flashSale().endsAtUtc;
-    if (!endsStr) return;
-    const ends = new Date(endsStr).getTime();
-    const now = Date.now();
-    const diff = Math.max(0, ends - now);
-
-    const totalSeconds = Math.floor(diff / 1000);
-    const h = Math.floor(totalSeconds / 3600);
-    const m = Math.floor((totalSeconds % 3600) / 60);
-    const s = totalSeconds % 60;
-
+    const ends = this.flashSale().endsAtUtc;
+    if (!ends) return;
+    const diff = Math.max(0, new Date(ends).getTime() - Date.now());
+    const totalSecs = Math.floor(diff / 1000);
+    const h = Math.floor(totalSecs / 3600);
+    const m = Math.floor((totalSecs % 3600) / 60);
+    const s = totalSecs % 60;
     this.flashHours.set(h);
     this.flashMinutes.set(m);
     this.flashSeconds.set(s);
   }
 
-  private startCountdown() {
-    if (this.timerInterval) clearInterval(this.timerInterval);
-    this.calculateFlashRemaining();
-    this.timerInterval = setInterval(() => {
-      this.calculateFlashRemaining();
-    }, 1000);
-  }
-
   pad(num: number): string {
-    return num.toString().padStart(2, '0');
+    return num < 10 ? '0' + num : '' + num;
   }
 
-  toggleWishlist(product: TrendingProduct, event: MouseEvent) {
-    event.stopPropagation();
-    product.isWishlisted = !product.isWishlisted;
-    this.wishlistCount.update(c => product.isWishlisted ? c + 1 : Math.max(0, c - 1));
-  }
-
-  addToCart(product: TrendingProduct, event: MouseEvent) {
-    event.stopPropagation();
-    this.cartCount.update(c => c + 1);
-
-    const btn = event.currentTarget as HTMLElement;
-    btn.style.transform = 'scale(1.25)';
-    setTimeout(() => {
-      btn.style.transform = 'scale(1)';
-    }, 200);
-
-    this.showStoreToast(`${product.name} has been added to your shopping cart.`, 'Added to Cart 🛍️', product.imageUrl);
-  }
-
-  subscribeNewsletter() {
-    if (this.newsletterEmail().trim()) {
-      this.isSubscribed.set(true);
-      this.showStoreToast('Thank you for subscribing to Happy Steppy updates!', 'Subscribed 🎉');
-      setTimeout(() => {
-        this.newsletterEmail.set('');
-        this.isSubscribed.set(false);
-      }, 3000);
-    }
-  }
-
-  scrollToSection(id: string) {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
-
-  toggleMobileMenu(): void {
+  toggleMobileMenu() {
     this.isMobileMenuOpen.update(v => !v);
   }
 
-  closeMobileMenu(): void {
+  closeMobileMenu() {
     this.isMobileMenuOpen.set(false);
+  }
+
+  toggleWishlist(product: TrendingProduct, event?: Event) {
+    if (event) event.stopPropagation();
+    product.isWishlisted = !product.isWishlisted;
+    const count = this.trendingProducts().filter(p => p.isWishlisted).length;
+    this.wishlistCount.set(count);
+    if (product.isWishlisted) {
+      this.showStoreToast(`${product.name} saved to wishlist!`, 'Saved', product.imageUrl);
+    }
+  }
+
+  addToCart(product: TrendingProduct, event?: Event) {
+    if (event) event.stopPropagation();
+    this.cartCount.update(c => c + 1);
+    this.showStoreToast(`${product.name} added to cart!`, 'Added to Cart', product.imageUrl);
+  }
+
+  subscribeNewsletter() {
+    const email = this.newsletterEmail().trim();
+    if (!email || !email.includes('@')) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+    this.isSubscribed.set(true);
+    this.showStoreToast(`Thanks for subscribing with ${email}!`, 'Newsletter Subscribed');
+    this.newsletterEmail.set('');
+  }
+
+  scrollToSection(sectionId: string) {
+    if (typeof document === 'undefined') return;
+    const el = document.getElementById(sectionId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 }

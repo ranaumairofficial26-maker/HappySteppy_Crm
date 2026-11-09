@@ -55,14 +55,6 @@
       >
         Deals
       </a>
-      <a
-        routerLink="/admin"
-        class="nav-link admin-nav-link"
-        title="Open Admin CMS Management"
-      >
-        <i class="fa-solid fa-lock"></i>
-        <span>Admin Panel</span>
-      </a>
     </nav>
 
     <!-- Pill Search Input with Round Green Button -->
@@ -84,10 +76,10 @@
 
     <!-- Header Actions (Account, Wishlist, Cart) -->
     <div class="header-actions">
-      <a routerLink="/admin" class="action-btn" title="Open Admin CMS">
-        <i class="fa-solid fa-user-shield action-icon"></i>
-        <span class="action-label">Admin</span>
-      </a>
+      <div class="action-btn" title="My Account">
+        <i class="fa-regular fa-user action-icon"></i>
+        <span class="action-label">Account</span>
+      </div>
 
       <div class="action-btn" title="Wishlist">
         <div class="badge-icon-wrap">
@@ -195,16 +187,6 @@
       <li class="drawer-link-item">
         <a routerLink="/new" (click)="closeMobileMenu()" class="drawer-nav-link">
           <span>New Arrivals</span>
-        </a>
-      </li>
-
-      <li class="drawer-link-item">
-        <a routerLink="/admin" (click)="closeMobileMenu()" class="drawer-nav-link drawer-admin-link">
-          <div class="drawer-cat-left">
-            <i class="fa-solid fa-lock drawer-cat-icon"></i>
-            <span>Admin Panel</span>
-          </div>
-          <span class="drawer-admin-badge">CMS</span>
         </a>
       </li>
     </ul>
@@ -681,19 +663,13 @@
       </div>
     </div>
 
-    <!-- 3. Trusted by Leading Brands (Infinite Scrolling Marquee) -->
+    <!-- 3. Trusted by Leading Brands -->
     @if (trustedBrands().length > 0) {
       <div class="proof-card proof-brands-card">
         <h4 class="brands-headline">Trusted by Leading Brands</h4>
         <div class="brands-ticker-wrap">
           <div class="brands-pills-list">
-            @for (brand of trustedBrands(); track $index) {
-              <div class="brand-item-pill">
-                <i class="fa-solid fa-circle-check brand-ico"></i>
-                <span>{{ brand.name }}</span>
-              </div>
-            }
-            @for (brand of trustedBrands(); track $index + '_loop') {
+            @for (brand of trustedBrands(); track brand.name) {
               <div class="brand-item-pill">
                 <i class="fa-solid fa-circle-check brand-ico"></i>
                 <span>{{ brand.name }}</span>
@@ -886,17 +862,6 @@
     </div>
   </div>
 </footer>
-
-<!-- Floating Admin CMS Panel Switcher (Bottom Left) -->
-<a
-  routerLink="/admin"
-  class="floating-admin-btn"
-  title="Go to Admin Panel CMS"
-  aria-label="Admin Panel CMS"
->
-  <i class="fa-solid fa-shield-halved"></i>
-  <span>Admin Panel</span>
-</a>
 
 <!-- Floating WhatsApp Quick-Chat Widget -->
 <a

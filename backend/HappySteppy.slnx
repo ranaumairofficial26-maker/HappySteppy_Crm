@@ -1,6 +1,0 @@
-<Solution>
-  <Project Path="HappySteppy.API/HappySteppy.API.csproj" />
-  <Project Path="HappySteppy.Application/HappySteppy.Application.csproj" />
-  <Project Path="HappySteppy.Domain/HappySteppy.Domain.csproj" />
-  <Project Path="HappySteppy.Infrastructure/HappySteppy.Infrastructure.csproj" />
-</Solution>
