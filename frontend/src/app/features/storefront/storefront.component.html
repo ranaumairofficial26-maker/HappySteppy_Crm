@@ -77,19 +77,17 @@
     <!-- Header Actions (Admin, Wishlist, Cart) -->
     <div class="header-actions">
       <!-- Admin Option -->
-      <div
+      <a
+        routerLink="/admin"
         class="action-btn admin-action-btn"
-        (click)="openAdminOption()"
-        title="Admin Portal"
-        role="button"
-        tabindex="0"
+        title="Admin Dashboard"
       >
         <div class="badge-icon-wrap">
           <i class="fa-solid fa-user-shield action-icon admin-icon"></i>
           <span class="admin-dot-badge"></span>
         </div>
         <span class="action-label admin-label">Admin</span>
-      </div>
+      </a>
 
       <div class="action-btn" title="Wishlist">
         <div class="badge-icon-wrap">
@@ -204,7 +202,7 @@
 
       <!-- Admin Portal in Drawer -->
       <li class="drawer-link-item admin-drawer-item">
-        <a href="javascript:void(0)" (click)="openAdminOption(); closeMobileMenu()" class="drawer-nav-link admin-drawer-link">
+        <a routerLink="/admin" (click)="closeMobileMenu()" class="drawer-nav-link admin-drawer-link">
           <div class="drawer-cat-left">
             <i class="fa-solid fa-user-shield drawer-cat-icon admin-drawer-icon"></i>
             <span class="drawer-link-text bold">Admin Portal</span>
@@ -903,59 +901,6 @@
   <i class="fa-brands fa-whatsapp"></i>
   <span class="whatsapp-tooltip">Chat on WhatsApp</span>
 </a>
-
-<!-- Admin Access Modal -->
-@if (isAdminModalOpen()) {
-  <div class="admin-modal-backdrop" (click)="closeAdminModal()"></div>
-  <div class="admin-modal-dialog" role="dialog" aria-modal="true">
-    <div class="admin-modal-header">
-      <div class="admin-header-title">
-        <div class="admin-shield-circle">
-          <i class="fa-solid fa-user-shield"></i>
-        </div>
-        <div>
-          <h3>Admin Portal</h3>
-          <p class="admin-subtitle">Store Management & Control Panel</p>
-        </div>
-      </div>
-      <button type="button" class="admin-close-btn" (click)="closeAdminModal()" aria-label="Close">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-
-    <div class="admin-modal-body">
-      <div class="admin-badge-notice">
-        <i class="fa-solid fa-shield-halved"></i>
-        <span>Administrator Access Only</span>
-      </div>
-
-      <div class="admin-input-group">
-        <label>Admin Email / Username</label>
-        <div class="admin-input-wrap">
-          <i class="fa-regular fa-envelope"></i>
-          <input type="text" value="admin@happysteppy.com" readonly />
-        </div>
-      </div>
-
-      <div class="admin-input-group">
-        <label>Password</label>
-        <div class="admin-input-wrap">
-          <i class="fa-solid fa-lock"></i>
-          <input type="password" value="••••••••••••" readonly />
-        </div>
-      </div>
-
-      <button
-        type="button"
-        class="admin-submit-btn"
-        (click)="showStoreToast('Admin access authenticated', '✅ Happy Steppy Admin'); closeAdminModal()"
-      >
-        <i class="fa-solid fa-arrow-right-to-bracket"></i>
-        <span>Enter Admin Dashboard</span>
-      </button>
-    </div>
-  </div>
-}
 
 <!-- Floating Store Toast Notification -->
 @if (storeToast(); as st) {

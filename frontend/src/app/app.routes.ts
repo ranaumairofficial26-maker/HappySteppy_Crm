@@ -8,6 +8,11 @@ export const routes: Routes = [
     title: 'Happy Steppy - Health Supplements & Autism Sensory Care'
   },
   {
+    path: 'admin',
+    loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent),
+    title: 'Happy Steppy - Admin Dashboard'
+  },
+  {
     path: '**',
     redirectTo: ''
   }
