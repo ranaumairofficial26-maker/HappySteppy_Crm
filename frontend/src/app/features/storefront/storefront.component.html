@@ -74,11 +74,93 @@
     <!-- Divider Bar -->
     <div class="header-divider"></div>
 
-    <!-- Header Actions (Account, Wishlist, Cart) -->
+    <!-- Header Actions (Admin, Account, Wishlist, Cart) -->
     <div class="header-actions">
-      <div class="action-btn" title="My Account">
-        <i class="fa-regular fa-user action-icon"></i>
-        <span class="action-label">Account</span>
+      <!-- Admin Option -->
+      <div
+        class="action-btn admin-action-btn"
+        (click)="openAdminOption()"
+        title="Admin Portal"
+        role="button"
+        tabindex="0"
+      >
+        <div class="badge-icon-wrap">
+          <i class="fa-solid fa-user-shield action-icon admin-icon"></i>
+          <span class="admin-dot-badge"></span>
+        </div>
+        <span class="action-label admin-label">Admin</span>
+      </div>
+
+      <!-- Account Option with Dropdown -->
+      <div
+        class="action-btn-dropdown-wrap"
+        (mouseenter)="isAccountDropdownOpen.set(true)"
+        (mouseleave)="isAccountDropdownOpen.set(false)"
+      >
+        <div
+          class="action-btn"
+          (click)="toggleAccountDropdown()"
+          title="My Account"
+          role="button"
+          tabindex="0"
+        >
+          <i class="fa-regular fa-user action-icon"></i>
+          <span class="action-label">
+            Account
+            <i class="fa-solid fa-chevron-down caret-icon"></i>
+          </span>
+        </div>
+
+        @if (isAccountDropdownOpen()) {
+          <div class="account-menu-dropdown">
+            <a
+              href="javascript:void(0)"
+              class="account-menu-item admin-menu-item"
+              (click)="openAdminOption()"
+            >
+              <div class="menu-icon-box admin-badge-icon">
+                <i class="fa-solid fa-user-shield"></i>
+              </div>
+              <div class="menu-text-box">
+                <div class="menu-title-row">
+                  <span class="menu-title">Admin Portal</span>
+                  <span class="admin-pill-tag">Owner</span>
+                </div>
+                <span class="menu-desc">Store dashboard & controls</span>
+              </div>
+            </a>
+
+            <div class="account-menu-divider"></div>
+
+            <a
+              href="javascript:void(0)"
+              class="account-menu-item"
+              (click)="onCustomerAccountClick()"
+            >
+              <div class="menu-icon-box">
+                <i class="fa-regular fa-user"></i>
+              </div>
+              <div class="menu-text-box">
+                <span class="menu-title">My Profile</span>
+                <span class="menu-desc">Manage customer account</span>
+              </div>
+            </a>
+
+            <a
+              href="javascript:void(0)"
+              class="account-menu-item"
+              (click)="onOrdersClick()"
+            >
+              <div class="menu-icon-box">
+                <i class="fa-solid fa-box-open"></i>
+              </div>
+              <div class="menu-text-box">
+                <span class="menu-title">My Orders</span>
+                <span class="menu-desc">Track and view history</span>
+              </div>
+            </a>
+          </div>
+        }
       </div>
 
       <div class="action-btn" title="Wishlist">
@@ -187,6 +269,19 @@
       <li class="drawer-link-item">
         <a routerLink="/new" (click)="closeMobileMenu()" class="drawer-nav-link">
           <span>New Arrivals</span>
+        </a>
+      </li>
+
+      <li class="drawer-link-divider"></li>
+
+      <!-- Admin Portal in Drawer -->
+      <li class="drawer-link-item admin-drawer-item">
+        <a href="javascript:void(0)" (click)="openAdminOption(); closeMobileMenu()" class="drawer-nav-link admin-drawer-link">
+          <div class="drawer-cat-left">
+            <i class="fa-solid fa-user-shield drawer-cat-icon admin-drawer-icon"></i>
+            <span class="drawer-link-text bold">Admin Portal</span>
+          </div>
+          <span class="admin-pill-tag">Owner</span>
         </a>
       </li>
     </ul>
@@ -880,6 +975,59 @@
   <i class="fa-brands fa-whatsapp"></i>
   <span class="whatsapp-tooltip">Chat on WhatsApp</span>
 </a>
+
+<!-- Admin Access Modal -->
+@if (isAdminModalOpen()) {
+  <div class="admin-modal-backdrop" (click)="closeAdminModal()"></div>
+  <div class="admin-modal-dialog" role="dialog" aria-modal="true">
+    <div class="admin-modal-header">
+      <div class="admin-header-title">
+        <div class="admin-shield-circle">
+          <i class="fa-solid fa-user-shield"></i>
+        </div>
+        <div>
+          <h3>Admin Portal</h3>
+          <p class="admin-subtitle">Store Management & Control Panel</p>
+        </div>
+      </div>
+      <button type="button" class="admin-close-btn" (click)="closeAdminModal()" aria-label="Close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="admin-modal-body">
+      <div class="admin-badge-notice">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>Administrator Access Only</span>
+      </div>
+
+      <div class="admin-input-group">
+        <label>Admin Email / Username</label>
+        <div class="admin-input-wrap">
+          <i class="fa-regular fa-envelope"></i>
+          <input type="text" value="admin@happysteppy.com" readonly />
+        </div>
+      </div>
+
+      <div class="admin-input-group">
+        <label>Password</label>
+        <div class="admin-input-wrap">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" value="••••••••••••" readonly />
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="admin-submit-btn"
+        (click)="showStoreToast('Admin access authenticated', '✅ Happy Steppy Admin'); closeAdminModal()"
+      >
+        <i class="fa-solid fa-arrow-right-to-bracket"></i>
+        <span>Enter Admin Dashboard</span>
+      </button>
+    </div>
+  </div>
+}
 
 <!-- Floating Store Toast Notification -->
 @if (storeToast(); as st) {

@@ -28,6 +28,10 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
   activeMenu = signal<string>('Home');
   activeSidebarCat = signal<string>('Bioray');
 
+  // Admin & Account State
+  isAdminModalOpen = signal<boolean>(false);
+  isAccountDropdownOpen = signal<boolean>(false);
+
   // Flash Sale Dynamic State & Countdown
   flashSale = signal<{
     title: string;
@@ -111,6 +115,35 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     this.storeToastTimer = setTimeout(() => this.storeToast.set(null), 3200);
   }
 
+  // Admin & Account Handlers
+  openAdminOption() {
+    this.isAccountDropdownOpen.set(false);
+    this.isAdminModalOpen.set(true);
+    this.showStoreToast('Admin Portal accessed', '🔒 Admin Access');
+  }
+
+  closeAdminModal() {
+    this.isAdminModalOpen.set(false);
+  }
+
+  toggleAccountDropdown() {
+    this.isAccountDropdownOpen.update(v => !v);
+  }
+
+  closeAccountDropdown() {
+    this.isAccountDropdownOpen.set(false);
+  }
+
+  onCustomerAccountClick() {
+    this.closeAccountDropdown();
+    this.showStoreToast('Customer profile and settings', '👤 My Account');
+  }
+
+  onOrdersClick() {
+    this.closeAccountDropdown();
+    this.showStoreToast('Track your existing orders', '📦 My Orders');
+  }
+
   // Social Media Links (Official Happy Steppy Channels)
   socialLinks = signal<{ [key: string]: string }>({
     facebook: 'https://www.facebook.com/happysteppyltd',
@@ -186,7 +219,7 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     imageUrl: 'assets/images/home-refresh-banner.jpg'
   });
 
-  // Sidebar Categories (Top Brands matching store spec)
+  // Sidebar Categories (Top Brands matching store spec - 9 brands)
   readonly categories = signal<CategoryItem[]>([
     { name: 'Bioray', icon: 'fa-solid fa-flask', imgUrl: '' },
     { name: 'CBD Plus', icon: 'fa-solid fa-leaf', imgUrl: '' },
@@ -196,10 +229,7 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     { name: 'Mary Ruth', icon: 'fa-solid fa-shield-heart', imgUrl: '' },
     { name: 'Nature\'s Answer', icon: 'fa-solid fa-seedling', imgUrl: '' },
     { name: 'Nature\'s Way', icon: 'fa-solid fa-tree', imgUrl: '' },
-    { name: 'NOW Foods', icon: 'fa-solid fa-apple-whole', imgUrl: '' },
-    { name: 'Nordic Naturals', icon: 'fa-solid fa-fish', imgUrl: '' },
-    { name: 'Quick Silver Scientific', icon: 'fa-solid fa-atom', imgUrl: '' },
-    { name: 'Seeking Health', icon: 'fa-solid fa-prescription-bottle-medical', imgUrl: '' }
+    { name: 'NOW Foods', icon: 'fa-solid fa-apple-whole', imgUrl: '' }
   ]);
 
   // 4 "Shop by Style" Cards
