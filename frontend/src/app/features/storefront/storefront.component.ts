@@ -26,7 +26,7 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
   cartCount = signal<number>(2);
   wishlistCount = signal<number>(0);
   activeMenu = signal<string>('Home');
-  activeSidebarCat = signal<string>('Tech Lover');
+  activeSidebarCat = signal<string>('Bioray');
 
   // Flash Sale Dynamic State & Countdown
   flashSale = signal<{
@@ -186,12 +186,20 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     imageUrl: 'assets/images/home-refresh-banner.jpg'
   });
 
-  // Sidebar Categories
+  // Sidebar Categories (Top Brands matching store spec)
   readonly categories = signal<CategoryItem[]>([
-    { name: 'Tech Lover', icon: 'fa-solid fa-laptop', imgUrl: '' },
-    { name: 'Modern Fashion', icon: 'fa-solid fa-shirt', imgUrl: '' },
-    { name: 'Home Vibes', icon: 'fa-solid fa-couch', imgUrl: '' },
-    { name: 'Active Life', icon: 'fa-solid fa-heart-pulse', imgUrl: '' }
+    { name: 'Bioray', icon: 'fa-solid fa-flask', imgUrl: '' },
+    { name: 'CBD Plus', icon: 'fa-solid fa-leaf', imgUrl: '' },
+    { name: 'Designs for Health', icon: 'fa-solid fa-heart-pulse', imgUrl: '' },
+    { name: 'Kirkman', icon: 'fa-solid fa-capsules', imgUrl: '' },
+    { name: 'Life Extension', icon: 'fa-solid fa-dna', imgUrl: '' },
+    { name: 'Mary Ruth', icon: 'fa-solid fa-shield-heart', imgUrl: '' },
+    { name: 'Nature\'s Answer', icon: 'fa-solid fa-seedling', imgUrl: '' },
+    { name: 'Nature\'s Way', icon: 'fa-solid fa-tree', imgUrl: '' },
+    { name: 'NOW Foods', icon: 'fa-solid fa-apple-whole', imgUrl: '' },
+    { name: 'Nordic Naturals', icon: 'fa-solid fa-fish', imgUrl: '' },
+    { name: 'Quick Silver Scientific', icon: 'fa-solid fa-atom', imgUrl: '' },
+    { name: 'Seeking Health', icon: 'fa-solid fa-prescription-bottle-medical', imgUrl: '' }
   ]);
 
   // 4 "Shop by Style" Cards

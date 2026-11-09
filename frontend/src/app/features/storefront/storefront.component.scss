@@ -264,18 +264,34 @@
   height: 100%;
 
   .sidebar-header-btn {
-    background: linear-gradient(135deg, #659f05 0%, #478401 100%);
+    background: linear-gradient(135deg, #478401 0%, #367c2b 100%);
     color: #ffffff;
-    font-size: 1.02rem;
+    font-size: 1rem;
     font-weight: 700;
-    padding: 18px 22px;
+    letter-spacing: 0.03em;
+    padding: 16px 20px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between;
     flex-shrink: 0;
+
+    .sidebar-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      span {
+        letter-spacing: 0.04em;
+      }
+    }
 
     .sidebar-grid-icon {
       font-size: 1.15rem;
+    }
+
+    .sidebar-chevron-toggle {
+      font-size: 0.92rem;
+      opacity: 0.95;
     }
   }
 
@@ -286,14 +302,22 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #e2e8f0;
+      border-radius: 4px;
+    }
 
     .sidebar-category-item {
-      flex: 1;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 22px;
-      font-size: 0.93rem;
+      padding: 10px 20px;
+      font-size: 0.92rem;
       font-weight: 600;
       color: #334155;
       cursor: pointer;

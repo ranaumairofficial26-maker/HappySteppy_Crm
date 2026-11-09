@@ -197,11 +197,14 @@
   <!-- 1. Hero Layout: Left Sidebar + Hero Banner & Trust Badges -->
   <section class="container hero-combo-section">
     <div class="hero-combo-grid">
-      <!-- Left Column: Category Sidebar Card -->
+      <!-- Left Column: Top Brands Sidebar Card -->
       <aside class="sidebar-category-col">
         <div class="sidebar-header-btn">
-          <i class="fa-solid fa-table-cells-large sidebar-grid-icon"></i>
-          <span>Shop by Category</span>
+          <div class="sidebar-header-left">
+            <i class="fa-solid fa-bars sidebar-grid-icon"></i>
+            <span>TOP BRANDS</span>
+          </div>
+          <i class="fa-solid fa-chevron-up sidebar-chevron-toggle"></i>
         </div>
 
         <ul class="sidebar-category-list">
@@ -212,7 +215,9 @@
               (click)="activeSidebarCat.set(cat.name)"
             >
               <div class="cat-item-left">
-                <i [class]="cat.icon + ' cat-icon-bullet'"></i>
+                @if (cat.icon) {
+                  <i [class]="cat.icon + ' cat-icon-bullet'"></i>
+                }
                 <span class="cat-item-title">{{ cat.name }}</span>
               </div>
               <i class="fa-solid fa-chevron-right cat-chevron"></i>
