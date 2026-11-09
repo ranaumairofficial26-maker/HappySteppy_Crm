@@ -74,3 +74,4 @@ export class AdminComponent implements OnInit {
     this.activeTab.set(tab);
   }
 }
+

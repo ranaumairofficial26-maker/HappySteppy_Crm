@@ -1,0 +1,6 @@
+@HappySteppy.API_HostAddress = http://localhost:5016
+
+GET {{HappySteppy.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
