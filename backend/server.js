@@ -3,16 +3,23 @@ const fs = require('fs');
 const path = require('path');
 const { Pool } = require('pg');
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
-// PostgreSQL Connection Pool
-const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'happysteppy',
-  password: '1234',
-  port: 5432,
-});
+// PostgreSQL Connection Pool (Supports both local and Render DATABASE_URL)
+const pool = new Pool(
+  process.env.DATABASE_URL
+    ? {
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false },
+      }
+    : {
+        user: process.env.PGUSER || 'postgres',
+        host: process.env.PGHOST || 'localhost',
+        database: process.env.PGDATABASE || 'happysteppy',
+        password: process.env.PGPASSWORD || '1234',
+        port: parseInt(process.env.PGPORT || '5432', 10),
+      }
+);
 
 // Verify connection and ensure schema & seed data
 async function initDatabase() {
