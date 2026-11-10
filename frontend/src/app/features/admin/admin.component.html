@@ -122,7 +122,7 @@
               (click)="setActiveTab('overview')"
             >
               <i class="fa-solid fa-gauge-high"></i>
-              <span>Overview</span>
+              <span>Dashboard</span>
             </button>
 
             <button
@@ -133,6 +133,16 @@
             >
               <i class="fa-solid fa-house"></i>
               <span>Home Page</span>
+            </button>
+
+            <button
+              type="button"
+              class="sidebar-nav-item"
+              [class.active]="activeTab() === 'footer'"
+              (click)="setActiveTab('footer')"
+            >
+              <i class="fa-solid fa-shoe-prints"></i>
+              <span>Footer & About Us</span>
             </button>
           </nav>
 
@@ -187,7 +197,7 @@
                 </div>
                 <div class="stat-info">
                   <span class="stat-label">Active Top Brands</span>
-                  <span class="stat-value">{{ stats().totalBrands }}</span>
+                  <span class="stat-value">{{ brands().length }}</span>
                 </div>
               </div>
 
@@ -216,67 +226,2975 @@
           <!-- Home Page Management Tab -->
           @if (activeTab() === 'homepage') {
             <div class="admin-homepage-section">
+              <!-- Section Header -->
               <div class="section-header-row">
                 <div>
                   <h2 class="section-heading">Home Page Management</h2>
-                  <p class="section-subheading">Storefront homepage ke tamam sections yahan se configure aur manage honge.</p>
+                  <p class="section-subheading">Storefront homepage ke Hero Banner, 4 Trust Badges aur Sidebar Brands ko yahan se customize karein.</p>
                 </div>
-                <button type="button" class="back-overview-btn" (click)="setActiveTab('overview')">
-                  <i class="fa-solid fa-arrow-left"></i>
-                  <span>Back to Overview</span>
+              </div>
+
+              <!-- Sub-tab Pills (Hero Banner | 4 Trust Badges | Sidebar Top Brands) -->
+              <div class="homepage-subtabs-nav">
+                <button
+                  type="button"
+                  class="subtab-pill-btn"
+                  [class.active]="homeSubTab() === 'banner'"
+                  (click)="setHomeSubTab('banner')"
+                >
+                  <i class="fa-solid fa-panorama"></i>
+                  <span>1. Hero Banner</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="subtab-pill-btn"
+                  [class.active]="homeSubTab() === 'cards'"
+                  (click)="setHomeSubTab('cards')"
+                >
+                  <i class="fa-solid fa-shield-heart"></i>
+                  <span>2. 4 Trust & Feature Badges</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="subtab-pill-btn"
+                  [class.active]="homeSubTab() === 'products'"
+                  (click)="setHomeSubTab('products')"
+                >
+                  <i class="fa-solid fa-fire"></i>
+                  <span>3. Trending Products ({{ trendingProducts().length }})</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="subtab-pill-btn"
+                  [class.active]="homeSubTab() === 'promo'"
+                  (click)="setHomeSubTab('promo')"
+                >
+                  <i class="fa-solid fa-rectangle-ad"></i>
+                  <span>4. Promo Banner (Offer Strip)</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="subtab-pill-btn"
+                  [class.active]="homeSubTab() === 'brands'"
+                  (click)="setHomeSubTab('brands')"
+                >
+                  <i class="fa-solid fa-tags"></i>
+                  <span>5. Sidebar Top Brands ({{ brands().length }})</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="subtab-pill-btn"
+                  [class.active]="homeSubTab() === 'styles'"
+                  (click)="setHomeSubTab('styles')"
+                >
+                  <i class="fa-solid fa-shapes"></i>
+                  <span>6. Shop by Style (4 Cards)</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="subtab-pill-btn"
+                  [class.active]="homeSubTab() === 'flashSale'"
+                  (click)="setHomeSubTab('flashSale')"
+                >
+                  <i class="fa-solid fa-bolt"></i>
+                  <span>7. Flash Sale Deal</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="subtab-pill-btn"
+                  [class.active]="homeSubTab() === 'socialProof'"
+                  (click)="setHomeSubTab('socialProof')"
+                >
+                  <i class="fa-solid fa-comments"></i>
+                  <span>8. Reviews & Social Proof</span>
                 </button>
               </div>
 
-              <!-- Homepage Sections Grid -->
-              <div class="homepage-cards-grid">
-                <div class="hp-section-card">
-                  <div class="hp-card-icon green">
-                    <i class="fa-regular fa-image"></i>
+              <!-- 1. HERO BANNER MANAGEMENT -->
+              @if (homeSubTab() === 'banner') {
+                <div class="hero-editor-card">
+                  <div class="he-card-header">
+                    <div class="he-title-wrap">
+                      <div class="he-icon-circle">
+                        <i class="fa-solid fa-panorama"></i>
+                      </div>
+                      <div>
+                        <h3 class="he-title">Main Hero Banner</h3>
+                        <p class="he-subtitle">Storefront ka main hero banner, picture, dimensions aur CTA buttons customize karein.</p>
+                      </div>
+                    </div>
+                    <button type="button" class="btn-save-header" [disabled]="isHeroSaving()" (click)="saveHeroBanner()">
+                      @if (isHeroSaving()) {
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <span>Saving...</span>
+                      } @else {
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Save Hero Banner</span>
+                      }
+                    </button>
                   </div>
-                  <div class="hp-card-info">
-                    <h3>Hero Banner & Slider</h3>
-                    <p>Main store title, promotional banner graphic, discount badge aur CTA button.</p>
+
+                  <div class="he-card-body">
+                    <!-- Banner Graphic Dimensions & Preview Box -->
+                    <div class="banner-dimension-box">
+                      <div class="banner-img-preview-wrap">
+                        <img [src]="resolvedHeroImageUrl()" (error)="onHeroImageError($event)" alt="Hero Banner Preview" class="admin-hero-banner-img" />
+                        <div class="banner-dim-floating-pill">
+                          <i class="fa-solid fa-ruler-combined"></i>
+                          <span>Recommended Size: <strong>1200 × 420 px</strong> (Aspect Ratio: 16:5 / ~3:1)</span>
+                        </div>
+                        <div class="banner-format-floating-pill">
+                          <i class="fa-solid fa-file-image"></i>
+                          <span>Format: JPG / PNG / WebP</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Choose Picture from PC Dropzone & Action Bar -->
+                    <div class="pc-upload-action-box">
+                      <input
+                        type="file"
+                        #heroFileInput
+                        accept="image/png, image/jpeg, image/webp, image/gif"
+                        (change)="onHeroImageSelected($event)"
+                        style="display: none;"
+                      />
+
+                      <div class="pc-upload-dropzone" (click)="heroFileInput.click()" role="button" tabindex="0">
+                        <div class="dropzone-icon-circle">
+                          @if (isImageUploading()) {
+                            <i class="fa-solid fa-spinner fa-spin"></i>
+                          } @else {
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                          }
+                        </div>
+                        <div class="dropzone-text">
+                          <strong>Apne PC se Picture Select Karein (Click to Browse)</strong>
+                          <span>Computer se koi bhi picture choose karein • Recommended size: 1200 × 420 px</span>
+                        </div>
+                        <button type="button" class="btn-browse-file" [disabled]="isImageUploading()">
+                          <i class="fa-solid fa-laptop"></i>
+                          <span>Choose from PC</span>
+                        </button>
+                      </div>
+
+                      @if (uploadedFileName()) {
+                        <div class="pc-file-selected-pill">
+                          <div class="pill-info">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Selected from PC: <strong>{{ uploadedFileName() }}</strong></span>
+                          </div>
+                          <button type="button" class="btn-clear-selection" (click)="resetHeroImage()" title="Reset to original default">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span>Reset to Original Image</span>
+                          </button>
+                        </div>
+                      }
+                    </div>
+
+                    <!-- Hero Banner Form Inputs Grid -->
+                    <div class="hero-form-grid">
+                      <!-- Image URL / Path with Browse PC button -->
+                      <div class="form-col full-width">
+                        <label for="heroImgInput">
+                          Banner Image URL / File Path
+                          <span class="rec-dim-tag">Recommended: 1200 x 420 px</span>
+                        </label>
+                        <div class="admin-input-wrap">
+                          <i class="fa-solid fa-image"></i>
+                          <input
+                            id="heroImgInput"
+                            type="text"
+                            placeholder="e.g. assets/images/hero-upgrade-lifestyle.jpg?v=2"
+                            [ngModel]="heroImageUrl()"
+                            (ngModelChange)="heroImageUrl.set($event)"
+                          />
+                          <button type="button" class="btn-inline-browse" (click)="heroFileInput.click()" title="Browse PC for image">
+                            <i class="fa-solid fa-laptop"></i>
+                            <span>Browse PC</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Offer Tag / Badge -->
+                      <div class="form-col">
+                        <label for="heroBadgeInput">Offer Badge Text</label>
+                        <div class="admin-input-wrap">
+                          <i class="fa-solid fa-certificate"></i>
+                          <input
+                            id="heroBadgeInput"
+                            type="text"
+                            placeholder="e.g. HEALTH & WELLNESS ESSENTIALS"
+                            [ngModel]="heroBadgeText()"
+                            (ngModelChange)="heroBadgeText.set($event)"
+                          />
+                        </div>
+                      </div>
+
+                      <!-- Main Heading / Title -->
+                      <div class="form-col">
+                        <label for="heroTitleInput">Main Heading / Title</label>
+                        <div class="admin-input-wrap">
+                          <i class="fa-solid fa-heading"></i>
+                          <textarea
+                            id="heroTitleInput"
+                            rows="2"
+                            placeholder="e.g. Trusted Care for a Healthier You"
+                            [ngModel]="heroTitle()"
+                            (ngModelChange)="heroTitle.set($event)"
+                          ></textarea>
+                        </div>
+                      </div>
+
+                      <!-- Subtitle / Description -->
+                      <div class="form-col full-width">
+                        <label for="heroDescInput">Subtitle / Description Text</label>
+                        <div class="admin-input-wrap">
+                          <i class="fa-solid fa-align-left"></i>
+                          <textarea
+                            id="heroDescInput"
+                            rows="2"
+                            placeholder="e.g. Premium supplements and natural medicines for your everyday wellness."
+                            [ngModel]="heroDescription()"
+                            (ngModelChange)="heroDescription.set($event)"
+                          ></textarea>
+                        </div>
+                      </div>
+
+                      <!-- Primary Button Text -->
+                      <div class="form-col">
+                        <label for="heroBtn1TextInput">Primary Button Text</label>
+                        <div class="admin-input-wrap">
+                          <i class="fa-solid fa-arrow-pointer"></i>
+                          <input
+                            id="heroBtn1TextInput"
+                            type="text"
+                            placeholder="e.g. Shop Now"
+                            [ngModel]="heroPrimaryBtnText()"
+                            (ngModelChange)="heroPrimaryBtnText.set($event)"
+                          />
+                        </div>
+                      </div>
+
+                      <!-- Primary Button Link / URL -->
+                      <div class="form-col">
+                        <label for="heroBtn1UrlInput">Primary Button Target Link</label>
+                        <div class="admin-input-wrap">
+                          <i class="fa-solid fa-link"></i>
+                          <input
+                            id="heroBtn1UrlInput"
+                            type="text"
+                            placeholder="e.g. #trending-products or /shop"
+                            [ngModel]="heroPrimaryBtnUrl()"
+                            (ngModelChange)="heroPrimaryBtnUrl.set($event)"
+                          />
+                        </div>
+                      </div>
+
+                      <!-- Secondary Button Text -->
+                      <div class="form-col">
+                        <label for="heroBtn2TextInput">Secondary Button Text</label>
+                        <div class="admin-input-wrap">
+                          <i class="fa-solid fa-tag"></i>
+                          <input
+                            id="heroBtn2TextInput"
+                            type="text"
+                            placeholder="e.g. Explore Products"
+                            [ngModel]="heroSecondaryBtnText()"
+                            (ngModelChange)="heroSecondaryBtnText.set($event)"
+                          />
+                        </div>
+                      </div>
+
+                      <!-- Secondary Button Link / URL -->
+                      <div class="form-col">
+                        <label for="heroBtn2UrlInput">Secondary Button Target Link</label>
+                        <div class="admin-input-wrap">
+                          <i class="fa-solid fa-link"></i>
+                          <input
+                            id="heroBtn2UrlInput"
+                            type="text"
+                            placeholder="e.g. #trending-products or /deals"
+                            [ngModel]="heroSecondaryBtnUrl()"
+                            (ngModelChange)="heroSecondaryBtnUrl.set($event)"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Inline Quick Save Action Bar -->
+                    <div class="banner-quick-save-bar">
+                      <div class="quick-save-info">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Changes apply directly to your live Storefront.</span>
+                      </div>
+                      <button type="button" class="btn-save-hero-prominent" [disabled]="isHeroSaving()" (click)="saveHeroBanner()">
+                        @if (isHeroSaving()) {
+                          <i class="fa-solid fa-spinner fa-spin"></i>
+                          <span>Saving Changes...</span>
+                        } @else {
+                          <i class="fa-solid fa-floppy-disk"></i>
+                          <span>Save Hero Banner</span>
+                        }
+                      </button>
+                    </div>
+
+                    <!-- Live Hero Banner Preview Card -->
+                    <div class="live-hero-preview-section">
+                      <span class="preview-badge-label">
+                        <i class="fa-solid fa-eye"></i>
+                        <span>Live Storefront Banner Preview</span>
+                      </span>
+
+                      <div class="admin-hero-live-card">
+                        <img [src]="resolvedHeroImageUrl()" (error)="onHeroImageError($event)" alt="Hero Preview" class="admin-hero-bg-img" />
+                        <div class="admin-hero-overlay">
+                          <span class="admin-hero-tag">{{ heroBadgeText() }}</span>
+                          <h2 class="admin-hero-heading">{{ heroTitle() }}</h2>
+                          <p class="admin-hero-desc">{{ heroDescription() }}</p>
+                          <div class="admin-hero-btns">
+                            <span class="preview-btn-primary">
+                              {{ heroPrimaryBtnText() }} <i class="fa-solid fa-arrow-right"></i>
+                            </span>
+                            <span class="preview-btn-secondary">
+                              {{ heroSecondaryBtnText() }}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <span class="hp-status-tag">Ready</span>
+
+                  <div class="he-card-footer">
+                    <button type="button" class="btn-save-hero-large" [disabled]="isHeroSaving()" (click)="saveHeroBanner()">
+                      @if (isHeroSaving()) {
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <span>Saving Changes...</span>
+                      } @else {
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Save Hero Banner Changes</span>
+                      }
+                    </button>
+                  </div>
+                </div>
+              }
+
+              <!-- 2. 4 TRUST & FEATURE BADGES -->
+              @if (homeSubTab() === 'cards') {
+                <div class="cards-editor-card">
+                  <div class="he-card-header">
+                    <div class="he-title-wrap">
+                      <div class="he-icon-circle">
+                        <i class="fa-solid fa-shield-heart"></i>
+                      </div>
+                      <div>
+                        <h3 class="he-title">4 Trust & Feature Badges</h3>
+                        <p class="he-subtitle">Hero banner ke bilkul neche walay 4 cards ke icons aur text yahan se customize karein.</p>
+                      </div>
+                    </div>
+                    <button type="button" class="btn-save-header" [disabled]="isCardsSaving()" (click)="saveFeatureCards()">
+                      @if (isCardsSaving()) {
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <span>Saving...</span>
+                      } @else {
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Save All Badges</span>
+                      }
+                    </button>
+                  </div>
+
+                  <div class="he-card-body">
+                    <!-- 4 Editable Feature Cards Grid -->
+                    <div class="feature-cards-edit-grid">
+                      @for (card of cardsForm(); track card.cardIndex; let idx = $index) {
+                        <div class="single-card-edit-box">
+                          <div class="card-edit-header">
+                            <span class="card-number-tag">Card #{{ idx + 1 }}</span>
+                            <div class="card-icon-preview">
+                              <i [class]="card.icon"></i>
+                            </div>
+                          </div>
+
+                          <!-- Title Input -->
+                          <div class="card-form-field">
+                            <label [for]="'cardTitle' + idx">Card Title</label>
+                            <input
+                              [id]="'cardTitle' + idx"
+                              type="text"
+                              [(ngModel)]="card.title"
+                              placeholder="e.g. Shipping All Pakistan"
+                            />
+                          </div>
+
+                          <!-- Subtitle Input -->
+                          <div class="card-form-field">
+                            <label [for]="'cardSub' + idx">Card Subtitle / Description</label>
+                            <input
+                              [id]="'cardSub' + idx"
+                              type="text"
+                              [(ngModel)]="card.subtitle"
+                              placeholder="e.g. Fast doorstep delivery"
+                            />
+                          </div>
+
+                          <!-- Icon Selector -->
+                          <div class="card-form-field">
+                            <label>Select Icon</label>
+                            <div class="card-icon-pill-grid">
+                              @for (preset of featureCardIcons; track preset.icon) {
+                                <button
+                                  type="button"
+                                  class="icon-mini-pill"
+                                  [class.selected]="card.icon === preset.icon"
+                                  (click)="updateCardIcon(idx, preset.icon)"
+                                  [title]="preset.label"
+                                >
+                                  <i [class]="preset.icon"></i>
+                                </button>
+                              }
+                            </div>
+                            <div class="custom-icon-class-input">
+                              <input
+                                type="text"
+                                [(ngModel)]="card.icon"
+                                placeholder="FontAwesome class e.g. fa-solid fa-truck-fast"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      }
+                    </div>
+
+                    <!-- Live Preview of 4 Cards (Matches Screenshot Exactly) -->
+                    <div class="live-cards-preview-section">
+                      <span class="preview-badge-label">
+                        <i class="fa-solid fa-eye"></i>
+                        <span>Live Storefront 4 Cards Preview</span>
+                      </span>
+
+                      <div class="admin-live-trust-grid">
+                        @for (card of cardsForm(); track card.cardIndex) {
+                          <div class="admin-live-trust-item">
+                            <div class="trust-card-icon-box">
+                              <i [class]="card.icon"></i>
+                            </div>
+                            <div class="trust-card-meta-box">
+                              <strong class="trust-title-text">{{ card.title }}</strong>
+                              <span class="trust-sub-text">{{ card.subtitle }}</span>
+                            </div>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="he-card-footer">
+                    <button type="button" class="btn-primary" [disabled]="isCardsSaving()" (click)="saveFeatureCards()">
+                      <i class="fa-solid fa-floppy-disk"></i>
+                      <span>Save All 4 Badges</span>
+                    </button>
+                  </div>
+                </div>
+              }
+
+              <!-- 3. TRENDING PRODUCTS MANAGEMENT -->
+              @if (homeSubTab() === 'products') {
+                <div class="products-editor-card">
+                  <div class="he-card-header">
+                    <div class="he-title-wrap">
+                      <div class="he-icon-circle products-circle">
+                        <i class="fa-solid fa-fire"></i>
+                      </div>
+                      <div>
+                        <h3 class="he-title">Trending Products (Homepage)</h3>
+                        <p class="he-subtitle">Storefront ke Trending Products section ke products, prices (Rs), discounts aur pictures yahan se customize karein.</p>
+                      </div>
+                    </div>
+                    <button type="button" class="btn-top-add-prod" (click)="openAddProductModal()" title="Add New Product">
+                      <i class="fa-solid fa-plus"></i>
+                      <span>Add New Product</span>
+                    </button>
+                  </div>
+
+                  <div class="he-card-body">
+                    <!-- Products Summary Bar -->
+                    <div class="admin-products-summary-bar">
+                      <div class="summary-stat-chip">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                        <span>Total Products: <strong>{{ trendingProducts().length }}</strong></span>
+                      </div>
+                      <div class="summary-stat-chip spec">
+                        <i class="fa-solid fa-ruler-combined"></i>
+                        <span>Image Size: <strong>400 × 400 px (Square 1:1)</strong></span>
+                      </div>
+                    </div>
+
+                    <!-- Live Uniform Cards Grid -->
+                    <div class="admin-products-grid">
+                      @for (prod of trendingProducts(); track prod.id) {
+                        <div class="admin-prod-card">
+                          <!-- Top Badges & Actions -->
+                          <div class="admin-prod-card-top">
+                            <div class="top-badges-left">
+                              @if (prod.discount > 0) {
+                                <span class="admin-prod-discount">{{ prod.discount }}% OFF</span>
+                              }
+                              <span class="admin-prod-size-badge" title="Image Dimension">
+                                <i class="fa-solid fa-ruler-combined"></i> 400×400 px
+                              </span>
+                            </div>
+                            <div class="admin-prod-actions">
+                              <button type="button" class="btn-action-circle edit" (click)="openEditProductModal(prod)" title="Edit Product">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                              </button>
+                              <button type="button" class="btn-action-circle delete" (click)="openDeleteProductModal(prod)" title="Delete Product">
+                                <i class="fa-solid fa-trash-can"></i>
+                              </button>
+                            </div>
+                          </div>
+
+                          <!-- Thumbnail Image with Fallback (Enlarged to Card Top) -->
+                          <div class="admin-prod-thumb-wrap">
+                            <img [src]="prod.imageUrl" [alt]="prod.name" (error)="onHeroImageError($event)" />
+                          </div>
+
+                          <!-- Product Meta -->
+                          <div class="admin-prod-meta">
+                            <h4 class="admin-prod-title" [title]="prod.name">{{ prod.name }}</h4>
+
+                            <div class="admin-prod-rating">
+                              <div class="stars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                              </div>
+                              <span class="score">{{ prod.rating }}</span>
+                              <span class="count">({{ prod.reviewCount }})</span>
+                            </div>
+
+                            <!-- Price in Rs -->
+                            <div class="admin-prod-price-row">
+                              <div class="price-wrap">
+                                <span class="price-rs">Rs {{ prod.price | number:'1.0-0' }}</span>
+                                @if (prod.originalPrice > prod.price) {
+                                  <span class="price-orig-rs">Rs {{ prod.originalPrice | number:'1.0-0' }}</span>
+                                }
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
+
+              <!-- 4. PROMO BANNER (HOME REFRESH EVENT) MANAGEMENT -->
+              @if (homeSubTab() === 'promo') {
+                <div class="hero-editor-card promo-editor-card">
+                  <div class="he-card-header">
+                    <div class="he-title-wrap">
+                      <div class="he-icon-circle promo-circle">
+                        <i class="fa-solid fa-rectangle-ad"></i>
+                      </div>
+                      <div>
+                        <h3 class="he-title">Promo Offer Banner (Home Refresh Event)</h3>
+                        <p class="he-subtitle">Storefront ka middle promotional banner, picture, dimensions aur CTA buttons customize karein.</p>
+                      </div>
+                    </div>
+                    <button type="button" class="btn-save-header" [disabled]="isPromoSaving()" (click)="savePromoBanner()">
+                      @if (isPromoSaving()) {
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <span>Saving...</span>
+                      } @else {
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Save Promo Banner</span>
+                      }
+                    </button>
+                  </div>
+
+                  <div class="he-card-body">
+                    <!-- Banner Graphic Dimensions & Interactive Live Preview Box -->
+                    <div class="banner-dimension-box">
+                      <div class="banner-img-preview-wrap promo-preview-wrap">
+                        <img [src]="resolvedPromoImageUrl()" (error)="onHeroImageError($event)" alt="Promo Banner Preview" class="admin-promo-banner-img" />
+                        
+                        <!-- Dimension & Format Badges (Exactly like Hero Banner) -->
+                        <div class="banner-dim-floating-pill">
+                          <i class="fa-solid fa-ruler-combined"></i>
+                          <span>Recommended Size: <strong>{{ promoRecWidth() }} × {{ promoRecHeight() }} px</strong> (Aspect Ratio: 6:1)</span>
+                        </div>
+                        <div class="banner-format-floating-pill">
+                          <i class="fa-solid fa-file-image"></i>
+                          <span>Format: JPG / PNG / WebP</span>
+                        </div>
+
+                        <!-- Live Text & Overlay Preview matching Storefront Exactly -->
+                        <div class="promo-live-preview-overlay">
+                          <div class="promo-meta-col">
+                            <span class="preview-event-tag">
+                              <span class="tag-line"></span>
+                              <span>{{ promoEventTag() || 'HOME REFRESH EVENT' }}</span>
+                              <span class="tag-line"></span>
+                            </span>
+                            <h3 class="preview-main-title">{{ promoTitle() || 'Refresh Your Space' }}</h3>
+                            <p class="preview-subtext">{{ promoSubtitle() || 'Discover modern essentials for every corner of your home.' }}</p>
+                          </div>
+
+                          <div class="preview-divider"></div>
+
+                          <div class="promo-offer-col">
+                            <div class="preview-discount-meta">
+                              <span class="preview-upto">Up to</span>
+                              <strong class="preview-discount-val">{{ promoDiscountText() || '40% OFF' }}</strong>
+                            </div>
+                            <span class="preview-btn-tag">
+                              <span>{{ promoButtonText() || 'Discover Now' }}</span>
+                              <i class="fa-solid fa-arrow-right"></i>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Choose Picture from PC Dropzone & Action Bar -->
+                    <div class="pc-upload-action-box">
+                      <input
+                        type="file"
+                        #promoFileInput
+                        accept="image/png, image/jpeg, image/webp, image/gif"
+                        (change)="onPromoImageSelected($event)"
+                        style="display: none;"
+                      />
+
+                      <div class="pc-upload-dropzone" (click)="promoFileInput.click()" role="button" tabindex="0">
+                        <div class="dropzone-icon-circle">
+                          @if (isPromoUploading()) {
+                            <i class="fa-solid fa-spinner fa-spin"></i>
+                          } @else {
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                          }
+                        </div>
+                        <div class="dropzone-text">
+                          <strong>Apne PC se Promo Picture Select Karein (Click to Browse)</strong>
+                          <span>Computer se koi bhi picture choose karein • Recommended size: 1200 × 200 px</span>
+                        </div>
+                        <button type="button" class="btn-browse-file" [disabled]="isPromoUploading()">
+                          <i class="fa-solid fa-laptop"></i>
+                          <span>Choose from PC</span>
+                        </button>
+                      </div>
+
+                      @if (uploadedPromoFileName()) {
+                        <div class="pc-file-selected-pill">
+                          <div class="pill-info">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Selected from PC: <strong>{{ uploadedPromoFileName() }}</strong></span>
+                          </div>
+                          <button type="button" class="btn-clear-selection" (click)="resetPromoImage()" title="Reset to original default">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span>Reset to Original Image</span>
+                          </button>
+                        </div>
+                      }
+                    </div>
+
+                    <!-- Promo Banner Form Inputs Grid -->
+                    <div class="hero-form-grid">
+                      <!-- 1. Image URL / Path -->
+                      <div class="form-col full-width">
+                        <label for="promoImgInput">
+                          Banner Image URL / File Path
+                          <span class="rec-dim-tag">Recommended: 1200 x 200 px</span>
+                        </label>
+                        <div class="admin-input-wrap">
+                          <i class="fa-solid fa-image"></i>
+                          <input
+                            type="text"
+                            id="promoImgInput"
+                            [ngModel]="promoImageUrl()"
+                            (ngModelChange)="promoImageUrl.set($event)"
+                            placeholder="e.g. assets/images/home-refresh-banner.jpg"
+                          />
+                        </div>
+                      </div>
+
+                      <!-- 3. Event Tag / Eyebrow Text -->
+                      <div class="form-col">
+                        <label for="promoEventTagInput">Event Tag / Eyebrow Text</label>
+                        <div class="admin-input-wrap">
+                          <i class="fa-solid fa-tag"></i>
+                          <input
+                            type="text"
+                            id="promoEventTagInput"
+                            [ngModel]="promoEventTag()"
+                            (ngModelChange)="promoEventTag.set($event)"
+                            placeholder="e.g. HOME REFRESH EVENT"
+                          />
+                        </div>
+                      </div>
+
+                      <!-- 4. Discount Text (% OFF) -->
+                      <div class="form-col">
+                        <label for="promoDiscountInput">Discount Offer Text</label>
+                        <div class="admin-input-wrap">
+                          <i class="fa-solid fa-percent"></i>
+                          <input
+                            type="text"
+                            id="promoDiscountInput"
+                            [ngModel]="promoDiscountText()"
+                            (ngModelChange)="promoDiscountText.set($event)"
+                            placeholder="e.g. 40% OFF"
+                          />
+                        </div>
+                      </div>
+
+                      <!-- 5. Main Title (2 Lines Option) -->
+                      <div class="form-col full-width">
+                        <label for="promoTitleInput">
+                          Banner Main Title (2 Lines Option)
+                          <span class="field-hint">Enter daba kar dusri line likh sakte hain</span>
+                        </label>
+                        <div class="admin-input-wrap textarea-wrap">
+                          <i class="fa-solid fa-heading"></i>
+                          <textarea
+                            id="promoTitleInput"
+                            rows="2"
+                            [ngModel]="promoTitle()"
+                            (ngModelChange)="promoTitle.set($event)"
+                            placeholder="e.g. Refresh Your Space"
+                          ></textarea>
+                        </div>
+                      </div>
+
+                      <!-- 6. Subtitle / Description -->
+                      <div class="form-col full-width">
+                        <label for="promoSubtitleInput">Subtitle / Offer Description</label>
+                        <div class="admin-input-wrap textarea-wrap">
+                          <i class="fa-solid fa-align-left"></i>
+                          <textarea
+                            id="promoSubtitleInput"
+                            rows="2"
+                            [ngModel]="promoSubtitle()"
+                            (ngModelChange)="promoSubtitle.set($event)"
+                            placeholder="e.g. Discover modern essentials for every corner of your home."
+                          ></textarea>
+                        </div>
+                      </div>
+
+                      <!-- 7. CTA Button Text & URL -->
+                      <div class="form-col">
+                        <label for="promoBtnTextInput">CTA Button Label</label>
+                        <div class="admin-input-wrap">
+                          <i class="fa-solid fa-arrow-pointer"></i>
+                          <input
+                            type="text"
+                            id="promoBtnTextInput"
+                            [ngModel]="promoButtonText()"
+                            (ngModelChange)="promoButtonText.set($event)"
+                            placeholder="e.g. Discover Now"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="form-col">
+                        <label for="promoBtnUrlInput">CTA Button Link URL</label>
+                        <div class="admin-input-wrap">
+                          <i class="fa-solid fa-link"></i>
+                          <input
+                            type="text"
+                            id="promoBtnUrlInput"
+                            [ngModel]="promoButtonUrl()"
+                            (ngModelChange)="promoButtonUrl.set($event)"
+                            placeholder="e.g. #trending-products or /shop"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Bottom Save Bar (Exact same as Hero Banner) -->
+                    <div class="bottom-action-bar">
+                      <div class="save-status-info">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>Yeh changes save hone ke baad Storefront middle banner par live show honge.</span>
+                      </div>
+                      <button type="button" class="btn-save-bottom" [disabled]="isPromoSaving()" (click)="savePromoBanner()">
+                        @if (isPromoSaving()) {
+                          <i class="fa-solid fa-spinner fa-spin"></i>
+                          <span>Saving to Database...</span>
+                        } @else {
+                          <i class="fa-solid fa-floppy-disk"></i>
+                          <span>Save Promo Banner</span>
+                        }
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              }
+
+              <!-- 5. TOP BRANDS (SIDEBAR MENU) -->
+              @if (homeSubTab() === 'brands') {
+                <div class="brands-manager-card">
+                  <div class="bm-card-header">
+                    <div class="bm-title-group">
+                      <div class="bm-icon-circle">
+                        <i class="fa-solid fa-tags"></i>
+                      </div>
+                      <div>
+                        <h3 class="bm-title">Sidebar Top Brands</h3>
+                        <p class="bm-subtitle">Yeh brands direct Storefront ke left sidebar menu ("TOP BRANDS") mein live display hotay hain.</p>
+                      </div>
+                    </div>
+                    <div class="header-action-group">
+                      <div class="bm-counter-pill">
+                        <strong>{{ brands().length }}</strong>
+                        <span>Brands Active</span>
+                      </div>
+                      <button type="button" class="btn-primary" (click)="openAddBrandModal()">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add New Brand</span>
+                      </button>
+                    </div>
+                  </div>
+
+                <!-- Brands Table / List -->
+                <div class="brands-table-container">
+                  <table class="brands-table">
+                    <thead>
+                      <tr>
+                        <th style="width: 120px;">Position</th>
+                        <th style="width: 70px;">Icon</th>
+                        <th>Brand Name</th>
+                        <th style="width: 150px;">Sidebar Status</th>
+                        <th style="width: 140px; text-align: right;">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (brand of brands(); track brand.id || brand.name; let i = $index) {
+                        <tr class="brand-row">
+                          <td class="brand-order-cell">
+                            <div class="order-controls">
+                              <span class="order-number-badge">#{{ i + 1 }}</span>
+                              <div class="order-arrows">
+                                <button
+                                  type="button"
+                                  class="order-arrow-btn up"
+                                  [disabled]="i === 0"
+                                  (click)="moveBrandUp(i, brand)"
+                                  title="Move Up (Sidebar mein upar layein)"
+                                  aria-label="Move Up"
+                                >
+                                  <i class="fa-solid fa-chevron-up"></i>
+                                </button>
+                                <button
+                                  type="button"
+                                  class="order-arrow-btn down"
+                                  [disabled]="i === brands().length - 1"
+                                  (click)="moveBrandDown(i, brand)"
+                                  title="Move Down (Sidebar mein neeche layein)"
+                                  aria-label="Move Down"
+                                >
+                                  <i class="fa-solid fa-chevron-down"></i>
+                                </button>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="brand-icon-cell">
+                            <div class="brand-table-icon">
+                              <i [class]="brand.icon"></i>
+                            </div>
+                          </td>
+                          <td class="brand-name-cell">
+                            <strong>{{ brand.name }}</strong>
+                          </td>
+                          <td>
+                            <span class="status-live-badge">
+                              <i class="fa-solid fa-circle"></i>
+                              <span>Live on Sidebar</span>
+                            </span>
+                          </td>
+                          <td class="brand-actions-cell">
+                            <button
+                              type="button"
+                              class="action-icon-btn edit-btn"
+                              (click)="openEditBrandModal(i, brand)"
+                              title="Edit Brand & Position"
+                            >
+                              <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button
+                              type="button"
+                              class="action-icon-btn delete-btn"
+                              (click)="openDeleteModal(i, brand)"
+                              title="Remove Brand"
+                            >
+                              <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      }
+                      @if (brands().length === 0) {
+                        <tr>
+                          <td colspan="5" class="empty-brands-row">
+                            <i class="fa-solid fa-tags"></i>
+                            <p>Koi brand mojood nahi hai. Naya brand add karne ke liye "Add New Brand" par click karein.</p>
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            }
+
+            <!-- 6. SHOP BY STYLE MANAGEMENT (4 CARDS) -->
+            @if (homeSubTab() === 'styles') {
+              <div class="hero-editor-card styles-editor-card">
+                <div class="he-card-header">
+                  <div class="he-title-wrap">
+                    <div class="he-icon-circle">
+                      <i class="fa-solid fa-shapes"></i>
+                    </div>
+                    <div>
+                      <h3 class="he-title">Shop by Style (4 Cards)</h3>
+                      <p class="he-subtitle">Storefront ke 'Shop by Style' section ke 4 categories, images, titles, subtitles aur shop links yahan se customize karein.</p>
+                    </div>
+                  </div>
+                  <button type="button" class="btn-save-header" [disabled]="isStylesSaving()" (click)="saveStyles()">
+                    @if (isStylesSaving()) {
+                      <i class="fa-solid fa-spinner fa-spin"></i>
+                      <span>Saving...</span>
+                    } @else {
+                      <i class="fa-solid fa-floppy-disk"></i>
+                      <span>Save All 4 Styles</span>
+                    }
+                  </button>
                 </div>
 
-                <div class="hp-section-card">
-                  <div class="hp-card-icon emerald">
-                    <i class="fa-solid fa-bolt"></i>
+                <div class="he-card-body">
+                  <!-- 4 Cards Grid Editor -->
+                  <div class="styles-cards-grid">
+                    @for (style of stylesForm(); track $index) {
+                      <div class="style-edit-panel">
+                        <div class="style-panel-header">
+                          <span class="style-card-number">Card #{{ $index + 1 }}</span>
+                          <span class="style-badge-tag">{{ style.title || 'Style Category' }}</span>
+                        </div>
+
+                        <div class="style-panel-body">
+                          <!-- Image Uploader with Preview -->
+                          <div class="style-thumb-upload-box">
+                            <div class="style-preview-frame">
+                              <img [src]="style.imageUrl" (error)="onHeroImageError($event)" alt="{{ style.title }}" class="style-thumb-img" />
+                            </div>
+                            <div class="style-upload-actions">
+                              <label class="btn-upload-style-mini">
+                                <i class="fa-solid fa-camera"></i>
+                                <span>{{ uploadingStyleIndex() === $index ? 'Uploading...' : 'Change Photo' }}</span>
+                                <input type="file" accept="image/*" (change)="onStyleImageSelected($event, $index)" class="hidden-file-input" />
+                              </label>
+                              <span class="style-img-hint">400 width x 300 height</span>
+                            </div>
+                          </div>
+
+                          <!-- Inputs -->
+                          <div class="form-field-group">
+                            <label class="he-label">
+                              <i class="fa-solid fa-heading text-lime"></i> Title
+                            </label>
+                            <input
+                              type="text"
+                              class="he-input style-title-input"
+                              [(ngModel)]="style.title"
+                              placeholder="e.g. Modern Fashion"
+                            />
+                          </div>
+
+                          <div class="form-field-group">
+                            <label class="he-label">
+                              <i class="fa-solid fa-align-left text-lime"></i> Subtitle
+                            </label>
+                            <input
+                              type="text"
+                              class="he-input"
+                              [(ngModel)]="style.subtitle"
+                              placeholder="e.g. Trendy & versatile"
+                            />
+                          </div>
+
+                          <div class="form-field-group">
+                            <label class="he-label">
+                              <i class="fa-solid fa-link text-lime"></i> Target Link URL
+                            </label>
+                            <input
+                              type="text"
+                              class="he-input"
+                              [(ngModel)]="style.linkUrl"
+                              placeholder="e.g. /shop?cat=fashion"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    }
                   </div>
-                  <div class="hp-card-info">
-                    <h3>Flash Sale & Countdown</h3>
-                    <p>Featured discount product, live reverse timer, sale & original price, stock alert.</p>
+
+                  <!-- Live Shop by Style Storefront Preview -->
+                  <div class="styles-live-preview-section">
+                    <span class="preview-badge-label">
+                      <i class="fa-solid fa-eye"></i>
+                      <span>Live Storefront Preview</span>
+                    </span>
+
+                    <div class="shop-by-style-preview-container">
+                      <div class="style-preview-head-row">
+                        <div class="style-head-title-col">
+                          <h3 class="s-preview-title">Shop by Style</h3>
+                          <span class="s-preview-sub">Discover styles for every space and lifestyle.</span>
+                        </div>
+                        <span class="s-preview-link">
+                          <span>View All Styles</span>
+                          <i class="fa-solid fa-arrow-right"></i>
+                        </span>
+                      </div>
+
+                      <div class="s-preview-cards-row">
+                        @for (style of stylesForm(); track $index) {
+                          <div class="s-single-card-mock">
+                            <div class="s-mock-thumb">
+                              <img [src]="style.imageUrl" (error)="onHeroImageError($event)" alt="" />
+                            </div>
+                            <div class="s-mock-footer">
+                              <div class="s-mock-text">
+                                <strong>{{ style.title }}</strong>
+                                <small>{{ style.subtitle }}</small>
+                              </div>
+                              <span class="s-mock-arrow-btn">
+                                <i class="fa-solid fa-arrow-right"></i>
+                              </span>
+                            </div>
+                          </div>
+                        }
+                      </div>
+                    </div>
                   </div>
-                  <span class="hp-status-tag">Ready</span>
+
+                  <!-- Bottom Save Bar -->
+                  <div class="bottom-action-bar">
+                    <div class="save-status-info">
+                      <i class="fa-solid fa-circle-info"></i>
+                      <span>Yeh changes save hone ke baad Storefront Shop by Style section par live show honge.</span>
+                    </div>
+                    <button type="button" class="btn-save-bottom" [disabled]="isStylesSaving()" (click)="saveStyles()">
+                      @if (isStylesSaving()) {
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <span>Saving Changes...</span>
+                      } @else {
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Save Shop by Style</span>
+                      }
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- 7. FLASH SALE DEAL MANAGEMENT -->
+            @if (homeSubTab() === 'flashSale') {
+              <div class="hero-editor-card flash-editor-card">
+                <div class="he-card-header">
+                  <div class="he-title-wrap">
+                    <div class="he-icon-circle">
+                      <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <div>
+                      <h3 class="he-title">Flash Sale Deal (Sale Box)</h3>
+                      <p class="he-subtitle">Storefront ke Flash Sale deal box ke product, pricing (Rs), discount badge, stock countdown aur interactive pictures yahan se customize karein.</p>
+                    </div>
+                  </div>
+                  <button type="button" class="btn-save-header" [disabled]="isFlashSaving()" (click)="saveFlashSale()">
+                    @if (isFlashSaving()) {
+                      <i class="fa-solid fa-spinner fa-spin"></i>
+                      <span>Saving...</span>
+                    } @else {
+                      <i class="fa-solid fa-floppy-disk"></i>
+                      <span>Save Flash Sale Deal</span>
+                    }
+                  </button>
                 </div>
 
-                <div class="hp-section-card">
-                  <div class="hp-card-icon blue">
-                    <i class="fa-solid fa-tags"></i>
+                <div class="he-card-body">
+                  <!-- Flash Sale Quick Stat Bar -->
+                  <div class="flash-admin-summary-bar">
+                    <div class="f-stat-chip">
+                      <i class="fa-solid fa-bolt"></i>
+                      <span>Deal Status: <strong>Live on Homepage</strong></span>
+                    </div>
+                    <div class="f-stat-chip timer-chip">
+                      <i class="fa-solid fa-clock"></i>
+                      <span>Timer: <strong>{{ flashEndsInHours() }}h {{ flashEndsInMinutes() }}m {{ flashEndsInSeconds() }}s</strong></span>
+                    </div>
+                    <div class="f-stat-chip discount-chip">
+                      <i class="fa-solid fa-tag"></i>
+                      <span>Discount: <strong>{{ flashDiscount() }}% OFF</strong></span>
+                    </div>
+                    <div class="f-stat-chip stock-chip">
+                      <i class="fa-solid fa-box-open"></i>
+                      <span>Stock: <strong>{{ flashStockLeft() }}</strong></span>
+                    </div>
                   </div>
-                  <div class="hp-card-info">
-                    <h3>Top Brands (Sidebar)</h3>
-                    <p>Left sidebar ke 9 health brands ki list aur navigation categories control.</p>
+
+                  <!-- Top Form Grid (Two Polished Master Panels) -->
+                  <div class="flash-editor-grid">
+                    <!-- Left Panel: Header, Countdown & CTA -->
+                    <div class="flash-panel-card timer-panel">
+                      <div class="panel-card-head">
+                        <div class="panel-head-icon green-glow">
+                          <i class="fa-solid fa-stopwatch"></i>
+                        </div>
+                        <div>
+                          <h4 class="panel-head-title">Sale Header & Timer Settings</h4>
+                          <p class="panel-head-sub">Flash sale ka top green bar aur countdown duration</p>
+                        </div>
+                      </div>
+
+                      <div class="panel-card-body">
+                        <div class="form-field-group">
+                          <label class="he-label">
+                            <i class="fa-solid fa-bolt text-lime"></i> Sale Header Title
+                          </label>
+                          <div class="input-with-pill-wrap">
+                            <input
+                              type="text"
+                              class="he-input flash-title-input"
+                              [ngModel]="flashTitle()"
+                              (ngModelChange)="flashTitle.set($event)"
+                              placeholder="e.g. Sale"
+                            />
+                            <span class="input-right-pill">Green Top Bar</span>
+                          </div>
+                        </div>
+
+                        <div class="form-field-group">
+                          <label class="he-label">
+                            <i class="fa-solid fa-hourglass-half text-lime"></i> Countdown Duration
+                          </label>
+                          <div class="digital-timer-dashboard">
+                            <div class="digital-timer-slot">
+                              <span class="timer-slot-tag">HOURS</span>
+                              <input
+                                type="number"
+                                class="digital-timer-num"
+                                [ngModel]="flashEndsInHours()"
+                                (ngModelChange)="flashEndsInHours.set($event)"
+                                min="0" max="99"
+                              />
+                              <span class="timer-slot-unit">h</span>
+                            </div>
+                            <span class="digital-colon">:</span>
+                            <div class="digital-timer-slot">
+                              <span class="timer-slot-tag">MINUTES</span>
+                              <input
+                                type="number"
+                                class="digital-timer-num"
+                                [ngModel]="flashEndsInMinutes()"
+                                (ngModelChange)="flashEndsInMinutes.set($event)"
+                                min="0" max="59"
+                              />
+                              <span class="timer-slot-unit">m</span>
+                            </div>
+                            <span class="digital-colon">:</span>
+                            <div class="digital-timer-slot">
+                              <span class="timer-slot-tag">SECONDS</span>
+                              <input
+                                type="number"
+                                class="digital-timer-num"
+                                [ngModel]="flashEndsInSeconds()"
+                                (ngModelChange)="flashEndsInSeconds.set($event)"
+                                min="0" max="59"
+                              />
+                              <span class="timer-slot-unit">s</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-field-group">
+                          <label class="he-label">
+                            <i class="fa-solid fa-fire text-lime"></i> Stock Urgency Tag
+                          </label>
+                          <div class="input-with-pill-wrap">
+                            <input
+                              type="text"
+                              class="he-input"
+                              [ngModel]="flashStockLeft()"
+                              (ngModelChange)="flashStockLeft.set($event)"
+                              placeholder="e.g. Only 15 left!"
+                            />
+                            <span class="input-urgency-badge">
+                              <span class="pulse-dot"></span> Live Stock
+                            </span>
+                          </div>
+                        </div>
+
+                        <div class="form-field-group">
+                          <label class="he-label">
+                            <i class="fa-solid fa-arrow-pointer text-lime"></i> Action Button Text & Destination Link
+                          </label>
+                          <div class="cta-inputs-pair">
+                            <div class="cta-input-subgroup">
+                              <small>Button Label</small>
+                              <input
+                                type="text"
+                                class="he-input"
+                                [ngModel]="flashButtonText()"
+                                (ngModelChange)="flashButtonText.set($event)"
+                                placeholder="Grab the Deal"
+                              />
+                            </div>
+                            <div class="cta-input-subgroup">
+                              <small>Button URL Link</small>
+                              <input
+                                type="text"
+                                class="he-input"
+                                [ngModel]="flashButtonUrl()"
+                                (ngModelChange)="flashButtonUrl.set($event)"
+                                placeholder="#trending-products"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Right Panel: Product Name, Pricing & Dual Images -->
+                    <div class="flash-panel-card product-panel">
+                      <div class="panel-card-head">
+                        <div class="panel-head-icon blue-glow">
+                          <i class="fa-solid fa-box-open"></i>
+                        </div>
+                        <div>
+                          <h4 class="panel-head-title">Featured Product & Pricing</h4>
+                          <p class="panel-head-sub">Product ka name, Rs pricing, discount aur dual photos</p>
+                        </div>
+                      </div>
+
+                      <div class="panel-card-body">
+                        <div class="form-field-group">
+                          <label class="he-label">Product Name</label>
+                          <input
+                            type="text"
+                            class="he-input prod-name-highlight"
+                            [ngModel]="flashProductName()"
+                            (ngModelChange)="flashProductName.set($event)"
+                            placeholder="e.g. Bioray Belly Mend"
+                          />
+                        </div>
+
+                        <!-- Rating & Reviews in sleek mini-cards -->
+                        <div class="flash-stat-inputs-row">
+                          <div class="form-field-group">
+                            <label class="he-label">Star Rating</label>
+                            <div class="rating-input-wrap">
+                              <i class="fa-solid fa-star star-ico"></i>
+                              <input
+                                type="number"
+                                step="0.1"
+                                class="he-input"
+                                [ngModel]="flashRating()"
+                                (ngModelChange)="flashRating.set($event)"
+                                placeholder="5.0"
+                              />
+                            </div>
+                          </div>
+                          <div class="form-field-group">
+                            <label class="he-label">Review Count</label>
+                            <input
+                              type="text"
+                              class="he-input"
+                              [ngModel]="flashReviewCount()"
+                              (ngModelChange)="flashReviewCount.set($event)"
+                              placeholder="1.2k"
+                            />
+                          </div>
+                        </div>
+
+                        <!-- 3 Pricing Cards Row -->
+                        <div class="pricing-cards-trio">
+                          <div class="price-box sale-price-box">
+                            <span class="price-box-label">Sale Price</span>
+                            <div class="price-box-val-wrap">
+                              <span class="currency-tag">Rs</span>
+                              <input
+                                type="number"
+                                class="price-box-input"
+                                [ngModel]="flashSalePrice()"
+                                (ngModelChange)="flashSalePrice.set($event)"
+                                placeholder="8200"
+                              />
+                            </div>
+                          </div>
+
+                          <div class="price-box was-price-box" [class.price-warning-box]="flashOriginalPrice() && flashOriginalPrice()! <= flashSalePrice()">
+                            <span class="price-box-label">Original Price</span>
+                            <div class="price-box-val-wrap">
+                              <span class="currency-tag">Rs</span>
+                              <input
+                                type="number"
+                                class="price-box-input strike"
+                                [ngModel]="flashOriginalPrice()"
+                                (ngModelChange)="flashOriginalPrice.set($event)"
+                                placeholder="10250"
+                              />
+                            </div>
+                          </div>
+
+                          <div class="price-box discount-box">
+                            <span class="price-box-label">Discount</span>
+                            <div class="price-box-val-wrap">
+                              <input
+                                type="number"
+                                class="price-box-input discount"
+                                [ngModel]="flashDiscount()"
+                                (ngModelChange)="flashDiscount.set($event)"
+                                placeholder="20"
+                              />
+                              <span class="percent-tag">% OFF</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Red Line Error Note when Original Price <= Sale Price -->
+                        @if (flashOriginalPrice() && flashOriginalPrice()! <= flashSalePrice()) {
+                          <div class="price-error-note">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>Actual price se kam hai! Original price (Rs{{ flashOriginalPrice() }}) Sale price (Rs{{ flashSalePrice() }}) se barhi honi chahiye taake strikethrough aur discount show ho sake.</span>
+                          </div>
+                        }
+
+                        <!-- Dual Images Upload Row -->
+                        <div class="flash-dual-upload-station">
+                          <!-- Primary Picture Box -->
+                          <div class="flash-photo-card" [class.uploading]="isFlashImgUploading()">
+                            <div class="photo-card-top-tag primary">
+                              <i class="fa-solid fa-box"></i> Primary Photo (Box + Bottle)
+                            </div>
+                            <div class="photo-card-preview-area">
+                              <img [src]="flashImageUrl()" (error)="onHeroImageError($event)" alt="Primary Photo" />
+                            </div>
+                            <label class="btn-flash-photo-upload">
+                              <i class="fa-solid fa-camera"></i>
+                              <span>{{ isFlashImgUploading() ? 'Uploading...' : 'Change Photo' }}</span>
+                              <input type="file" accept="image/*" (change)="onFlashImageSelected($event, false)" class="hidden-file-input" />
+                            </label>
+                          </div>
+
+                          <!-- Secondary Picture Box -->
+                          <div class="flash-photo-card" [class.uploading]="isFlashSecImgUploading()">
+                            <div class="photo-card-top-tag secondary">
+                              <i class="fa-solid fa-flask"></i> Hover Photo (Dropper Bottle)
+                            </div>
+                            <div class="photo-card-preview-area">
+                              <img [src]="flashSecondaryImageUrl()" (error)="onHeroImageError($event)" alt="Secondary Photo" />
+                            </div>
+                            <label class="btn-flash-photo-upload secondary">
+                              <i class="fa-solid fa-camera"></i>
+                              <span>{{ isFlashSecImgUploading() ? 'Uploading...' : 'Change Photo' }}</span>
+                              <input type="file" accept="image/*" (change)="onFlashImageSelected($event, true)" class="hidden-file-input" />
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <span class="hp-status-tag">Ready</span>
+
+                  <!-- Live Flash Sale Storefront Visual Preview -->
+                  <div class="flash-live-preview-section">
+                    <div class="preview-header-bar">
+                      <div class="preview-badge-label">
+                        <i class="fa-solid fa-eye"></i>
+                        <span>Live Storefront Deal Card Preview</span>
+                      </div>
+                      <span class="preview-hint-pill">
+                        <i class="fa-solid fa-hand-pointer"></i> Click mini thumbnails to preview switcher
+                      </span>
+                    </div>
+
+                    <!-- Pixel-perfect Storefront Flash Sale Box Clone -->
+                    <div class="admin-flash-preview-card">
+                      <!-- Top Green Gradient Bar -->
+                      <div class="af-top-bar">
+                        <div class="af-brand">
+                          <i class="fa-solid fa-bolt"></i>
+                          <span>{{ flashTitle() || 'Sale' }}</span>
+                        </div>
+                        <div class="af-timer">
+                          <span class="af-ends-label">Ends in:</span>
+                          <div class="af-digits-group">
+                            <span class="af-digit-capsule">{{ flashEndsInHours() }} h</span>
+                            <span class="af-digit-capsule">{{ flashEndsInMinutes() }} m</span>
+                            <span class="af-digit-capsule">{{ flashEndsInSeconds() }} s</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Inner Body -->
+                      <div class="af-inner-body">
+                        <!-- Left Image + Thumbnails -->
+                        <div class="af-img-col">
+                          <div class="af-main-img-wrap">
+                            <img [src]="currentFlashPreviewImg()" (error)="onHeroImageError($event)" alt="Flash Deal" class="af-main-img" />
+                          </div>
+                          <div class="af-thumbs-row">
+                            <button
+                              type="button"
+                              class="af-thumb-btn"
+                              [class.active]="flashPreviewThumbIndex() === 0"
+                              (click)="flashPreviewThumbIndex.set(0)"
+                              title="Primary: Box & Bottle"
+                            >
+                              <img [src]="flashImageUrl()" alt="Box & Bottle" />
+                            </button>
+                            <button
+                              type="button"
+                              class="af-thumb-btn"
+                              [class.active]="flashPreviewThumbIndex() === 1"
+                              (click)="flashPreviewThumbIndex.set(1)"
+                              title="Secondary: Bottle"
+                            >
+                              <img [src]="flashSecondaryImageUrl()" alt="Bottle" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <!-- Divider Line -->
+                        <div class="af-v-divider"></div>
+
+                        <!-- Right Product Details -->
+                        <div class="af-details-col">
+                          <h4 class="af-product-name">{{ flashProductName() }}</h4>
+                          
+                          <div class="af-stars-row">
+                            <div class="stars-gold">
+                              <i class="fa-solid fa-star"></i>
+                              <i class="fa-solid fa-star"></i>
+                              <i class="fa-solid fa-star"></i>
+                              <i class="fa-solid fa-star"></i>
+                              <i class="fa-solid fa-star"></i>
+                            </div>
+                            <span class="stars-score">{{ flashRating() }} ({{ flashReviewCount() }})</span>
+                          </div>
+
+                          <div class="af-pricing-row">
+                            <div class="af-prices">
+                              <span class="af-price-now">Rs{{ flashSalePrice() | number:'1.0-0' }}</span>
+                              @if (flashOriginalPrice() && flashOriginalPrice()! > flashSalePrice()) {
+                                <span class="af-price-was">Rs{{ flashOriginalPrice() | number:'1.0-0' }}</span>
+                              }
+                            </div>
+                            @if (flashOriginalPrice() && flashOriginalPrice()! > flashSalePrice() && flashDiscount()) {
+                              <span class="af-discount-pill">{{ flashDiscount() }}% OFF</span>
+                            }
+                          </div>
+
+                          <div class="af-action-row">
+                            <span class="af-btn-grab">
+                              <span>{{ flashButtonText() }}</span>
+                              <i class="fa-solid fa-arrow-right"></i>
+                            </span>
+                            <div class="af-sub-divider"></div>
+                            <span class="af-stock-text">{{ flashStockLeft() }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Bottom Save Bar -->
+                  <div class="bottom-action-bar">
+                    <div class="save-status-info">
+                      <i class="fa-solid fa-circle-info"></i>
+                      <span>Yeh changes save hone ke baad Storefront Flash Sale deal box par live show honge.</span>
+                    </div>
+                    <button type="button" class="btn-save-bottom" [disabled]="isFlashSaving()" (click)="saveFlashSale()">
+                      @if (isFlashSaving()) {
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <span>Saving Changes...</span>
+                      } @else {
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Save Flash Sale Deal</span>
+                      }
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- 8. REVIEWS & SOCIAL PROOF MANAGEMENT -->
+            @if (homeSubTab() === 'socialProof') {
+              <div class="hero-editor-card proof-editor-card">
+                <div class="he-card-header">
+                  <div class="he-title-wrap">
+                    <div class="he-icon-circle">
+                      <i class="fa-solid fa-comments"></i>
+                    </div>
+                    <div>
+                      <h3 class="he-title">Customer Reviews & Social Proof</h3>
+                      <p class="he-subtitle">Storefront ke Customer Testimonials slider, 500,000+ Happy Shoppers counter aur Trusted Brands tags yahan se customize karein.</p>
+                    </div>
+                  </div>
+                  <button type="button" class="btn-save-header" [disabled]="isSocialProofSaving()" (click)="saveSocialProof()">
+                    @if (isSocialProofSaving()) {
+                      <i class="fa-solid fa-spinner fa-spin"></i>
+                      <span>Saving...</span>
+                    } @else {
+                      <i class="fa-solid fa-floppy-disk"></i>
+                      <span>Save Social Proof</span>
+                    }
+                  </button>
                 </div>
 
-                <div class="hp-section-card">
-                  <div class="hp-card-icon purple">
-                    <i class="fa-solid fa-fire"></i>
+                <div class="he-card-body">
+                  <!-- Section 1: Customer Testimonials List -->
+                  <div class="social-sub-section">
+                    <div class="section-title-action-row">
+                      <div>
+                        <h4 class="sub-sec-title"><i class="fa-solid fa-quote-left"></i> 1. Customer Testimonials ({{ testimonials().length }})</h4>
+                        <p class="sub-sec-desc">Yeh reviews Homepage footer ke ooper customer review slider me show hote hain.</p>
+                      </div>
+                      <button type="button" class="btn-add-review" (click)="openAddTestimonialModal()">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add New Review</span>
+                      </button>
+                    </div>
+
+                    <div class="testimonials-admin-grid">
+                      @for (t of testimonials(); track t.id) {
+                        <div class="admin-test-card">
+                          <div class="test-card-top">
+                            <img [src]="t.avatarUrl" (error)="onHeroImageError($event)" alt="{{ t.name }}" class="test-avatar" />
+                            <div class="test-author-info">
+                              <strong class="test-name">{{ t.name }}</strong>
+                              <span class="test-role"><i class="fa-solid fa-circle-check"></i> {{ t.role }}</span>
+                            </div>
+                            <div class="test-card-actions">
+                              <button type="button" class="btn-action-circle edit" (click)="openEditTestimonialModal(t)" title="Edit Review">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                              </button>
+                              <button type="button" class="btn-action-circle delete" (click)="openDeleteTestimonialModal(t)" title="Delete Review">
+                                <i class="fa-solid fa-trash-can"></i>
+                              </button>
+                            </div>
+                          </div>
+                          <p class="test-comment-text">"{{ t.comment }}"</p>
+                        </div>
+                      }
+                    </div>
                   </div>
-                  <div class="hp-card-info">
-                    <h3>Trending Products</h3>
-                    <p>Homepage par show hone wale store supplements aur health products grid.</p>
+
+                  <!-- Section 2: Happy Shoppers Counter -->
+                  <div class="social-sub-section">
+                    <h4 class="sub-sec-title"><i class="fa-solid fa-award"></i> 2. Happy Shoppers Counter Badge</h4>
+                    <p class="sub-sec-desc">Homepage ke middle social proof card par show hone wala count aur text.</p>
+
+                    <div class="split-fields-row three-col">
+                      <div class="form-field-group">
+                        <label class="he-label">Top Caption</label>
+                        <input
+                          type="text"
+                          class="he-input"
+                          [ngModel]="shoppersCaption()"
+                          (ngModelChange)="shoppersCaption.set($event)"
+                          placeholder="e.g. Loved by"
+                        />
+                      </div>
+                      <div class="form-field-group">
+                        <label class="he-label">Big Count Number</label>
+                        <input
+                          type="text"
+                          class="he-input"
+                          [ngModel]="shoppersCount()"
+                          (ngModelChange)="shoppersCount.set($event)"
+                          placeholder="e.g. 500,000+"
+                        />
+                      </div>
+                      <div class="form-field-group">
+                        <label class="he-label">Bottom Label</label>
+                        <input
+                          type="text"
+                          class="he-input"
+                          [ngModel]="shoppersLabel()"
+                          (ngModelChange)="shoppersLabel.set($event)"
+                          placeholder="e.g. Happy Shoppers"
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <span class="hp-status-tag">Ready</span>
+
+                  <!-- Section 3: Trusted Brands Tags -->
+                  <div class="social-sub-section">
+                    <h4 class="sub-sec-title"><i class="fa-solid fa-circle-check"></i> 3. Trusted by Leading Brands ({{ trustedBrandsList().length }} Brands)</h4>
+                    <p class="sub-sec-desc">Social proof row ke right card par checkmark ke sath show hone wale brands.</p>
+
+                    <div class="add-brand-tag-bar">
+                      <input
+                        type="text"
+                        class="he-input"
+                        [ngModel]="newBrandName()"
+                        (ngModelChange)="newBrandName.set($event)"
+                        (keyup.enter)="addBrandTag()"
+                        placeholder="Type brand name (e.g. Puma, Nike, NovaTech) and press Enter"
+                      />
+                      <button type="button" class="btn-add-tag" (click)="addBrandTag()">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Brand</span>
+                      </button>
+                    </div>
+
+                    <div class="brand-tags-chips-list">
+                      @for (brand of trustedBrandsList(); track brand; let i = $index) {
+                        <span class="brand-chip-pill">
+                          <i class="fa-solid fa-circle-check check-ico"></i>
+                          <span>{{ brand }}</span>
+                          <button type="button" class="btn-remove-tag" (click)="removeBrandTag(i)" title="Remove brand">
+                            <i class="fa-solid fa-xmark"></i>
+                          </button>
+                        </span>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Live Social Proof Row Preview -->
+                  <div class="social-live-preview-section">
+                    <span class="preview-badge-label">
+                      <i class="fa-solid fa-eye"></i>
+                      <span>Live Storefront 3-Cards Row Preview</span>
+                    </span>
+
+                    <div class="social-preview-3cards-row">
+                      <!-- Card 1: Review -->
+                      <div class="mock-proof-card mock-test-card">
+                        <div class="mock-test-body">
+                          <img [src]="testimonials()[0]?.avatarUrl || 'assets/images/avatar-emily.jpg'" (error)="onHeroImageError($event)" alt="" class="mock-test-avatar" />
+                          <div class="mock-test-content">
+                            <i class="fa-solid fa-quote-left mock-quote-ico"></i>
+                            <p class="mock-quote-p">"{{ testimonials()[0]?.comment || 'Exceptional service and authentic supplements...' }}"</p>
+                            <div class="mock-author-line">
+                              <strong>{{ testimonials()[0]?.name || 'Marcus K.' }}</strong>
+                              <span class="mock-verified"><i class="fa-solid fa-circle-check"></i> {{ testimonials()[0]?.role || 'Verified Buyer' }}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Card 2: Shoppers Wreath -->
+                      <div class="mock-proof-card mock-shoppers-card">
+                        <span class="mock-wreath">🌿</span>
+                        <div class="mock-shoppers-text">
+                          <span class="cap">{{ shoppersCaption() }}</span>
+                          <strong class="count">{{ shoppersCount() }}</strong>
+                          <span class="lbl">{{ shoppersLabel() }}</span>
+                        </div>
+                        <span class="mock-wreath flipped">🌿</span>
+                      </div>
+
+                      <!-- Card 3: Brands -->
+                      <div class="mock-proof-card mock-brands-card">
+                        <h5 class="mock-brands-title">Trusted by Leading Brands</h5>
+                        <div class="mock-brands-pills">
+                          @for (b of trustedBrandsList(); track b) {
+                            <span class="mock-pill"><i class="fa-solid fa-circle-check"></i> {{ b }}</span>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Bottom Save Bar -->
+                  <div class="bottom-action-bar">
+                    <div class="save-status-info">
+                      <i class="fa-solid fa-circle-info"></i>
+                      <span>Yeh changes save hone ke baad Storefront social proof section par live show honge.</span>
+                    </div>
+                    <button type="button" class="btn-save-bottom" [disabled]="isSocialProofSaving()" (click)="saveSocialProof()">
+                      @if (isSocialProofSaving()) {
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <span>Saving Changes...</span>
+                      } @else {
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Save Reviews & Social Proof</span>
+                      }
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- ========================================== -->
+        <!-- FOOTER & ABOUT US TAB (SIDEBAR DEDICATED) -->
+        <!-- ========================================== -->
+        @if (activeTab() === 'footer') {
+          <div class="footer-management-container">
+            <div class="footer-editor-card">
+              <div class="fe-card-header">
+                <div class="fe-title-wrap">
+                  <div class="fe-icon-circle">
+                    <i class="fa-solid fa-shoe-prints"></i>
+                  </div>
+                  <div>
+                    <h3 class="fe-title">Footer & About Us</h3>
+                  </div>
+                </div>
+                <button type="button" class="btn-save-header" [disabled]="isFooterSaving()" (click)="saveFooterSettings()">
+                  @if (isFooterSaving()) {
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <span>Saving...</span>
+                  } @else {
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    <span>Save Footer Settings</span>
+                  }
+                </button>
+              </div>
+
+              <div class="fe-card-body">
+                <!-- Live Footer Preview Box -->
+                <div class="footer-live-preview-box">
+                  <div class="preview-header-pill">
+                    <i class="fa-solid fa-eye"></i>
+                    <span>Live Footer Visual Preview</span>
+                  </div>
+
+                  <div class="footer-preview-inner">
+                    <!-- Brand & About Column -->
+                    <div class="fp-col fp-col-brand">
+                      <div class="fp-logo-wrap">
+                        <img [src]="resolvedFooterLogoUrl() || 'assets/images/logo.png'" (error)="$any($event.target).src = 'assets/images/logo.png'" alt="Footer Brand Logo" class="fp-logo-img" />
+                      </div>
+                      <p class="fp-about-text">{{ footerAboutText() }}</p>
+                      @if (footerTrustBadgeText()) {
+                        <div class="fp-trust-badge">
+                          <i class="fa-solid fa-shield-heart"></i>
+                          <span>{{ footerTrustBadgeText() }}</span>
+                        </div>
+                      }
+                      <div class="fp-contacts">
+                        @if (footerPhone()) {
+                          <div class="fp-contact-item">
+                            <i class="fa-solid fa-phone"></i>
+                            <span>{{ footerPhone() }}</span>
+                          </div>
+                        }
+                        @if (footerEmail()) {
+                          <div class="fp-contact-item">
+                            <i class="fa-solid fa-envelope"></i>
+                            <span>{{ footerEmail() }}</span>
+                          </div>
+                        }
+                      </div>
+                    </div>
+
+                    <!-- Newsletter Column -->
+                    <div class="fp-col fp-col-newsletter">
+                      <h5 class="fp-heading">{{ footerNewsletterTitle() }}</h5>
+                      <p class="fp-sub">{{ footerNewsletterSubtitle() }}</p>
+                      <div class="fp-fake-input">
+                        <span>Enter your email...</span>
+                        <button type="button">Subscribe</button>
+                      </div>
+                    </div>
+
+                    <!-- Social Media Column -->
+                    <div class="fp-col fp-col-social">
+                      <h5 class="fp-heading">Follow Us</h5>
+                      <div class="fp-social-icons">
+                        @if (footerShowInstagram()) {
+                          <span class="fp-social-icon insta" title="Instagram Visible"><i class="fa-brands fa-instagram"></i></span>
+                        }
+                        @if (footerShowFacebook()) {
+                          <span class="fp-social-icon fb" title="Facebook Visible"><i class="fa-brands fa-facebook-f"></i></span>
+                        }
+                        @if (footerShowWhatsapp()) {
+                          <span class="fp-social-icon wa" title="WhatsApp Visible"><i class="fa-brands fa-whatsapp"></i></span>
+                        }
+                        @if (footerShowTiktok()) {
+                          <span class="fp-social-icon tt" title="TikTok Visible"><i class="fa-brands fa-tiktok"></i></span>
+                        }
+                        @if (footerShowYoutube()) {
+                          <span class="fp-social-icon yt" title="YouTube Visible"><i class="fa-brands fa-youtube"></i></span>
+                        }
+                        @if (footerShowX()) {
+                          <span class="fp-social-icon tw" title="X Visible"><i class="fa-brands fa-x-twitter"></i></span>
+                        }
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Bottom Bar Preview -->
+                  <div class="fp-bottom-bar">
+                    <span>{{ footerCopyrightText() }}</span>
+                    <div class="fp-legal-preview">
+                      <span>Privacy Policy</span>
+                      <span>•</span>
+                      <span>Terms of Service</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 1. Footer Brand Logo -->
+                <div class="section-divider-title">
+                  <div class="sdt-icon"><i class="fa-solid fa-image"></i></div>
+                  <div class="sdt-text">
+                    <strong>1. Footer Brand Logo</strong>
+                    <span>Computer se transparent picture / logo upload karein</span>
+                  </div>
+                </div>
+
+                <div class="pc-upload-action-box">
+                  <input
+                    type="file"
+                    #footerLogoFileInput
+                    accept="image/png, image/jpeg, image/webp, image/svg+xml"
+                    (change)="onFooterLogoSelected($event)"
+                    style="display: none;"
+                  />
+
+                  <div class="pc-upload-dropzone" (click)="footerLogoFileInput.click()" role="button" tabindex="0">
+                    <div class="dropzone-icon-circle">
+                      @if (isFooterLogoUploading()) {
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                      } @else {
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                      }
+                    </div>
+                    <div class="dropzone-text">
+                      <strong>Apne PC se Footer Logo Select Karein (Click to Browse)</strong>
+                      <span>Transparent PNG / SVG / JPG logo select karein • Size: 220 × 60 px recommended</span>
+                    </div>
+                    <button type="button" class="btn-browse-file" [disabled]="isFooterLogoUploading()">
+                      <i class="fa-solid fa-laptop"></i>
+                      <span>Choose from PC</span>
+                    </button>
+                  </div>
+
+                  @if (uploadedFooterLogoFileName()) {
+                    <div class="pc-file-selected-pill">
+                      <div class="pill-info">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Selected from PC: <strong>{{ uploadedFooterLogoFileName() }}</strong></span>
+                      </div>
+                      <button type="button" class="btn-clear-selection" (click)="resetFooterLogo()" title="Reset to original default">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span>Reset Default Logo</span>
+                      </button>
+                    </div>
+                  }
+                </div>
+
+                <!-- Direct Logo URL input -->
+                <div class="form-row">
+                  <div class="form-col full-width">
+                    <label for="footerLogoUrlInput"><i class="fa-solid fa-link"></i> Footer Logo Image URL / Path</label>
+                    <div class="admin-input-wrap">
+                      <i class="fa-solid fa-image"></i>
+                      <input
+                        type="text"
+                        id="footerLogoUrlInput"
+                        [ngModel]="footerLogoUrl()"
+                        (ngModelChange)="footerLogoUrl.set($event)"
+                        placeholder="assets/images/logo.png or http://localhost:5000/uploads/..."
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 2. About Store & Trust Badge -->
+                <div class="section-divider-title">
+                  <div class="sdt-icon"><i class="fa-solid fa-align-left"></i></div>
+                  <div class="sdt-text">
+                    <strong>2. About Store & Trust Badge</strong>
+                    <span>Brand description aur authenticity assurance badge</span>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-col full-width">
+                    <label for="footerAboutTextInput">
+                      <i class="fa-solid fa-quote-left"></i> About Brand / Store Description (Footer main show hoga)
+                    </label>
+                    <div class="admin-input-wrap textarea-wrap">
+                      <i class="fa-solid fa-paragraph"></i>
+                      <textarea
+                        id="footerAboutTextInput"
+                        rows="3"
+                        [ngModel]="footerAboutText()"
+                        (ngModelChange)="footerAboutText.set($event)"
+                        placeholder="Store description text..."
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-col full-width">
+                    <label for="footerTrustBadgeInput"><i class="fa-solid fa-shield-heart"></i> Trust Badge Text (e.g. 100% Authentic & Halal Certified)</label>
+                    <div class="admin-input-wrap">
+                      <i class="fa-solid fa-certificate"></i>
+                      <input
+                        type="text"
+                        id="footerTrustBadgeInput"
+                        [ngModel]="footerTrustBadgeText()"
+                        (ngModelChange)="footerTrustBadgeText.set($event)"
+                        placeholder="100% Authentic & Halal Certified"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 3. Customer Support & Contacts -->
+                <div class="section-divider-title">
+                  <div class="sdt-icon"><i class="fa-solid fa-headset"></i></div>
+                  <div class="sdt-text">
+                    <strong>3. Contact & Customer Support</strong>
+                    <span>Customer assistance phone aur official email</span>
+                  </div>
+                </div>
+
+                <div class="form-row two-col">
+                  <div class="form-col">
+                    <label for="footerPhoneInput"><i class="fa-solid fa-phone"></i> Customer Support Phone / WhatsApp</label>
+                    <div class="admin-input-wrap">
+                      <i class="fa-solid fa-phone"></i>
+                      <input
+                        type="text"
+                        id="footerPhoneInput"
+                        [ngModel]="footerPhone()"
+                        (ngModelChange)="footerPhone.set($event)"
+                        placeholder="+92 300 1234567"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="form-col">
+                    <label for="footerEmailInput"><i class="fa-solid fa-envelope"></i> Official Support Email</label>
+                    <div class="admin-input-wrap">
+                      <i class="fa-solid fa-envelope"></i>
+                      <input
+                        type="email"
+                        id="footerEmailInput"
+                        [ngModel]="footerEmail()"
+                        (ngModelChange)="footerEmail.set($event)"
+                        placeholder="support@happysteppy.com"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 4. Newsletter Signup Section -->
+                <div class="section-divider-title">
+                  <div class="sdt-icon"><i class="fa-solid fa-paper-plane"></i></div>
+                  <div class="sdt-text">
+                    <strong>4. Newsletter Signup Section</strong>
+                    <span>Email subscription heading aur subtitle</span>
+                  </div>
+                </div>
+
+                <div class="form-row two-col">
+                  <div class="form-col">
+                    <label for="footerNewsTitleInput"><i class="fa-solid fa-heading"></i> Newsletter Headline</label>
+                    <div class="admin-input-wrap">
+                      <i class="fa-solid fa-heading"></i>
+                      <input
+                        type="text"
+                        id="footerNewsTitleInput"
+                        [ngModel]="footerNewsletterTitle()"
+                        (ngModelChange)="footerNewsletterTitle.set($event)"
+                        placeholder="Stay in the Loop"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="form-col">
+                    <label for="footerNewsSubInput"><i class="fa-solid fa-paragraph"></i> Newsletter Subtitle / Description</label>
+                    <div class="admin-input-wrap">
+                      <i class="fa-solid fa-paragraph"></i>
+                      <input
+                        type="text"
+                        id="footerNewsSubInput"
+                        [ngModel]="footerNewsletterSubtitle()"
+                        (ngModelChange)="footerNewsletterSubtitle.set($event)"
+                        placeholder="Get the latest deals, new arrivals and wellness tips..."
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 5. Social Media Channels -->
+                <div class="section-divider-title">
+                  <div class="sdt-icon"><i class="fa-solid fa-share-nodes"></i></div>
+                  <div class="sdt-text">
+                    <strong>5. Social Media Channels (Storefront Footer Icons)</strong>
+                    <span>Har icon ke sath Show / Hide toggle switch mojood hai</span>
+                  </div>
+                </div>
+
+                <div class="form-row two-col">
+                  <!-- Instagram -->
+                  <div class="form-col">
+                    <div class="channel-header-row">
+                      <label for="footerInstaInput"><i class="fa-brands fa-instagram" style="color: #e1306c;"></i> Instagram</label>
+                      <button
+                        type="button"
+                        class="btn-toggle-social"
+                        [class.visible]="footerShowInstagram()"
+                        [class.hidden]="!footerShowInstagram()"
+                        (click)="toggleSocialVisibility('instagram')"
+                        [title]="footerShowInstagram() ? 'Storefront footer par show ho raha hai (Click to Hide)' : 'Storefront footer par chupaya hua hai (Click to Show)'"
+                      >
+                        @if (footerShowInstagram()) {
+                          <i class="fa-solid fa-eye"></i>
+                          <span>Show</span>
+                        } @else {
+                          <i class="fa-solid fa-eye-slash"></i>
+                          <span>Hide</span>
+                        }
+                      </button>
+                    </div>
+                    <div class="admin-input-wrap" [class.input-dimmed]="!footerShowInstagram()">
+                      <i class="fa-brands fa-instagram"></i>
+                      <input
+                        type="text"
+                        id="footerInstaInput"
+                        [ngModel]="footerInstagram()"
+                        (ngModelChange)="footerInstagram.set($event)"
+                        [placeholder]="footerShowInstagram() ? 'https://instagram.com/happysteppy' : '(Hidden - Footer par show nahi hoga)'"
+                      />
+                    </div>
+                  </div>
+
+                  <!-- Facebook -->
+                  <div class="form-col">
+                    <div class="channel-header-row">
+                      <label for="footerFbInput"><i class="fa-brands fa-facebook" style="color: #1877f2;"></i> Facebook</label>
+                      <button
+                        type="button"
+                        class="btn-toggle-social"
+                        [class.visible]="footerShowFacebook()"
+                        [class.hidden]="!footerShowFacebook()"
+                        (click)="toggleSocialVisibility('facebook')"
+                        [title]="footerShowFacebook() ? 'Storefront footer par show ho raha hai (Click to Hide)' : 'Storefront footer par chupaya hua hai (Click to Show)'"
+                      >
+                        @if (footerShowFacebook()) {
+                          <i class="fa-solid fa-eye"></i>
+                          <span>Show</span>
+                        } @else {
+                          <i class="fa-solid fa-eye-slash"></i>
+                          <span>Hide</span>
+                        }
+                      </button>
+                    </div>
+                    <div class="admin-input-wrap" [class.input-dimmed]="!footerShowFacebook()">
+                      <i class="fa-brands fa-facebook"></i>
+                      <input
+                        type="text"
+                        id="footerFbInput"
+                        [ngModel]="footerFacebook()"
+                        (ngModelChange)="footerFacebook.set($event)"
+                        [placeholder]="footerShowFacebook() ? 'https://facebook.com/happysteppy' : '(Hidden - Footer par show nahi hoga)'"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row two-col">
+                  <!-- WhatsApp -->
+                  <div class="form-col">
+                    <div class="channel-header-row">
+                      <label for="footerWaInput"><i class="fa-brands fa-whatsapp" style="color: #25d366;"></i> WhatsApp Chat</label>
+                      <button
+                        type="button"
+                        class="btn-toggle-social"
+                        [class.visible]="footerShowWhatsapp()"
+                        [class.hidden]="!footerShowWhatsapp()"
+                        (click)="toggleSocialVisibility('whatsapp')"
+                        [title]="footerShowWhatsapp() ? 'Storefront footer par show ho raha hai (Click to Hide)' : 'Storefront footer par chupaya hua hai (Click to Show)'"
+                      >
+                        @if (footerShowWhatsapp()) {
+                          <i class="fa-solid fa-eye"></i>
+                          <span>Show</span>
+                        } @else {
+                          <i class="fa-solid fa-eye-slash"></i>
+                          <span>Hide</span>
+                        }
+                      </button>
+                    </div>
+                    <div class="admin-input-wrap" [class.input-dimmed]="!footerShowWhatsapp()">
+                      <i class="fa-brands fa-whatsapp"></i>
+                      <input
+                        type="text"
+                        id="footerWaInput"
+                        [ngModel]="footerWhatsapp()"
+                        (ngModelChange)="footerWhatsapp.set($event)"
+                        [placeholder]="footerShowWhatsapp() ? 'https://wa.me/923001234567' : '(Hidden - Footer par show nahi hoga)'"
+                      />
+                    </div>
+                  </div>
+
+                  <!-- TikTok -->
+                  <div class="form-col">
+                    <div class="channel-header-row">
+                      <label for="footerTtInput"><i class="fa-brands fa-tiktok"></i> TikTok</label>
+                      <button
+                        type="button"
+                        class="btn-toggle-social"
+                        [class.visible]="footerShowTiktok()"
+                        [class.hidden]="!footerShowTiktok()"
+                        (click)="toggleSocialVisibility('tiktok')"
+                        [title]="footerShowTiktok() ? 'Storefront footer par show ho raha hai (Click to Hide)' : 'Storefront footer par chupaya hua hai (Click to Show)'"
+                      >
+                        @if (footerShowTiktok()) {
+                          <i class="fa-solid fa-eye"></i>
+                          <span>Show</span>
+                        } @else {
+                          <i class="fa-solid fa-eye-slash"></i>
+                          <span>Hide</span>
+                        }
+                      </button>
+                    </div>
+                    <div class="admin-input-wrap" [class.input-dimmed]="!footerShowTiktok()">
+                      <i class="fa-brands fa-tiktok"></i>
+                      <input
+                        type="text"
+                        id="footerTtInput"
+                        [ngModel]="footerTiktok()"
+                        (ngModelChange)="footerTiktok.set($event)"
+                        [placeholder]="footerShowTiktok() ? 'https://tiktok.com/@happysteppy' : '(Hidden - Footer par show nahi hoga)'"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row two-col">
+                  <!-- YouTube -->
+                  <div class="form-col">
+                    <div class="channel-header-row">
+                      <label for="footerYtInput"><i class="fa-brands fa-youtube" style="color: #ff0000;"></i> YouTube</label>
+                      <button
+                        type="button"
+                        class="btn-toggle-social"
+                        [class.visible]="footerShowYoutube()"
+                        [class.hidden]="!footerShowYoutube()"
+                        (click)="toggleSocialVisibility('youtube')"
+                        [title]="footerShowYoutube() ? 'Storefront footer par show ho raha hai (Click to Hide)' : 'Storefront footer par chupaya hua hai (Click to Show)'"
+                      >
+                        @if (footerShowYoutube()) {
+                          <i class="fa-solid fa-eye"></i>
+                          <span>Show</span>
+                        } @else {
+                          <i class="fa-solid fa-eye-slash"></i>
+                          <span>Hide</span>
+                        }
+                      </button>
+                    </div>
+                    <div class="admin-input-wrap" [class.input-dimmed]="!footerShowYoutube()">
+                      <i class="fa-brands fa-youtube"></i>
+                      <input
+                        type="text"
+                        id="footerYtInput"
+                        [ngModel]="footerYoutube()"
+                        (ngModelChange)="footerYoutube.set($event)"
+                        [placeholder]="footerShowYoutube() ? 'https://youtube.com/@happysteppy' : '(Hidden - Footer par show nahi hoga)'"
+                      />
+                    </div>
+                  </div>
+
+                  <!-- X (Twitter) -->
+                  <div class="form-col">
+                    <div class="channel-header-row">
+                      <label for="footerXInput"><i class="fa-brands fa-x-twitter"></i> X (Twitter)</label>
+                      <button
+                        type="button"
+                        class="btn-toggle-social"
+                        [class.visible]="footerShowX()"
+                        [class.hidden]="!footerShowX()"
+                        (click)="toggleSocialVisibility('x')"
+                        [title]="footerShowX() ? 'Storefront footer par show ho raha hai (Click to Hide)' : 'Storefront footer par chupaya hua hai (Click to Show)'"
+                      >
+                        @if (footerShowX()) {
+                          <i class="fa-solid fa-eye"></i>
+                          <span>Show</span>
+                        } @else {
+                          <i class="fa-solid fa-eye-slash"></i>
+                          <span>Hide</span>
+                        }
+                      </button>
+                    </div>
+                    <div class="admin-input-wrap" [class.input-dimmed]="!footerShowX()">
+                      <i class="fa-brands fa-x-twitter"></i>
+                      <input
+                        type="text"
+                        id="footerXInput"
+                        [ngModel]="footerX()"
+                        (ngModelChange)="footerX.set($event)"
+                        [placeholder]="footerShowX() ? 'https://x.com/happysteppy' : '(Hidden - Footer par show nahi hoga)'"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 6. Copyright Bar & Legal URLs -->
+                <div class="section-divider-title">
+                  <div class="sdt-icon"><i class="fa-solid fa-copyright"></i></div>
+                  <div class="sdt-text">
+                    <strong>6. Copyright Bar & Legal URLs</strong>
+                    <span>Copyright text aur privacy/terms policy pages</span>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-col full-width">
+                    <label for="footerCopyrightInput"><i class="fa-solid fa-copyright"></i> Copyright Notice Text</label>
+                    <div class="admin-input-wrap">
+                      <i class="fa-solid fa-copyright"></i>
+                      <input
+                        type="text"
+                        id="footerCopyrightInput"
+                        [ngModel]="footerCopyrightText()"
+                        (ngModelChange)="footerCopyrightText.set($event)"
+                        placeholder="© 2026 Happy Steppy. All rights reserved."
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row two-col">
+                  <div class="form-col">
+                    <label for="footerPrivacyInput"><i class="fa-solid fa-user-shield"></i> Privacy Policy Link URL</label>
+                    <div class="admin-input-wrap">
+                      <i class="fa-solid fa-user-shield"></i>
+                      <input
+                        type="text"
+                        id="footerPrivacyInput"
+                        [ngModel]="footerPrivacyPolicyUrl()"
+                        (ngModelChange)="footerPrivacyPolicyUrl.set($event)"
+                        placeholder="/privacy-policy"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="form-col">
+                    <label for="footerTermsInput"><i class="fa-solid fa-scale-balanced"></i> Terms of Service Link URL</label>
+                    <div class="admin-input-wrap">
+                      <i class="fa-solid fa-scale-balanced"></i>
+                      <input
+                        type="text"
+                        id="footerTermsInput"
+                        [ngModel]="footerTermsUrl()"
+                        (ngModelChange)="footerTermsUrl.set($event)"
+                        placeholder="/terms"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Bottom Save Bar -->
+                <div class="bottom-action-bar">
+                  <div class="save-status-info">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>Yeh changes save hone ke baad Storefront footer par live show honge.</span>
+                  </div>
+                  <button type="button" class="btn-save-bottom" [disabled]="isFooterSaving()" (click)="saveFooterSettings()">
+                    @if (isFooterSaving()) {
+                      <i class="fa-solid fa-spinner fa-spin"></i>
+                      <span>Saving to Database...</span>
+                    } @else {
+                      <i class="fa-solid fa-floppy-disk"></i>
+                      <span>Save Footer Settings</span>
+                    }
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+        </main>
+      </div>
+    </div>
+  }
+
+  <!-- Add / Edit Brand Modal Dialog -->
+  @if (isBrandModalOpen()) {
+    <div class="modal-backdrop-overlay" (click)="closeBrandModal()">
+      <div class="modal-dialog-container" (click)="$event.stopPropagation()">
+        <div class="brand-modal-dialog" role="dialog" aria-modal="true">
+          <!-- Modal Header -->
+          <div class="brand-modal-header">
+            <div class="modal-title-wrap">
+              <div class="modal-icon-badge">
+                <i [class]="isEditing() ? 'fa-solid fa-pen-to-square' : 'fa-solid fa-tags'"></i>
+              </div>
+              <div class="modal-title-text">
+                <h3>{{ isEditing() ? 'Edit Sidebar Brand' : 'Add New Sidebar Brand' }}</h3>
+                <p class="modal-subtitle">Yeh brand storefront ke "TOP BRANDS" sidebar mein show hoga.</p>
+              </div>
+            </div>
+            <button type="button" class="modal-close-btn" (click)="closeBrandModal()" aria-label="Close">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Modal Scrollable Body -->
+          <div class="brand-modal-body">
+            @if (brandFormError()) {
+              <div class="modal-alert-error">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span>{{ brandFormError() }}</span>
+              </div>
+            }
+
+            <!-- Brand Name Input -->
+            <div class="modal-form-group">
+              <label for="brandName">Brand Name <span class="required-asterisk">*</span></label>
+              <div class="modal-input-wrap">
+                <i class="fa-solid fa-tag"></i>
+                <input
+                  id="brandName"
+                  type="text"
+                  placeholder="e.g. Thorne, Bioray, Mary Ruth"
+                  [ngModel]="brandNameInput()"
+                  (ngModelChange)="brandNameInput.set($event)"
+                  (keyup.enter)="saveBrand()"
+                  autofocus
+                />
+              </div>
+            </div>
+
+            <!-- Brand Icon Selector -->
+            <div class="modal-form-group">
+              <div class="icon-selector-header">
+                <label>Select Brand Icon</label>
+                <span class="icon-helper-hint">Preset icons for pharmacy & wellness:</span>
+              </div>
+              <div class="icon-presets-grid">
+                @for (ic of availableIcons; track ic.icon) {
+                  <button
+                    type="button"
+                    class="icon-preset-btn"
+                    [class.selected]="brandIconInput() === ic.icon"
+                    (click)="selectIcon(ic.icon)"
+                    [title]="ic.label"
+                  >
+                    <i [class]="ic.icon"></i>
+                    <span>{{ ic.label }}</span>
+                  </button>
+                }
+              </div>
+            </div>
+
+            <!-- Custom Icon Class (Optional) -->
+            <div class="modal-form-group">
+              <label for="customIcon">Custom FontAwesome Icon Class (Optional)</label>
+              <div class="modal-input-wrap">
+                <i [class]="brandIconInput()"></i>
+                <input
+                  id="customIcon"
+                  type="text"
+                  placeholder="e.g. fa-solid fa-flask"
+                  [ngModel]="brandIconInput()"
+                  (ngModelChange)="brandIconInput.set($event)"
+                />
+              </div>
+            </div>
+
+            <!-- Sidebar Position / Order Number -->
+            <div class="modal-form-group">
+              <div class="order-input-header">
+                <label for="brandOrder">Sidebar Position (Order Number)</label>
+                <span class="order-helper-hint">Position #1 sidebar mein sab se upar dikhega</span>
+              </div>
+              <div class="modal-input-wrap">
+                <i class="fa-solid fa-arrow-down-1-9"></i>
+                <input
+                  id="brandOrder"
+                  type="number"
+                  min="1"
+                  [max]="brands().length + 1"
+                  [ngModel]="brandOrderInput()"
+                  (ngModelChange)="brandOrderInput.set(+$event)"
+                  placeholder="e.g. 1, 2, 3..."
+                />
+              </div>
+            </div>
+
+            <!-- Live Preview Card -->
+            <div class="brand-live-preview">
+              <span class="preview-label">SIDEBAR PREVIEW (POSITION #{{ brandOrderInput() || 1 }}):</span>
+              <div class="preview-item">
+                <i [class]="brandIconInput() + ' preview-icon'"></i>
+                <span class="preview-name">{{ brandNameInput() || 'Brand Name' }}</span>
+                <i class="fa-solid fa-chevron-right preview-chevron"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal Footer Actions -->
+          <div class="brand-modal-footer">
+            <button type="button" class="btn-modal-cancel" (click)="closeBrandModal()">
+              Cancel
+            </button>
+            <button type="button" class="btn-modal-save" (click)="saveBrand()">
+              <i class="fa-solid fa-check"></i>
+              <span>{{ isEditing() ? 'Save Changes' : 'Add to Sidebar' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Custom CSS Delete Confirmation Modal -->
+  @if (isDeleteModalOpen()) {
+    <div class="modal-backdrop-overlay" (click)="closeDeleteModal()">
+      <div class="modal-dialog-container" (click)="$event.stopPropagation()">
+        <div class="confirm-modal-dialog delete-dialog" role="dialog" aria-modal="true">
+          <button type="button" class="confirm-close-x" (click)="closeDeleteModal()" aria-label="Close">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+          
+          <div class="confirm-icon-circle danger-circle">
+            <i class="fa-solid fa-trash-can"></i>
+          </div>
+
+          <h3 class="confirm-modal-title">Delete Brand?</h3>
+          <p class="confirm-modal-desc">
+            Are you sure you want to remove <strong>"{{ brandToDelete()?.name }}"</strong>?
+          </p>
+
+          <div class="confirm-modal-callout danger-callout">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>Yeh brand SQLite database aur Storefront ke <strong>TOP BRANDS</strong> sidebar se remove ho jayega.</span>
+          </div>
+
+          <div class="confirm-modal-actions">
+            <button type="button" class="btn-confirm-cancel" (click)="closeDeleteModal()">
+              Cancel
+            </button>
+            <button type="button" class="btn-confirm-delete" (click)="confirmDelete()">
+              <i class="fa-solid fa-trash-can"></i>
+              <span>Yes, Delete Brand</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Add / Edit Trending Product Modal Dialog -->
+  @if (isProductModalOpen()) {
+    <div class="modal-backdrop-overlay" (click)="closeProductModal()">
+      <div class="modal-dialog-container" (click)="$event.stopPropagation()">
+        <div class="brand-modal-dialog product-modal-dialog" role="dialog" aria-modal="true">
+          <!-- Modal Header -->
+          <div class="brand-modal-header">
+            <div class="modal-title-wrap">
+              <div class="modal-icon-badge products-circle">
+                <i [class]="isEditingProduct() ? 'fa-solid fa-pen-to-square' : 'fa-solid fa-fire'"></i>
+              </div>
+              <div class="modal-title-text">
+                <h3>{{ isEditingProduct() ? 'Edit Trending Product' : 'Add New Trending Product' }}</h3>
+                <p class="modal-subtitle">Yeh product Homepage ke "Trending Products" section mein show hoga.</p>
+              </div>
+            </div>
+            <button type="button" class="modal-close-btn" (click)="closeProductModal()" aria-label="Close">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Modal Body Form -->
+          <form class="brand-modal-body" (ngSubmit)="saveProductForm()">
+            @if (prodFormError()) {
+              <div class="modal-form-alert">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>{{ prodFormError() }}</span>
+              </div>
+            }
+
+            <!-- 1. Product Name (2 Lines Support) -->
+            <div class="modal-form-group">
+              <label for="prodNameInput">Product Name (2 Lines Option) <span class="req">*</span></label>
+              <div class="modal-input-field textarea-field">
+                <i class="fa-solid fa-heading"></i>
+                <textarea
+                  id="prodNameInput"
+                  rows="2"
+                  placeholder="Line 1: Nordic Naturals Omega-3&#10;Line 2: 1560 mg 8 Oz Liquid"
+                  [ngModel]="prodNameInput()"
+                  (ngModelChange)="prodNameInput.set($event)"
+                  name="prodName"
+                ></textarea>
+              </div>
+              <span class="modal-field-hint">
+                <i class="fa-solid fa-circle-info"></i> Enter daba kar dusri line likh sakte hain. Sabhi cards ka size bilkul barabar rahega.
+              </span>
+            </div>
+
+            <!-- 2. Discount (% OFF) -->
+            <div class="modal-form-group">
+              <label for="prodDiscountInput">Discount (% OFF)</label>
+              <div class="modal-input-field">
+                <i class="fa-solid fa-percent"></i>
+                <input
+                  id="prodDiscountInput"
+                  type="number"
+                  min="0"
+                  max="100"
+                  placeholder="e.g. 15"
+                  [ngModel]="prodDiscountInput()"
+                  (ngModelChange)="prodDiscountInput.set($event)"
+                  name="prodDiscount"
+                />
+              </div>
+            </div>
+
+            <!-- 3. Price & Original Price in Rs Row -->
+            <div class="modal-two-col">
+              <div class="modal-form-group">
+                <label for="prodPriceInput">Selling Price (Rs) <span class="req">*</span></label>
+                <div class="modal-input-field">
+                  <span class="currency-tag">Rs</span>
+                  <input
+                    id="prodPriceInput"
+                    type="number"
+                    min="0"
+                    step="1"
+                    placeholder="e.g. 9800"
+                    [ngModel]="prodPriceInput()"
+                    (ngModelChange)="prodPriceInput.set($event)"
+                    name="prodPrice"
+                  />
+                </div>
+              </div>
+
+              <div class="modal-form-group" [class.has-price-error]="prodOriginalPriceInput() && prodOriginalPriceInput()! <= (prodPriceInput() || 0)">
+                <label for="prodOriginalPriceInput">Original Price (Rs)</label>
+                <div class="modal-input-field">
+                  <span class="currency-tag">Rs</span>
+                  <input
+                    id="prodOriginalPriceInput"
+                    type="number"
+                    min="0"
+                    step="1"
+                    placeholder="e.g. 11500"
+                    [ngModel]="prodOriginalPriceInput()"
+                    (ngModelChange)="prodOriginalPriceInput.set($event)"
+                    name="prodOrigPrice"
+                  />
+                </div>
+                @if (prodOriginalPriceInput() && prodOriginalPriceInput()! <= (prodPriceInput() || 0)) {
+                  <small class="field-error-text">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Actual price se kam hai! (Original price Selling price se barhi honi chahiye)
+                  </small>
+                }
+              </div>
+            </div>
+
+            <!-- 4. Rating & Review Count Row -->
+            <div class="modal-two-col">
+              <div class="modal-form-group">
+                <label for="prodRatingInput">Rating (1.0 - 5.0)</label>
+                <div class="modal-input-field">
+                  <i class="fa-solid fa-star"></i>
+                  <input
+                    id="prodRatingInput"
+                    type="number"
+                    min="1"
+                    max="5"
+                    step="0.1"
+                    placeholder="e.g. 5.0"
+                    [ngModel]="prodRatingInput()"
+                    (ngModelChange)="prodRatingInput.set($event)"
+                    name="prodRating"
+                  />
+                </div>
+              </div>
+
+              <div class="modal-form-group">
+                <label for="prodReviewCountInput">Review Count</label>
+                <div class="modal-input-field">
+                  <i class="fa-solid fa-comments"></i>
+                  <input
+                    id="prodReviewCountInput"
+                    type="text"
+                    placeholder="e.g. 2.4k"
+                    [ngModel]="prodReviewCountInput()"
+                    (ngModelChange)="prodReviewCountInput.set($event)"
+                    name="prodReviewCount"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- 5. Product Image Selection (URL + Browse PC) -->
+            <div class="modal-form-group">
+              <label>Product Image</label>
+              <div class="img-spec-notice">
+                <i class="fa-solid fa-ruler-combined"></i>
+                <span>Image Size: <strong>400 × 400 px</strong> (Square 1:1, Clean transparent/white background)</span>
+              </div>
+              <div class="prod-img-picker-row">
+                <div class="prod-img-preview-thumb">
+                  <img [src]="prodImageUrlInput()" alt="Product Preview" (error)="onHeroImageError($event)" />
+                </div>
+                <div class="prod-img-inputs">
+                  <div class="modal-input-field">
+                    <i class="fa-solid fa-image"></i>
+                    <input
+                      type="text"
+                      placeholder="e.g. assets/images/nordic-naturals-omega-3.jpg"
+                      [ngModel]="prodImageUrlInput()"
+                      (ngModelChange)="prodImageUrlInput.set($event)"
+                      name="prodImgUrl"
+                    />
+                  </div>
+                  <input
+                    #prodFileInput
+                    type="file"
+                    accept="image/png, image/jpeg, image/webp"
+                    style="display: none"
+                    (change)="onProductImageSelected($event)"
+                  />
+                  <button type="button" class="btn-pc-browse" (click)="prodFileInput.click()">
+                    @if (prodImageUploading()) {
+                      <i class="fa-solid fa-spinner fa-spin"></i>
+                      <span>Uploading...</span>
+                    } @else {
+                      <i class="fa-solid fa-laptop"></i>
+                      <span>Browse Image From PC</span>
+                    }
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal Footer Actions -->
+            <div class="brand-modal-footer">
+              <button type="button" class="btn-modal-cancel" (click)="closeProductModal()" [disabled]="isProductSaving()">
+                Cancel
+              </button>
+              <button type="button" class="btn-modal-save" (click)="saveProductForm()" [disabled]="isProductSaving()">
+                @if (isProductSaving()) {
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                  <span>Saving Product...</span>
+                } @else {
+                  <i class="fa-solid fa-check"></i>
+                  <span>{{ isEditingProduct() ? 'Update Product' : 'Add New Product' }}</span>
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Delete Product Confirmation Modal -->
+  @if (isDeleteProductModalOpen()) {
+    <div class="modal-backdrop-overlay" (click)="closeDeleteProductModal()">
+      <div class="modal-dialog-container" (click)="$event.stopPropagation()">
+        <div class="confirm-modal-dialog delete-dialog" role="dialog" aria-modal="true">
+          <button type="button" class="confirm-close-x" (click)="closeDeleteProductModal()" aria-label="Close">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+          
+          <div class="confirm-icon-circle danger-circle">
+            <i class="fa-solid fa-trash-can"></i>
+          </div>
+
+          <h3 class="confirm-modal-title">Delete Product?</h3>
+          <p class="confirm-modal-desc">
+            Are you sure you want to remove <strong>"{{ productToDelete()?.name }}"</strong>?
+          </p>
+
+          <div class="confirm-modal-callout danger-callout">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>Yeh product Homepage ke <strong>Trending Products</strong> section se delete ho jayega.</span>
+          </div>
+
+          <div class="confirm-modal-actions">
+            <button type="button" class="btn-confirm-cancel" (click)="closeDeleteProductModal()">
+              Cancel
+            </button>
+            <button type="button" class="btn-confirm-delete" (click)="confirmDeleteProduct()">
+              <i class="fa-solid fa-trash-can"></i>
+              <span>Yes, Delete Product</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Add / Edit Testimonial Modal -->
+  @if (isTestimonialModalOpen()) {
+    <div class="modal-backdrop-overlay" (click)="closeTestimonialModal()">
+      <div class="modal-dialog-container" (click)="$event.stopPropagation()">
+        <div class="brand-modal-dialog testimonial-modal-dialog" role="dialog" aria-modal="true">
+          <div class="brand-modal-header">
+            <div class="modal-title-wrap">
+              <div class="modal-icon-badge">
+                <i class="fa-solid fa-quote-left"></i>
+              </div>
+              <div class="modal-title-text">
+                <h3>{{ isEditingTestimonial() ? 'Edit Customer Review' : 'Add New Customer Review' }}</h3>
+                <p class="modal-subtitle">Yeh review Storefront footer ke ooper customer testimonials slider me show hoga.</p>
+              </div>
+            </div>
+            <button type="button" class="modal-close-btn" (click)="closeTestimonialModal()" aria-label="Close">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <form class="brand-modal-form" (submit)="$event.preventDefault(); saveTestimonialForm()">
+            <div class="brand-modal-body form-modal-body">
+              <div class="form-field-group">
+                <label class="he-label">
+                  <i class="fa-solid fa-user text-lime"></i> Customer Name
+                </label>
+                <input
+                  type="text"
+                  class="he-input"
+                  [ngModel]="testNameInput()"
+                  (ngModelChange)="testNameInput.set($event)"
+                  name="testName"
+                  placeholder="e.g. Marcus K., Emily R."
+                  required
+                />
+              </div>
+
+              <div class="form-field-group">
+                <label class="he-label">
+                  <i class="fa-solid fa-circle-check text-lime"></i> Customer Role / Badge
+                </label>
+                <input
+                  type="text"
+                  class="he-input"
+                  [ngModel]="testRoleInput()"
+                  (ngModelChange)="testRoleInput.set($event)"
+                  name="testRole"
+                  placeholder="e.g. Verified Buyer or Health Enthusiast"
+                  required
+                />
+              </div>
+
+              <div class="form-field-group">
+                <label class="he-label">
+                  <i class="fa-solid fa-comment-dots text-lime"></i> Review Comment
+                </label>
+                <textarea
+                  class="he-textarea"
+                  rows="3"
+                  [ngModel]="testCommentInput()"
+                  (ngModelChange)="testCommentInput.set($event)"
+                  name="testComment"
+                  placeholder="e.g. Exceptional service and authentic supplements. Happy Steppy is my go-to store!"
+                  required
+                ></textarea>
+              </div>
+
+              <!-- Avatar Image Upload & URL -->
+              <div class="form-field-group">
+                <label class="he-label">
+                  <i class="fa-solid fa-image text-lime"></i> Customer Avatar Photo
+                </label>
+                <div class="test-avatar-upload-row">
+                  <div class="test-avatar-preview">
+                    <img [src]="testAvatarUrlInput()" (error)="onHeroImageError($event)" alt="Avatar Preview" />
+                  </div>
+                  <div class="test-avatar-controls">
+                    <input
+                      type="text"
+                      class="he-input"
+                      [ngModel]="testAvatarUrlInput()"
+                      (ngModelChange)="testAvatarUrlInput.set($event)"
+                      name="testAvatarUrl"
+                      placeholder="Image URL or upload from PC"
+                    />
+                    <label class="btn-upload-avatar-file">
+                      <i class="fa-solid fa-camera"></i>
+                      <span>{{ testAvatarUploading() ? 'Uploading...' : 'Upload PC Photo' }}</span>
+                      <input type="file" accept="image/*" (change)="onTestAvatarSelected($event)" class="hidden-file-input" />
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="brand-modal-footer">
+              <button type="button" class="btn-modal-cancel" (click)="closeTestimonialModal()">
+                Cancel
+              </button>
+              <button type="button" class="btn-modal-save" (click)="saveTestimonialForm()">
+                <i class="fa-solid fa-check"></i>
+                <span>{{ isEditingTestimonial() ? 'Update Review' : 'Save Review' }}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Delete Testimonial Modal -->
+  @if (isDeleteTestimonialModalOpen()) {
+    <div class="modal-backdrop-overlay" (click)="closeDeleteTestimonialModal()">
+      <div class="modal-dialog-container" (click)="$event.stopPropagation()">
+        <div class="confirm-modal-dialog delete-dialog" role="dialog" aria-modal="true">
+          <button type="button" class="confirm-close-x" (click)="closeDeleteTestimonialModal()" aria-label="Close">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+          
+          <div class="confirm-icon-circle danger-circle">
+            <i class="fa-solid fa-trash-can"></i>
+          </div>
+
+          <h3 class="confirm-modal-title">Delete Customer Review?</h3>
+          <p class="confirm-modal-desc">
+            Are you sure you want to remove review by <strong>"{{ testimonialToDelete()?.name }}"</strong>?
+          </p>
+
+          <div class="confirm-modal-actions">
+            <button type="button" class="btn-confirm-cancel" (click)="closeDeleteTestimonialModal()">
+              Cancel
+            </button>
+            <button type="button" class="btn-confirm-delete" (click)="confirmDeleteTestimonial()">
+              <i class="fa-solid fa-trash-can"></i>
+              <span>Yes, Delete Review</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Save Success Confirmation Popup Modal -->
+  @if (isSaveSuccessModalOpen()) {
+    <div class="modal-backdrop-overlay" (click)="closeSaveSuccessModal()">
+      <div class="modal-dialog-container" (click)="$event.stopPropagation()">
+        <div class="confirm-modal-dialog success-dialog" role="dialog" aria-modal="true">
+          <button type="button" class="confirm-close-x" (click)="closeSaveSuccessModal()" aria-label="Close">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+          
+          <div class="confirm-icon-circle success-circle">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+
+          <h3 class="confirm-modal-title">
+            @if (saveSuccessType() === 'hero') {
+              Hero Banner Saved Successfully!
+            } @else if (saveSuccessType() === 'promo') {
+              Promo Banner Saved Successfully!
+            } @else if (saveSuccessType() === 'footer') {
+              Footer Settings Saved Successfully!
+            } @else if (saveSuccessType() === 'product') {
+              Product Saved Successfully!
+            } @else if (saveSuccessType() === 'styles') {
+              Shop by Style Saved Successfully!
+            } @else if (saveSuccessType() === 'flashSale') {
+              Flash Sale Deal Saved Successfully!
+            } @else if (saveSuccessType() === 'socialProof') {
+              Reviews & Social Proof Saved Successfully!
+            } @else {
+              Feature Badges Saved Successfully!
+            }
+          </h3>
+          <p class="confirm-modal-desc">
+            Aapki changes successfully save ho chuki hain aur storefront par foran live ho chuki hain.
+          </p>
+
+          @if (saveSuccessType() === 'hero') {
+            <!-- Mini live recap card -->
+            <div class="save-recap-box">
+              <div class="save-recap-img-wrap">
+                <img [src]="resolvedHeroImageUrl()" (error)="onHeroImageError($event)" alt="Banner Thumbnail" />
+              </div>
+              <div class="save-recap-text">
+                <span class="recap-badge">{{ heroBadgeText() }}</span>
+                <h4 class="recap-title">{{ heroTitle() }}</h4>
+                <div class="recap-buttons-row">
+                  <span class="recap-btn-tag">{{ heroPrimaryBtnText() }}</span>
+                  <span class="recap-btn-tag secondary">{{ heroSecondaryBtnText() }}</span>
                 </div>
               </div>
             </div>
           }
-        </main>
+
+          @if (saveSuccessType() === 'promo') {
+            <!-- Mini live promo recap card -->
+            <div class="save-recap-box promo-recap-box">
+              <div class="save-recap-img-wrap promo-recap-img">
+                <img [src]="resolvedPromoImageUrl()" (error)="onHeroImageError($event)" alt="Promo Thumbnail" />
+              </div>
+              <div class="save-recap-text">
+                <span class="recap-badge">{{ promoEventTag() }}</span>
+                <h4 class="recap-title">{{ promoTitle() }}</h4>
+                <div class="recap-buttons-row">
+                  <span class="recap-btn-tag">Up to {{ promoDiscountText() }}</span>
+                  <span class="recap-btn-tag secondary">{{ promoButtonText() }}</span>
+                </div>
+              </div>
+            </div>
+          }
+
+          @if (saveSuccessType() === 'footer') {
+            <!-- Mini live footer recap card -->
+            <div class="save-recap-box footer-recap-box">
+              <div class="save-recap-img-wrap footer-recap-img">
+                <img [src]="resolvedFooterLogoUrl() || 'assets/images/logo.png'" (error)="$any($event.target).src = 'assets/images/logo.png'" alt="Footer Logo Thumbnail" />
+              </div>
+              <div class="save-recap-text">
+                <span class="recap-badge">{{ footerTrustBadgeText() }}</span>
+                <h4 class="recap-title">{{ footerAboutText() }}</h4>
+                <div class="recap-buttons-row">
+                  <span class="recap-btn-tag"><i class="fa-solid fa-phone"></i> {{ footerPhone() }}</span>
+                  <span class="recap-btn-tag secondary"><i class="fa-solid fa-envelope"></i> {{ footerEmail() }}</span>
+                </div>
+              </div>
+            </div>
+          }
+
+          <div class="confirm-modal-callout success-callout">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Changes Synchronized & Live</span>
+          </div>
+
+          <div class="confirm-modal-actions">
+            <button type="button" class="btn-confirm-cancel" (click)="closeSaveSuccessModal()">
+              Continue Editing
+            </button>
+            <a href="/" target="_blank" class="btn-confirm-view-store" (click)="closeSaveSuccessModal()">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              <span>View Storefront</span>
+            </a>
+          </div>
+        </div>
       </div>
+    </div>
+  }
+
+  <!-- Admin Toast Notification -->
+  @if (toastMessage()) {
+    <div class="admin-toast-alert">
+      <i class="fa-solid fa-circle-check"></i>
+      <span>{{ toastMessage() }}</span>
     </div>
   }
 </div>

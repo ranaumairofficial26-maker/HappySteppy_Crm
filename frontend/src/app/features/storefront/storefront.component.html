@@ -79,6 +79,7 @@
       <!-- Admin Option -->
       <a
         routerLink="/admin"
+        (click)="openAdmin()"
         class="action-btn admin-action-btn"
         title="Admin Dashboard"
       >
@@ -202,7 +203,7 @@
 
       <!-- Admin Portal in Drawer -->
       <li class="drawer-link-item admin-drawer-item">
-        <a routerLink="/admin" (click)="closeMobileMenu()" class="drawer-nav-link admin-drawer-link">
+        <a routerLink="/admin" (click)="closeMobileMenu(); openAdmin()" class="drawer-nav-link admin-drawer-link">
           <div class="drawer-cat-left">
             <i class="fa-solid fa-user-shield drawer-cat-icon admin-drawer-icon"></i>
             <span class="drawer-link-text bold">Admin Portal</span>
@@ -252,7 +253,8 @@
         <!-- Hero Banner Graphic Card with Real HTML/CSS Content Overlay -->
         <div class="hero-banner-main-card">
           <img
-            [src]="heroSlide().desktopImageUrl"
+            [src]="resolveHeroImage(heroSlide().imageUrl)"
+            (error)="onHeroImageError($event)"
             [alt]="heroSlide().title"
             class="hero-banner-main-img"
           />
@@ -302,47 +304,19 @@
           </div>
         </div>
 
-        <!-- 4 Separate Trust Cards Grid (Client-specific Happy Steppy Guarantees) -->
+        <!-- 4 Separate Trust Cards Grid (Client-specific Happy Steppy Guarantees - Synced with Database) -->
         <div class="hero-trust-cards-grid scroll-stagger">
-          <div class="trust-card-item" title="We ship our products across Pakistan, making them accessible to customers everywhere.">
-            <div class="trust-card-icon">
-              <i class="fa-solid fa-truck-fast"></i>
+          @for (card of featureCards(); track card.cardIndex || card.id) {
+            <div class="trust-card-item" [title]="card.title + ' - ' + card.subtitle">
+              <div class="trust-card-icon">
+                <i [class]="card.icon"></i>
+              </div>
+              <div class="trust-card-meta">
+                <strong class="trust-title">{{ card.title }}</strong>
+                <span class="trust-sub">{{ card.subtitle }}</span>
+              </div>
             </div>
-            <div class="trust-card-meta">
-              <strong class="trust-title">Shipping All Pakistan</strong>
-              <span class="trust-sub">Fast doorstep delivery</span>
-            </div>
-          </div>
-
-          <div class="trust-card-item" title="If you're not satisfied with your purchase, simply return it within 7 days for a refund.">
-            <div class="trust-card-icon">
-              <i class="fa-solid fa-rotate-left"></i>
-            </div>
-            <div class="trust-card-meta">
-              <strong class="trust-title">7-Day Money Back</strong>
-              <span class="trust-sub">100% refund guarantee</span>
-            </div>
-          </div>
-
-          <div class="trust-card-item" title="We stand behind our products and services and guarantee your complete satisfaction.">
-            <div class="trust-card-icon">
-              <i class="fa-solid fa-shield-halved"></i>
-            </div>
-            <div class="trust-card-meta">
-              <strong class="trust-title">Our Guarantee</strong>
-              <span class="trust-sub">Satisfaction guaranteed</span>
-            </div>
-          </div>
-
-          <div class="trust-card-item" title="We're here to help you with any questions or concerns you have, 24/7.">
-            <div class="trust-card-icon">
-              <i class="fa-solid fa-headset"></i>
-            </div>
-            <div class="trust-card-meta">
-              <strong class="trust-title">24/7 Customer Service</strong>
-              <span class="trust-sub">Always here to help you</span>
-            </div>
-          </div>
+          }
         </div>
       </div>
     </div>
@@ -376,12 +350,12 @@
 
           <!-- Product Image -->
           <div class="product-thumb-wrap">
-            <img [src]="prod.imageUrl" [alt]="prod.name" class="product-thumb-img" />
+            <img [src]="resolveHeroImage(prod.imageUrl)" [alt]="prod.name" class="product-thumb-img" />
           </div>
 
           <!-- Product Details -->
           <div class="product-meta">
-            <h3 class="product-title">{{ prod.name }}</h3>
+            <h3 class="product-title" [title]="prod.name">{{ prod.name }}</h3>
 
             <div class="product-rating-row">
               <div class="rating-stars">
@@ -389,7 +363,7 @@
                 <i class="fa-solid fa-star"></i>
                 <i class="fa-solid fa-star"></i>
                 <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star-half-stroke"></i>
+                <i class="fa-solid fa-star"></i>
               </div>
               <span class="rating-score">{{ prod.rating }}</span>
               <span class="rating-count">({{ prod.reviewCount }})</span>
@@ -397,8 +371,10 @@
 
             <div class="product-bottom-row">
               <div class="product-pricing">
-                <span class="price-current">${{ prod.price.toFixed(2) }}</span>
-                <span class="price-original">${{ prod.originalPrice.toFixed(2) }}</span>
+                <span class="price-current">Rs {{ prod.price | number:'1.0-0' }}</span>
+                @if (prod.originalPrice > prod.price) {
+                  <span class="price-original">Rs {{ prod.originalPrice | number:'1.0-0' }}</span>
+                }
               </div>
 
               <button
@@ -419,9 +395,10 @@
   <section class="container home-refresh-section scroll-fade-up">
     <div class="home-refresh-card">
       <img
-        [src]="promoBanner().imageUrl"
+        [src]="resolveHeroImage(promoBanner().imageUrl)"
         [alt]="promoBanner().title"
         class="home-refresh-banner-img"
+        (error)="onHeroImageError($event)"
       />
 
       <!-- Real HTML/CSS Content Overlay on Clean Banner -->
@@ -430,11 +407,11 @@
         <div class="refresh-meta-col">
           <span class="refresh-event-tag">
             <span class="tag-line"></span>
-            <span>HOME REFRESH EVENT</span>
+            <span>{{ promoBanner().eventTag || 'HOME REFRESH EVENT' }}</span>
             <span class="tag-line"></span>
           </span>
-          <h2 class="refresh-main-title">{{ promoBanner().title }}</h2>
-          <p class="refresh-subtext">{{ promoBanner().subtitle }}</p>
+          <h2 class="refresh-main-title" style="white-space: pre-line;">{{ promoBanner().title }}</h2>
+          <p class="refresh-subtext" style="white-space: pre-line;">{{ promoBanner().subtitle }}</p>
         </div>
 
         <!-- Vertical Divider Bar -->
@@ -478,19 +455,19 @@
         </div>
 
         <div class="style-items-grid scroll-stagger">
-          @for (style of styleCategories(); track style.title) {
+          @for (style of styleCategories(); track style.id || style.title) {
             <div class="style-single-item">
               <div class="style-single-thumb">
-                <img [src]="style.imgUrl + '?v=8'" alt="" class="style-img" />
+                <img [src]="resolveHeroImage(style.imageUrl)" alt="" class="style-img" />
               </div>
               <div class="style-single-footer">
                 <div class="style-text-col">
                   <h4 class="style-title">{{ style.title }}</h4>
                   <p class="style-sub">{{ style.subtitle }}</p>
                 </div>
-                <button class="btn-style-arrow" title="Explore {{ style.title }}">
+                <a [routerLink]="style.linkUrl || '/shop'" class="btn-style-arrow" title="Explore {{ style.title }}">
                   <i class="fa-solid fa-arrow-right"></i>
-                </button>
+                </a>
               </div>
             </div>
           }
@@ -566,15 +543,19 @@
                 <i class="fa-solid fa-star"></i>
                 <i class="fa-solid fa-star"></i>
               </div>
-              <span class="stars-val">{{ flashSale().ratingText || '5.0 (1.2k)' }}</span>
+              <span class="stars-val">{{ flashSale().rating || 5.0 }} ({{ flashSale().reviewCount || '1.2k' }})</span>
             </div>
 
             <div class="flash-pricing-badge-row">
               <div class="flash-prices">
-                <span class="flash-now">{{ flashSale().salePrice || '₨8,200' }}</span>
-                <span class="flash-was">{{ flashSale().originalPrice || '₨10,250' }}</span>
+                <span class="flash-now">{{ (flashSale().salePrice ? ('Rs' + (flashSale().salePrice | number:'1.0-0')) : 'Rs8,200') }}</span>
+                @if (flashSale().originalPrice && flashSale().originalPrice! > flashSale().salePrice) {
+                  <span class="flash-was">Rs{{ flashSale().originalPrice | number:'1.0-0' }}</span>
+                }
               </div>
-              <span class="flash-discount-pill">{{ flashSale().discountPercentage || 20 }}% OFF</span>
+              @if (flashSale().originalPrice && flashSale().originalPrice! > flashSale().salePrice && flashSale().discountPercentage) {
+                <span class="flash-discount-pill">{{ flashSale().discountPercentage }}% OFF</span>
+              }
             </div>
 
             <div class="flash-cta-stock-row">
@@ -667,9 +648,9 @@
         </svg>
 
         <div class="shoppers-text-block">
-          <span class="shoppers-caption">Loved by</span>
-          <span class="shoppers-count">500,000+</span>
-          <span class="shoppers-label">Happy Shoppers</span>
+          <span class="shoppers-caption">{{ socialProof().shoppersCaption || 'Loved by' }}</span>
+          <span class="shoppers-count">{{ socialProof().shoppersCount || '500,000+' }}</span>
+          <span class="shoppers-label">{{ socialProof().shoppersLabel || 'Happy Shoppers' }}</span>
         </div>
 
         <svg class="wreath-svg wreath-right" viewBox="0 0 32 54" aria-hidden="true">
@@ -690,15 +671,15 @@
     </div>
 
     <!-- 3. Trusted by Leading Brands -->
-    @if (trustedBrands().length > 0) {
+    @if (socialProof().trustedBrands?.length) {
       <div class="proof-card proof-brands-card">
         <h4 class="brands-headline">Trusted by Leading Brands</h4>
         <div class="brands-ticker-wrap">
           <div class="brands-pills-list">
-            @for (brand of trustedBrands(); track brand.name) {
+            @for (brand of socialProof().trustedBrands; track brand) {
               <div class="brand-item-pill">
                 <i class="fa-solid fa-circle-check brand-ico"></i>
-                <span>{{ brand.name }}</span>
+                <span>{{ brand }}</span>
               </div>
             }
           </div>
@@ -715,14 +696,24 @@
       <!-- Brand & Mission -->
       <div class="footer-brand-col">
         <a routerLink="/" class="footer-brand-logo">
-          <img src="assets/images/logo.png" alt="Happy Steppy" class="footer-brand-logo-img" />
+          <img [src]="resolveHeroImage(footerConfig().logoUrl) || 'assets/images/logo.png'" (error)="$any($event.target).src = 'assets/images/logo.png'" alt="Happy Steppy" class="footer-brand-logo-img" />
         </a>
         <p class="footer-tagline">
-          {{ footerSettings()['FooterAbout'] || 'Your one-stop shop for lifestyle, tech, home and more.' }}
+          {{ footerConfig().aboutText }}
         </p>
         <div class="footer-trust-badge">
           <i class="fa-solid fa-shield-heart"></i>
-          <span>100% Guaranteed & Verified</span>
+          <span>{{ footerConfig().trustBadgeText }}</span>
+        </div>
+        <div class="footer-contact-mini">
+          <a [href]="'tel:' + footerConfig().contactPhone" class="contact-mini-item">
+            <i class="fa-solid fa-phone"></i>
+            <span>{{ footerConfig().contactPhone }}</span>
+          </a>
+          <a [href]="'mailto:' + footerConfig().contactEmail" class="contact-mini-item">
+            <i class="fa-solid fa-envelope"></i>
+            <span>{{ footerConfig().contactEmail }}</span>
+          </a>
         </div>
       </div>
 
@@ -779,8 +770,8 @@
 
       <!-- Newsletter: Stay in the Loop -->
       <div class="footer-newsletter-col">
-        <h4 class="footer-col-title">{{ footerSettings()['NewsletterTitle'] || 'Stay in the Loop' }}</h4>
-        <p class="newsletter-sub">{{ footerSettings()['NewsletterSubtitle'] || 'Get the latest deals, new arrivals and more.' }}</p>
+        <h4 class="footer-col-title">{{ footerConfig().newsletterTitle || 'Stay in the Loop' }}</h4>
+        <p class="newsletter-sub">{{ footerConfig().newsletterSubtitle || 'Get the latest deals, new arrivals and more.' }}</p>
 
         <form class="newsletter-form" (submit)="$event.preventDefault(); subscribeNewsletter()">
           <div class="newsletter-input-wrap">
@@ -811,77 +802,89 @@
       <div class="footer-social-col">
         <h4 class="footer-col-title">Follow Us</h4>
         <div class="social-icons-row">
-          <a
-            [href]="socialLinks()['instagram']"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="social-icon-btn social-instagram"
-            aria-label="Instagram"
-            title="Follow us on Instagram"
-          >
-            <i class="fa-brands fa-instagram"></i>
-          </a>
-          <a
-            [href]="socialLinks()['facebook']"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="social-icon-btn social-facebook"
-            aria-label="Facebook"
-            title="Follow us on Facebook"
-          >
-            <i class="fa-brands fa-facebook-f"></i>
-          </a>
-          <a
-            [href]="socialLinks()['whatsapp']"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="social-icon-btn social-whatsapp"
-            aria-label="WhatsApp"
-            title="Chat with us on WhatsApp"
-          >
-            <i class="fa-brands fa-whatsapp"></i>
-          </a>
-          <a
-            [href]="socialLinks()['tiktok']"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="social-icon-btn social-tiktok"
-            aria-label="TikTok"
-            title="Follow us on TikTok"
-          >
-            <i class="fa-brands fa-tiktok"></i>
-          </a>
-          <a
-            [href]="socialLinks()['youtube']"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="social-icon-btn social-youtube"
-            aria-label="YouTube"
-            title="Subscribe on YouTube"
-          >
-            <i class="fa-brands fa-youtube"></i>
-          </a>
-          <a
-            [href]="socialLinks()['x'] || socialLinks()['twitter']"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="social-icon-btn social-x"
-            aria-label="X (Twitter)"
-            title="Follow us on X"
-          >
-            <i class="fa-brands fa-x-twitter"></i>
-          </a>
+          @if (footerConfig().showInstagram !== false && footerConfig().socialInstagram) {
+            <a
+              [href]="footerConfig().socialInstagram"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="social-icon-btn social-instagram"
+              aria-label="Instagram"
+              title="Follow us on Instagram"
+            >
+              <i class="fa-brands fa-instagram"></i>
+            </a>
+          }
+          @if (footerConfig().showFacebook !== false && footerConfig().socialFacebook) {
+            <a
+              [href]="footerConfig().socialFacebook"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="social-icon-btn social-facebook"
+              aria-label="Facebook"
+              title="Follow us on Facebook"
+            >
+              <i class="fa-brands fa-facebook-f"></i>
+            </a>
+          }
+          @if (footerConfig().showWhatsapp !== false && footerConfig().socialWhatsapp) {
+            <a
+              [href]="footerConfig().socialWhatsapp"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="social-icon-btn social-whatsapp"
+              aria-label="WhatsApp"
+              title="Chat with us on WhatsApp"
+            >
+              <i class="fa-brands fa-whatsapp"></i>
+            </a>
+          }
+          @if (footerConfig().showTiktok !== false && footerConfig().socialTiktok) {
+            <a
+              [href]="footerConfig().socialTiktok"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="social-icon-btn social-tiktok"
+              aria-label="TikTok"
+              title="Follow us on TikTok"
+            >
+              <i class="fa-brands fa-tiktok"></i>
+            </a>
+          }
+          @if (footerConfig().showYoutube !== false && footerConfig().socialYoutube) {
+            <a
+              [href]="footerConfig().socialYoutube"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="social-icon-btn social-youtube"
+              aria-label="YouTube"
+              title="Subscribe on YouTube"
+            >
+              <i class="fa-brands fa-youtube"></i>
+            </a>
+          }
+          @if (footerConfig().showX !== false && footerConfig().socialX) {
+            <a
+              [href]="footerConfig().socialX"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="social-icon-btn social-x"
+              aria-label="X (Twitter)"
+              title="Follow us on X"
+            >
+              <i class="fa-brands fa-x-twitter"></i>
+            </a>
+          }
         </div>
       </div>
     </div>
 
     <!-- Bottom Copyright Bar -->
     <div class="footer-bottom-bar">
-      <span class="copyright-text">{{ footerSettings()['CopyrightText'] || '&copy; 2026 Happy Steppy. All rights reserved.' }}</span>
+      <span class="copyright-text">{{ footerConfig().copyrightText || '© 2026 Happy Steppy. All rights reserved.' }}</span>
       <div class="legal-links">
-        <a href="#">Privacy Policy</a>
+        <a [href]="footerConfig().privacyPolicyUrl || '/privacy-policy'">Privacy Policy</a>
         <span class="legal-sep">|</span>
-        <a href="#">Terms of Service</a>
+        <a [href]="footerConfig().termsUrl || '/terms'">Terms of Service</a>
         <span class="legal-sep">|</span>
         <a href="#">Cookie Settings</a>
       </div>

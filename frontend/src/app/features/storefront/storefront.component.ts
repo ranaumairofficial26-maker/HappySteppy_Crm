@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CategoryItem, TrendingProduct } from '../../core/models/shopora.model';
+import { BrandStoreService } from '../../core/services/brand-store.service';
+import { HomepageContentService, normalizeImageUrl } from '../../core/services/homepage-content.service';
 
 export interface StyleCategory {
   title: string;
@@ -28,38 +30,7 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
   activeMenu = signal<string>('Home');
   activeSidebarCat = signal<string>('Bioray');
 
-  // Flash Sale Dynamic State & Countdown
-  flashSale = signal<{
-    title: string;
-    subtitle: string;
-    discountPercentage: number;
-    endsAtUtc: string;
-    isActive: boolean;
-    productName: string;
-    imageUrl: string;
-    secondaryImageUrl?: string;
-    ratingText: string;
-    salePrice: string;
-    originalPrice: string;
-    stockLeftText: string;
-    buttonText: string;
-    buttonUrl: string;
-  }>({
-    title: 'Sale',
-    subtitle: 'Gut Support & Immunity',
-    discountPercentage: 20,
-    endsAtUtc: new Date(Date.now() + 12 * 3600 * 1000).toISOString(),
-    isActive: true,
-    productName: 'Bioray Belly Mend',
-    imageUrl: 'assets/images/bioray-belly-mend.webp',
-    secondaryImageUrl: 'assets/images/bioray-belly-mend-bottle.webp',
-    ratingText: '5.0 (1.2k)',
-    salePrice: '₨8,200',
-    originalPrice: '₨10,250',
-    stockLeftText: 'Only 15 left!',
-    buttonText: 'Grab the Deal',
-    buttonUrl: '#trending-products'
-  });
+  // Flash Sale Dynamic Countdown Timers
   flashHours = signal<number>(10);
   flashMinutes = signal<number>(39);
   flashSeconds = signal<number>(30);
@@ -137,107 +108,32 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     { columnName: 'about happy steppy', label: 'Contact Us', url: '#' }
   ]);
 
-  footerSettings = signal<{ [key: string]: string }>({
-    CopyrightText: '© 2026 Happy Steppy. All rights reserved.',
-    ContactPhone: '+92 317 4641903',
-    ContactEmail: 'support@happysteppy.com',
-    FooterAbout: 'Your one-stop shop for health supplements, sensory care, tech, and lifestyle essentials.',
-    NewsletterTitle: 'Stay in the Loop',
-    NewsletterSubtitle: 'Get the latest deals, new arrivals and exclusive store discounts.'
-  });
+  // Homepage Content (Hero Banner, 4 Feature Badges, Promo Banner, Footer, Styles, Flash Sale, Reviews, Social Proof synced with Database)
+  readonly homepageContent = inject(HomepageContentService);
+  readonly heroSlide = this.homepageContent.hero;
+  readonly featureCards = this.homepageContent.featureCards;
+  readonly promoBanner = this.homepageContent.promoBanner;
+  readonly footerConfig = this.homepageContent.footer;
+  readonly styleCategories = this.homepageContent.styles;
+  readonly flashSale = this.homepageContent.flashSale;
+  readonly testimonialsList = this.homepageContent.testimonials;
+  readonly socialProof = this.homepageContent.socialProof;
 
-  // Hero Slide
-  heroSlide = signal<{
-    title: string;
-    subtitle: string;
-    description: string;
-    badgeText: string;
-    primaryButtonText: string;
-    primaryButtonUrl: string;
-    secondaryButtonText: string;
-    secondaryButtonUrl: string;
-    desktopImageUrl: string;
-  }>({
-    title: 'Upgrade Your Lifestyle',
-    subtitle: 'Discover top picks for home, tech, fashion and more — all in one place.',
-    description: 'Discover top picks for home, tech, fashion and more — all in one place.',
-    badgeText: 'LIMITED TIME OFFER',
-    primaryButtonText: 'Shop the Collection',
-    primaryButtonUrl: '#trending-products',
-    secondaryButtonText: 'Explore Deals',
-    secondaryButtonUrl: '#trending-products',
-    desktopImageUrl: 'assets/images/hero-upgrade-lifestyle.jpg?v=2'
-  });
+  resolveHeroImage(url?: string): string {
+    return normalizeImageUrl(url);
+  }
 
-  // Promotional Banner
-  promoBanner = signal<{
-    title: string;
-    subtitle: string;
-    discountText: string;
-    buttonText: string;
-    buttonUrl: string;
-    imageUrl: string;
-  }>({
-    title: 'Refresh Your Space',
-    subtitle: 'Discover modern essentials for every corner of your home.',
-    discountText: 'Up to 40% OFF',
-    buttonText: 'Discover Now',
-    buttonUrl: '#trending-products',
-    imageUrl: 'assets/images/home-refresh-banner.jpg'
-  });
-
-  // Sidebar Categories (Top Brands matching store spec - 9 brands)
-  readonly categories = signal<CategoryItem[]>([
-    { name: 'Bioray', icon: 'fa-solid fa-flask', imgUrl: '' },
-    { name: 'CBD Plus', icon: 'fa-solid fa-leaf', imgUrl: '' },
-    { name: 'Designs for Health', icon: 'fa-solid fa-heart-pulse', imgUrl: '' },
-    { name: 'Kirkman', icon: 'fa-solid fa-capsules', imgUrl: '' },
-    { name: 'Life Extension', icon: 'fa-solid fa-dna', imgUrl: '' },
-    { name: 'Mary Ruth', icon: 'fa-solid fa-shield-heart', imgUrl: '' },
-    { name: 'Nature\'s Answer', icon: 'fa-solid fa-seedling', imgUrl: '' },
-    { name: 'Nature\'s Way', icon: 'fa-solid fa-tree', imgUrl: '' },
-    { name: 'NOW Foods', icon: 'fa-solid fa-apple-whole', imgUrl: '' }
-  ]);
-
-  // 4 "Shop by Style" Cards
-  readonly styleCategories = signal<StyleCategory[]>([
-    { title: 'Tech Lover', subtitle: 'Smart & connected', imgUrl: 'assets/images/style-tech.jpg' },
-    { title: 'Modern Fashion', subtitle: 'Trendy & versatile', imgUrl: 'assets/images/style-fashion.jpg' },
-    { title: 'Home Vibes', subtitle: 'Cozy & stylish', imgUrl: 'assets/images/style-home.jpg' },
-    { title: 'Active Life', subtitle: 'Fit, strong & healthy', imgUrl: 'assets/images/style-active.jpg' }
-  ]);
-
-  // Trusted by Leading Brands (Clean, Compact, Original)
-  readonly trustedBrands = signal<{ name: string; logoUrl?: string | null }[]>([
-    { name: 'Puma', logoUrl: null },
-    { name: 'Nordic Naturals', logoUrl: null },
-    { name: 'NovaTech', logoUrl: null },
-    { name: 'UrbanFit', logoUrl: null },
-    { name: 'Bioray', logoUrl: null },
-    { name: 'Nova', logoUrl: null }
-  ]);
-
-  // Testimonials Auto-Slider (Every 3 seconds)
-  readonly testimonialsList = signal<any[]>([
-    {
-      customerName: 'Emily R.',
-      customerRole: 'Verified Customer',
-      comment: 'The quality of products exceeded my expectations! Fast delivery and great customer support.',
-      avatarUrl: 'assets/images/avatar-emily.jpg'
-    },
-    {
-      customerName: 'Marcus K.',
-      customerRole: 'Verified Buyer',
-      comment: 'Exceptional service and authentic supplements. Happy Steppy is my go-to store!',
-      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80'
-    },
-    {
-      customerName: 'Sarah T.',
-      customerRole: 'Health Enthusiast',
-      comment: 'Noticeable results with Belly Mend within days. Highly recommended!',
-      avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80'
+  onHeroImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img && !img.src.includes('hero-upgrade-lifestyle.jpg')) {
+      img.src = 'assets/images/hero-upgrade-lifestyle.jpg?v=2';
     }
-  ]);
+  }
+
+  // Sidebar Categories (Top Brands synced with BrandStoreService)
+  private readonly brandStore = inject(BrandStoreService);
+  readonly categories = this.brandStore.brands;
+
   readonly currentTestimonialIndex = signal<number>(0);
   readonly isTestimonialSliding = signal<boolean>(false);
   private testimonialInterval: any;
@@ -255,33 +151,8 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     avatarUrl: 'assets/images/avatar-emily.jpg'
   });
 
-  // Trending Products (Pure store products requested by owner)
-  readonly trendingProducts = signal<TrendingProduct[]>([
-    {
-      id: 1,
-      name: 'Nordic Naturals Omega-3 1560 mg 8 Oz Liquid',
-      category: 'Supplements',
-      discount: 15,
-      rating: 5.0,
-      reviewCount: '2.4k',
-      price: 9800,
-      originalPrice: 11500,
-      imageUrl: 'assets/images/nordic-naturals-omega-3.jpg',
-      isWishlisted: false
-    },
-    {
-      id: 2,
-      name: 'Bioray Belly Mend',
-      category: 'Supplements',
-      discount: 20,
-      rating: 5.0,
-      reviewCount: '1.2k',
-      price: 8200,
-      originalPrice: 10250,
-      imageUrl: 'assets/images/bioray-belly-mend.webp',
-      isWishlisted: false
-    }
-  ]);
+  // Trending Products (synced with PostgreSQL Database)
+  readonly trendingProducts = this.homepageContent.trendingProducts;
 
   getLinksForColumn(col: string) {
     const list = this.footerLinks().filter(l => l.columnName?.toLowerCase() === col.toLowerCase());
@@ -289,6 +160,9 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
+    if (typeof window !== 'undefined') {
+      window.scrollTo(0, 0);
+    }
     this.startCountdown();
     this.startTestimonialRotation();
   }
@@ -357,10 +231,10 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
       this.currentTestimonialIndex.update(idx => (idx + 1) % list.length);
       const t = list[this.currentTestimonialIndex()];
       this.testimonial.set({
-        name: t.customerName,
-        role: t.customerRole,
+        name: t.name || (t as any).customerName || 'Customer',
+        role: t.role || (t as any).customerRole || 'Verified Buyer',
         comment: t.comment,
-        avatarUrl: t.avatarUrl || 'assets/images/avatar-emily.jpg'
+        avatarUrl: normalizeImageUrl(t.avatarUrl) || 'assets/images/avatar-emily.jpg'
       });
       setTimeout(() => {
         this.isTestimonialSliding.set(false);
@@ -376,10 +250,10 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
       this.currentTestimonialIndex.update(idx => (idx - 1 + list.length) % list.length);
       const t = list[this.currentTestimonialIndex()];
       this.testimonial.set({
-        name: t.customerName,
-        role: t.customerRole,
+        name: t.name || (t as any).customerName || 'Customer',
+        role: t.role || (t as any).customerRole || 'Verified Buyer',
         comment: t.comment,
-        avatarUrl: t.avatarUrl || 'assets/images/avatar-emily.jpg'
+        avatarUrl: normalizeImageUrl(t.avatarUrl) || 'assets/images/avatar-emily.jpg'
       });
       setTimeout(() => {
         this.isTestimonialSliding.set(false);
@@ -395,10 +269,10 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
       this.currentTestimonialIndex.set(idx);
       const t = list[idx];
       this.testimonial.set({
-        name: t.customerName,
-        role: t.customerRole,
+        name: t.name || (t as any).customerName || 'Customer',
+        role: t.role || (t as any).customerRole || 'Verified Buyer',
         comment: t.comment,
-        avatarUrl: t.avatarUrl || 'assets/images/avatar-emily.jpg'
+        avatarUrl: normalizeImageUrl(t.avatarUrl) || 'assets/images/avatar-emily.jpg'
       });
       setTimeout(() => {
         this.isTestimonialSliding.set(false);
@@ -443,16 +317,12 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private calculateFlashRemaining() {
-    const ends = this.flashSale().endsAtUtc;
-    if (!ends) return;
-    const diff = Math.max(0, new Date(ends).getTime() - Date.now());
-    const totalSecs = Math.floor(diff / 1000);
-    const h = Math.floor(totalSecs / 3600);
-    const m = Math.floor((totalSecs % 3600) / 60);
-    const s = totalSecs % 60;
-    this.flashHours.set(h);
-    this.flashMinutes.set(m);
-    this.flashSeconds.set(s);
+    const fs = this.flashSale();
+    if (fs) {
+      this.flashHours.set(fs.endsInHours ?? 11);
+      this.flashMinutes.set(fs.endsInMinutes ?? 59);
+      this.flashSeconds.set(fs.endsInSeconds ?? 55);
+    }
   }
 
   pad(num: number): string {
@@ -500,5 +370,12 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+  }
+
+  openAdmin(): void {
+    try {
+      localStorage.removeItem('hs_admin_auth');
+      sessionStorage.removeItem('hs_admin_auth');
+    } catch {}
   }
 }
