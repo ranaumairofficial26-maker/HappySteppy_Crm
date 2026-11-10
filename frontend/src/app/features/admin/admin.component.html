@@ -3192,8 +3192,12 @@
 
   <!-- Admin Toast Notification -->
   @if (toastMessage()) {
-    <div class="admin-toast-alert">
-      <i class="fa-solid fa-circle-check"></i>
+    <div class="admin-toast-alert" [class.toast-error]="toastMessage()?.toLowerCase()?.includes('error') || toastMessage()?.toLowerCase()?.includes('failed')">
+      @if (toastMessage()?.toLowerCase()?.includes('error') || toastMessage()?.toLowerCase()?.includes('failed')) {
+        <i class="fa-solid fa-circle-exclamation text-danger"></i>
+      } @else {
+        <i class="fa-solid fa-circle-check"></i>
+      }
       <span>{{ toastMessage() }}</span>
     </div>
   }

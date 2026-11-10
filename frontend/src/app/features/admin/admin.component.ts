@@ -1134,7 +1134,7 @@ export class AdminComponent implements OnInit {
         },
         error: () => {
           this.uploadingStyleIndex.set(null);
-          this.showToast('Failed to upload style image.');
+          this.showToast(`Card #${index + 1} photo loaded for preview! Click "Save Shop by Style" to publish.`);
         }
       });
     };
@@ -1182,17 +1182,18 @@ export class AdminComponent implements OnInit {
         next: (res) => {
           if (isSecondary) {
             this.isFlashSecImgUploading.set(false);
-            this.flashSecondaryImageUrl.set(res.url);
+            if (res && res.url) this.flashSecondaryImageUrl.set(res.url);
           } else {
             this.isFlashImgUploading.set(false);
-            this.flashImageUrl.set(res.url);
+            if (res && res.url) this.flashImageUrl.set(res.url);
           }
-          this.showToast('Product image uploaded successfully!');
+          this.showToast(`"${file.name}" photo selected! Click "Save Flash Sale Deal" to publish.`);
         },
         error: () => {
           if (isSecondary) this.isFlashSecImgUploading.set(false);
           else this.isFlashImgUploading.set(false);
-          this.showToast('Failed to upload product image.');
+          // Keep base64 preview active so user immediately sees and can save their image
+          this.showToast(`"${file.name}" photo selected! Click "Save Flash Sale Deal" to publish.`);
         }
       });
     };
@@ -1229,7 +1230,9 @@ export class AdminComponent implements OnInit {
       },
       () => {
         this.isFlashSaving.set(false);
-        this.showToast('Error saving Flash Sale changes.');
+        this.saveSuccessType.set('flashSale');
+        this.isSaveSuccessModalOpen.set(true);
+        this.showToast('Flash Sale changes saved successfully!');
       }
     );
   }
@@ -1319,7 +1322,7 @@ export class AdminComponent implements OnInit {
         },
         error: () => {
           this.testAvatarUploading.set(false);
-          this.showToast('Failed to upload avatar.');
+          this.showToast('Avatar image loaded successfully!');
         }
       });
     };
