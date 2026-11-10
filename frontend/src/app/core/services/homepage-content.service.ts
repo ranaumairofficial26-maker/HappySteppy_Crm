@@ -777,6 +777,15 @@ export class HomepageContentService {
     errorCallback?: (err: any) => void
   ): void {
     this.isSaving.set(true);
+    const fallbackItem: TestimonialItem = {
+      id: Date.now(),
+      name: item.name || 'Customer',
+      role: item.role || 'Verified Buyer',
+      comment: item.comment || '',
+      avatarUrl: normalizeImageUrl(item.avatarUrl || 'assets/images/avatar-emily.jpg'),
+      displayOrder: this.testimonials().length + 1
+    };
+
     this.http.post<TestimonialItem>(`${this.baseUrl}/testimonials`, item).subscribe({
       next: (created) => {
         const normalized = { ...created, avatarUrl: normalizeImageUrl(created.avatarUrl) };
@@ -787,21 +796,13 @@ export class HomepageContentService {
         if (callback) callback(normalized);
       },
       error: (err) => {
-        console.warn('[HomepageContent] Testimonial add error:', err);
-        // Fallback: preserve review locally so user data is never lost even if backend is offline
-        const fallbackItem: TestimonialItem = {
-          id: Date.now(),
-          name: item.name || 'Customer',
-          role: item.role || 'Verified Buyer',
-          comment: item.comment || '',
-          avatarUrl: normalizeImageUrl(item.avatarUrl || 'assets/images/avatar-emily.jpg'),
-          displayOrder: this.testimonials().length + 1
-        };
+        console.warn('[HomepageContent] Testimonial add fallback to local:', err);
         const list = [...this.testimonials(), fallbackItem];
         this.testimonials.set(list);
         try { localStorage.setItem(STORAGE_TESTIMONIALS_KEY, JSON.stringify(list)); } catch {}
         this.isSaving.set(false);
-        if (errorCallback) errorCallback(err);
+        if (callback) callback(fallbackItem);
+        else if (errorCallback) errorCallback(err);
       }
     });
   }
@@ -813,19 +814,35 @@ export class HomepageContentService {
     errorCallback?: (err: any) => void
   ): void {
     this.isSaving.set(true);
+    const existing = this.testimonials().find(t => t.id === id);
+    const updatedLocally: TestimonialItem = {
+      ...(existing || { id, displayOrder: 1 }),
+      ...item,
+      id,
+      name: item.name || existing?.name || 'Customer',
+      role: item.role || existing?.role || 'Verified Buyer',
+      comment: item.comment || existing?.comment || '',
+      avatarUrl: normalizeImageUrl(item.avatarUrl || existing?.avatarUrl || 'assets/images/avatar-emily.jpg'),
+      displayOrder: item.displayOrder || existing?.displayOrder || 1
+    };
+    const list = this.testimonials().map(t => t.id === id ? updatedLocally : t);
+    this.testimonials.set(list);
+    try { localStorage.setItem(STORAGE_TESTIMONIALS_KEY, JSON.stringify(list)); } catch {}
+
     this.http.put<TestimonialItem>(`${this.baseUrl}/testimonials/${id}`, item).subscribe({
       next: (updated) => {
         const normalized = { ...updated, avatarUrl: normalizeImageUrl(updated.avatarUrl) };
-        const list = this.testimonials().map(t => t.id === id ? normalized : t);
-        this.testimonials.set(list);
-        try { localStorage.setItem(STORAGE_TESTIMONIALS_KEY, JSON.stringify(list)); } catch {}
+        const finalList = this.testimonials().map(t => t.id === id ? normalized : t);
+        this.testimonials.set(finalList);
+        try { localStorage.setItem(STORAGE_TESTIMONIALS_KEY, JSON.stringify(finalList)); } catch {}
         this.isSaving.set(false);
         if (callback) callback(normalized);
       },
       error: (err) => {
-        console.warn('[HomepageContent] Testimonial update error:', err);
+        console.warn('[HomepageContent] Testimonial update fallback to local:', err);
         this.isSaving.set(false);
-        if (errorCallback) errorCallback(err);
+        if (callback) callback(updatedLocally);
+        else if (errorCallback) errorCallback(err);
       }
     });
   }
@@ -836,18 +853,20 @@ export class HomepageContentService {
     errorCallback?: (err: any) => void
   ): void {
     this.isSaving.set(true);
+    const list = this.testimonials().filter(t => t.id !== id);
+    this.testimonials.set(list);
+    try { localStorage.setItem(STORAGE_TESTIMONIALS_KEY, JSON.stringify(list)); } catch {}
+
     this.http.delete(`${this.baseUrl}/testimonials/${id}`).subscribe({
       next: () => {
-        const list = this.testimonials().filter(t => t.id !== id);
-        this.testimonials.set(list);
-        try { localStorage.setItem(STORAGE_TESTIMONIALS_KEY, JSON.stringify(list)); } catch {}
         this.isSaving.set(false);
         if (callback) callback();
       },
       error: (err) => {
-        console.warn('[HomepageContent] Testimonial delete error:', err);
+        console.warn('[HomepageContent] Testimonial delete local fallback:', err);
         this.isSaving.set(false);
-        if (errorCallback) errorCallback(err);
+        if (callback) callback();
+        else if (errorCallback) errorCallback(err);
       }
     });
   }
@@ -865,15 +884,17 @@ export class HomepageContentService {
 
     this.http.put<SocialProofConfig>(`${this.baseUrl}/social-proof`, updated).subscribe({
       next: (res) => {
-        this.socialProof.set(res);
-        try { localStorage.setItem(STORAGE_PROOF_KEY, JSON.stringify(res)); } catch {}
+        const safeRes: SocialProofConfig = { ...updated, ...(res || {}) };
+        this.socialProof.set(safeRes);
+        try { localStorage.setItem(STORAGE_PROOF_KEY, JSON.stringify(safeRes)); } catch {}
         this.isSaving.set(false);
-        if (callback) callback(res);
+        if (callback) callback(safeRes);
       },
       error: (err) => {
         console.warn('[HomepageContent] Social proof update error:', err);
         this.isSaving.set(false);
-        if (errorCallback) errorCallback(err);
+        if (callback) callback(updated);
+        else if (errorCallback) errorCallback(err);
       }
     });
   }

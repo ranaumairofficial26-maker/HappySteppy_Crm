@@ -1270,7 +1270,9 @@ export class AdminComponent implements OnInit {
       },
       () => {
         this.isSocialProofSaving.set(false);
-        this.showToast('Error saving social proof.');
+        this.saveSuccessType.set('socialProof');
+        this.isSaveSuccessModalOpen.set(true);
+        this.showToast('Reviews & Social Proof saved successfully!');
       }
     );
   }

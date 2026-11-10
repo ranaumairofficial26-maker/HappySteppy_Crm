@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, signal, inject, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, signal, computed, inject, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -139,16 +139,24 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
   private testimonialInterval: any;
   private isTestimonialsPaused = false;
 
-  readonly testimonial = signal<{
-    name: string;
-    role: string;
-    comment: string;
-    avatarUrl: string;
-  }>({
-    name: 'Emily R.',
-    role: 'Verified Customer',
-    comment: 'The quality of products exceeded my expectations! Fast delivery and great customer support.',
-    avatarUrl: 'assets/images/avatar-emily.jpg'
+  readonly testimonial = computed(() => {
+    const list = this.testimonialsList();
+    if (!list || list.length === 0) {
+      return {
+        name: 'Emily R.',
+        role: 'Verified Customer',
+        comment: 'The quality of products exceeded my expectations! Fast delivery and great customer support.',
+        avatarUrl: 'assets/images/avatar-emily.jpg'
+      };
+    }
+    const idx = Math.min(this.currentTestimonialIndex(), list.length - 1);
+    const item = list[idx >= 0 ? idx : 0];
+    return {
+      name: item.name || (item as any).customerName || 'Customer',
+      role: item.role || (item as any).customerRole || 'Verified Buyer',
+      comment: item.comment,
+      avatarUrl: normalizeImageUrl(item.avatarUrl) || 'assets/images/avatar-emily.jpg'
+    };
   });
 
   // Trending Products (synced with PostgreSQL Database)
@@ -229,13 +237,6 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isTestimonialSliding.set(true);
     setTimeout(() => {
       this.currentTestimonialIndex.update(idx => (idx + 1) % list.length);
-      const t = list[this.currentTestimonialIndex()];
-      this.testimonial.set({
-        name: t.name || (t as any).customerName || 'Customer',
-        role: t.role || (t as any).customerRole || 'Verified Buyer',
-        comment: t.comment,
-        avatarUrl: normalizeImageUrl(t.avatarUrl) || 'assets/images/avatar-emily.jpg'
-      });
       setTimeout(() => {
         this.isTestimonialSliding.set(false);
       }, 50);
@@ -248,13 +249,6 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isTestimonialSliding.set(true);
     setTimeout(() => {
       this.currentTestimonialIndex.update(idx => (idx - 1 + list.length) % list.length);
-      const t = list[this.currentTestimonialIndex()];
-      this.testimonial.set({
-        name: t.name || (t as any).customerName || 'Customer',
-        role: t.role || (t as any).customerRole || 'Verified Buyer',
-        comment: t.comment,
-        avatarUrl: normalizeImageUrl(t.avatarUrl) || 'assets/images/avatar-emily.jpg'
-      });
       setTimeout(() => {
         this.isTestimonialSliding.set(false);
       }, 50);
@@ -267,13 +261,6 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isTestimonialSliding.set(true);
     setTimeout(() => {
       this.currentTestimonialIndex.set(idx);
-      const t = list[idx];
-      this.testimonial.set({
-        name: t.name || (t as any).customerName || 'Customer',
-        role: t.role || (t as any).customerRole || 'Verified Buyer',
-        comment: t.comment,
-        avatarUrl: normalizeImageUrl(t.avatarUrl) || 'assets/images/avatar-emily.jpg'
-      });
       setTimeout(() => {
         this.isTestimonialSliding.set(false);
       }, 50);

@@ -901,15 +901,26 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/api/homepage/social-proof' && req.method === 'PUT') {
     try {
       const data = await parseBody(req);
+      const brandsJson = Array.isArray(data.trustedBrands)
+        ? JSON.stringify(data.trustedBrands)
+        : JSON.stringify(["Puma", "Nordic Naturals", "NovaTech", "UrbanFit", "Bioray", "Nova"]);
+
       const updateRes = await pool.query(`
-        UPDATE homepage_social_proof
-        SET
-          shoppers_caption = COALESCE($1, shoppers_caption),
-          shoppers_count = COALESCE($2, shoppers_count),
-          shoppers_label = COALESCE($3, shoppers_label),
-          trusted_brands = COALESCE($4::jsonb, trusted_brands),
+        INSERT INTO homepage_social_proof (id, shoppers_caption, shoppers_count, shoppers_label, trusted_brands, updated_at)
+        VALUES (
+          1,
+          COALESCE($1, 'Loved by'),
+          COALESCE($2, '500,000+'),
+          COALESCE($3, 'Happy Shoppers'),
+          $4::jsonb,
+          CURRENT_TIMESTAMP
+        )
+        ON CONFLICT (id) DO UPDATE SET
+          shoppers_caption = COALESCE($1, homepage_social_proof.shoppers_caption),
+          shoppers_count = COALESCE($2, homepage_social_proof.shoppers_count),
+          shoppers_label = COALESCE($3, homepage_social_proof.shoppers_label),
+          trusted_brands = COALESCE($4::jsonb, homepage_social_proof.trusted_brands),
           updated_at = CURRENT_TIMESTAMP
-        WHERE id = 1
         RETURNING
           id, 
           shoppers_caption as "shoppersCaption", 
@@ -920,10 +931,11 @@ const server = http.createServer(async (req, res) => {
         data.shoppersCaption,
         data.shoppersCount,
         data.shoppersLabel,
-        data.trustedBrands ? JSON.stringify(data.trustedBrands) : null
+        brandsJson
       ]);
+      const row = updateRes.rows[0] || {};
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(updateRes.rows[0]));
+      res.end(JSON.stringify(row));
     } catch (err) {
       res.writeHead(500, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: err.message }));
