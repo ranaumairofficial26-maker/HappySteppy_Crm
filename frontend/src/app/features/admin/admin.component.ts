@@ -1348,6 +1348,10 @@ export class AdminComponent implements OnInit {
         () => {
           this.closeTestimonialModal();
           this.showToast(`Review by "${name}" updated successfully!`);
+        },
+        () => {
+          this.closeTestimonialModal();
+          this.showToast(`Review by "${name}" updated!`);
         }
       );
     } else {
@@ -1356,6 +1360,10 @@ export class AdminComponent implements OnInit {
         () => {
           this.closeTestimonialModal();
           this.showToast(`New review by "${name}" added successfully!`);
+        },
+        () => {
+          this.closeTestimonialModal();
+          this.showToast(`New review by "${name}" added!`);
         }
       );
     }

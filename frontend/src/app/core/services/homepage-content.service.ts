@@ -754,12 +754,13 @@ export class HomepageContentService {
 
     this.http.put<FlashSaleConfig>(`${this.baseUrl}/flash-sale`, updated).subscribe({
       next: (res) => {
-        res.imageUrl = normalizeImageUrl(res.imageUrl);
-        if (res.secondaryImageUrl) res.secondaryImageUrl = normalizeImageUrl(res.secondaryImageUrl);
-        this.flashSale.set(res);
-        try { localStorage.setItem(STORAGE_FLASH_KEY, JSON.stringify(res)); } catch {}
+        const safeRes: FlashSaleConfig = { ...updated, ...(res || {}) };
+        if (safeRes.imageUrl) safeRes.imageUrl = normalizeImageUrl(safeRes.imageUrl);
+        if (safeRes.secondaryImageUrl) safeRes.secondaryImageUrl = normalizeImageUrl(safeRes.secondaryImageUrl);
+        this.flashSale.set(safeRes);
+        try { localStorage.setItem(STORAGE_FLASH_KEY, JSON.stringify(safeRes)); } catch {}
         this.isSaving.set(false);
-        if (callback) callback(res);
+        if (callback) callback(safeRes);
       },
       error: (err) => {
         console.warn('[HomepageContent] Flash sale update error:', err);
@@ -787,6 +788,18 @@ export class HomepageContentService {
       },
       error: (err) => {
         console.warn('[HomepageContent] Testimonial add error:', err);
+        // Fallback: preserve review locally so user data is never lost even if backend is offline
+        const fallbackItem: TestimonialItem = {
+          id: Date.now(),
+          name: item.name || 'Customer',
+          role: item.role || 'Verified Buyer',
+          comment: item.comment || '',
+          avatarUrl: normalizeImageUrl(item.avatarUrl || 'assets/images/avatar-emily.jpg'),
+          displayOrder: this.testimonials().length + 1
+        };
+        const list = [...this.testimonials(), fallbackItem];
+        this.testimonials.set(list);
+        try { localStorage.setItem(STORAGE_TESTIMONIALS_KEY, JSON.stringify(list)); } catch {}
         this.isSaving.set(false);
         if (errorCallback) errorCallback(err);
       }

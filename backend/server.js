@@ -279,6 +279,15 @@ async function initDatabase() {
       console.log('[PostgreSQL] Seeded initial social proof data.');
     }
 
+    // Synchronize auto-increment sequences after seeding to prevent primary key conflicts
+    await client.query(`
+      SELECT setval(pg_get_serial_sequence('homepage_testimonials', 'id'), COALESCE((SELECT MAX(id) FROM homepage_testimonials), 1));
+      SELECT setval(pg_get_serial_sequence('homepage_styles', 'id'), COALESCE((SELECT MAX(id) FROM homepage_styles), 1));
+      SELECT setval(pg_get_serial_sequence('trending_products', 'id'), COALESCE((SELECT MAX(id) FROM trending_products), 1));
+      SELECT setval(pg_get_serial_sequence('brands', 'id'), COALESCE((SELECT MAX(id) FROM brands), 1));
+    `);
+    console.log('[PostgreSQL] Synchronized serial sequences for all auto-increment tables.');
+
     client.release();
   } catch (err) {
     console.error('[PostgreSQL Error] Failed to initialize database:', err.message);
@@ -667,26 +676,56 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/api/homepage/flash-sale' && req.method === 'PUT') {
     try {
       const data = await parseBody(req);
+      const rating = isNaN(parseFloat(data.rating)) ? 5.0 : parseFloat(data.rating);
+      const salePrice = isNaN(parseFloat(data.salePrice)) ? 8200.00 : parseFloat(data.salePrice);
+      const originalPrice = isNaN(parseFloat(data.originalPrice)) ? 10250.00 : parseFloat(data.originalPrice);
+      const discountPercentage = isNaN(parseInt(data.discountPercentage, 10)) ? 20 : parseInt(data.discountPercentage, 10);
+      const endsInHours = isNaN(parseInt(data.endsInHours, 10)) ? 11 : parseInt(data.endsInHours, 10);
+      const endsInMinutes = isNaN(parseInt(data.endsInMinutes, 10)) ? 59 : parseInt(data.endsInMinutes, 10);
+      const endsInSeconds = isNaN(parseInt(data.endsInSeconds, 10)) ? 55 : parseInt(data.endsInSeconds, 10);
+
       const updateRes = await pool.query(`
-        UPDATE homepage_flash_sale
-        SET
-          title = COALESCE($1, title),
-          product_name = COALESCE($2, product_name),
-          rating = COALESCE($3, rating),
-          review_count = COALESCE($4, review_count),
-          sale_price = COALESCE($5, sale_price),
-          original_price = COALESCE($6, original_price),
-          discount_percentage = COALESCE($7, discount_percentage),
-          stock_left_text = COALESCE($8, stock_left_text),
-          button_text = COALESCE($9, button_text),
-          button_url = COALESCE($10, button_url),
-          image_url = COALESCE($11, image_url),
-          secondary_image_url = COALESCE($12, secondary_image_url),
-          ends_in_hours = COALESCE($13, ends_in_hours),
-          ends_in_minutes = COALESCE($14, ends_in_minutes),
-          ends_in_seconds = COALESCE($15, ends_in_seconds),
+        INSERT INTO homepage_flash_sale (
+          id, title, product_name, rating, review_count, sale_price, original_price,
+          discount_percentage, stock_left_text, button_text, button_url,
+          image_url, secondary_image_url, ends_in_hours, ends_in_minutes, ends_in_seconds, updated_at
+        )
+        VALUES (
+          1,
+          COALESCE($1, 'Sale'),
+          COALESCE($2, 'Bioray Belly Mend'),
+          COALESCE($3, 5.0),
+          COALESCE($4, '1.2k'),
+          COALESCE($5, 8200.00),
+          COALESCE($6, 10250.00),
+          COALESCE($7, 20),
+          COALESCE($8, 'Only 15 left!'),
+          COALESCE($9, 'Grab the Deal'),
+          COALESCE($10, '#trending-products'),
+          COALESCE($11, 'assets/images/bioray-belly-mend.webp'),
+          COALESCE($12, 'assets/images/bioray-belly-mend-bottle.webp'),
+          COALESCE($13, 11),
+          COALESCE($14, 59),
+          COALESCE($15, 55),
+          CURRENT_TIMESTAMP
+        )
+        ON CONFLICT (id) DO UPDATE SET
+          title = COALESCE($1, homepage_flash_sale.title),
+          product_name = COALESCE($2, homepage_flash_sale.product_name),
+          rating = COALESCE($3, homepage_flash_sale.rating),
+          review_count = COALESCE($4, homepage_flash_sale.review_count),
+          sale_price = COALESCE($5, homepage_flash_sale.sale_price),
+          original_price = COALESCE($6, homepage_flash_sale.original_price),
+          discount_percentage = COALESCE($7, homepage_flash_sale.discount_percentage),
+          stock_left_text = COALESCE($8, homepage_flash_sale.stock_left_text),
+          button_text = COALESCE($9, homepage_flash_sale.button_text),
+          button_url = COALESCE($10, homepage_flash_sale.button_url),
+          image_url = COALESCE($11, homepage_flash_sale.image_url),
+          secondary_image_url = COALESCE($12, homepage_flash_sale.secondary_image_url),
+          ends_in_hours = COALESCE($13, homepage_flash_sale.ends_in_hours),
+          ends_in_minutes = COALESCE($14, homepage_flash_sale.ends_in_minutes),
+          ends_in_seconds = COALESCE($15, homepage_flash_sale.ends_in_seconds),
           updated_at = CURRENT_TIMESTAMP
-        WHERE id = 1
         RETURNING
           id, 
           title, 
@@ -705,14 +744,15 @@ const server = http.createServer(async (req, res) => {
           ends_in_minutes as "endsInMinutes", 
           ends_in_seconds as "endsInSeconds";
       `, [
-        data.title, data.productName, data.rating, data.reviewCount,
-        data.salePrice, data.originalPrice, data.discountPercentage,
+        data.title, data.productName, rating, data.reviewCount,
+        salePrice, originalPrice, discountPercentage,
         data.stockLeftText, data.buttonText, data.buttonUrl,
         data.imageUrl, data.secondaryImageUrl,
-        data.endsInHours, data.endsInMinutes, data.endsInSeconds
+        endsInHours, endsInMinutes, endsInSeconds
       ]);
+      const responseData = updateRes.rows[0] || {};
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(updateRes.rows[0]));
+      res.end(JSON.stringify(responseData));
     } catch (err) {
       res.writeHead(500, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: err.message }));
@@ -728,7 +768,7 @@ const server = http.createServer(async (req, res) => {
       const result = await pool.query(`
         SELECT id, name, role, comment, avatar_url as "avatarUrl", display_order as "displayOrder"
         FROM homepage_testimonials
-        ORDER BY display_order ASC;
+        ORDER BY display_order ASC, id ASC;
       `);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(result.rows));
@@ -742,11 +782,39 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/api/homepage/testimonials' && req.method === 'POST') {
     try {
       const data = await parseBody(req);
-      const insRes = await pool.query(`
-        INSERT INTO homepage_testimonials (name, role, comment, avatar_url, display_order)
-        VALUES ($1, $2, $3, $4, $5)
-        RETURNING id, name, role, comment, avatar_url as "avatarUrl", display_order as "displayOrder";
-      `, [data.name || 'Anonymous', data.role || 'Verified Buyer', data.comment || '', data.avatarUrl || 'assets/images/avatar-emily.jpg', data.displayOrder || 99]);
+      const displayOrder = isNaN(parseInt(data.displayOrder, 10)) ? 99 : parseInt(data.displayOrder, 10);
+      let insRes;
+      try {
+        insRes = await pool.query(`
+          INSERT INTO homepage_testimonials (name, role, comment, avatar_url, display_order)
+          VALUES ($1, $2, $3, $4, $5)
+          RETURNING id, name, role, comment, avatar_url as "avatarUrl", display_order as "displayOrder";
+        `, [
+          data.name || 'Anonymous',
+          data.role || 'Verified Buyer',
+          data.comment || '',
+          data.avatarUrl || 'assets/images/avatar-emily.jpg',
+          displayOrder
+        ]);
+      } catch (insertErr) {
+        // If serial sequence was desynchronized by prior manual inserts, auto-resync and retry
+        if (insertErr.code === '23505') {
+          await pool.query(`SELECT setval(pg_get_serial_sequence('homepage_testimonials', 'id'), COALESCE((SELECT MAX(id) FROM homepage_testimonials), 1));`);
+          insRes = await pool.query(`
+            INSERT INTO homepage_testimonials (name, role, comment, avatar_url, display_order)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING id, name, role, comment, avatar_url as "avatarUrl", display_order as "displayOrder";
+          `, [
+            data.name || 'Anonymous',
+            data.role || 'Verified Buyer',
+            data.comment || '',
+            data.avatarUrl || 'assets/images/avatar-emily.jpg',
+            displayOrder
+          ]);
+        } else {
+          throw insertErr;
+        }
+      }
       res.writeHead(201, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(insRes.rows[0]));
     } catch (err) {
@@ -761,6 +829,7 @@ const server = http.createServer(async (req, res) => {
     const id = parseInt(matchTestimonialUpdate[1], 10);
     try {
       const data = await parseBody(req);
+      const displayOrder = data.displayOrder !== undefined ? (isNaN(parseInt(data.displayOrder, 10)) ? 1 : parseInt(data.displayOrder, 10)) : null;
       const updRes = await pool.query(`
         UPDATE homepage_testimonials
         SET
@@ -772,7 +841,12 @@ const server = http.createServer(async (req, res) => {
           updated_at = CURRENT_TIMESTAMP
         WHERE id = $6
         RETURNING id, name, role, comment, avatar_url as "avatarUrl", display_order as "displayOrder";
-      `, [data.name, data.role, data.comment, data.avatarUrl, data.displayOrder, id]);
+      `, [data.name, data.role, data.comment, data.avatarUrl, displayOrder, id]);
+      if (updRes.rowCount === 0) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'Testimonial not found' }));
+        return;
+      }
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(updRes.rows[0]));
     } catch (err) {
