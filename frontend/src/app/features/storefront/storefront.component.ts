@@ -342,12 +342,12 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
 
   subscribeNewsletter() {
     const email = this.newsletterEmail().trim();
-    if (!email || !email.includes('@')) {
-      alert('Please enter a valid email address.');
+    if (!email || !email.includes('@') || !email.includes('.')) {
+      this.showStoreToast('Please enter a valid email address (e.g. name@domain.com).', 'Invalid Email');
       return;
     }
     this.isSubscribed.set(true);
-    this.showStoreToast(`Thanks for subscribing with ${email}!`, 'Newsletter Subscribed');
+    this.showStoreToast(`Thanks for subscribing! Exclusive deals will be sent to ${email}`, 'Subscribed Successfully 🎉');
     this.newsletterEmail.set('');
   }
 
