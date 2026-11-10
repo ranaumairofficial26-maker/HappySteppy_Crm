@@ -274,15 +274,15 @@ const DEFAULT_SOCIAL_PROOF: SocialProofConfig = {
   trustedBrands: ['Puma', 'Nordic Naturals', 'NovaTech', 'UrbanFit', 'Bioray', 'Nova']
 };
 
-const STORAGE_HERO_KEY = 'hs_homepage_hero';
-const STORAGE_CARDS_KEY = 'hs_feature_cards';
-const STORAGE_PRODUCTS_KEY = 'hs_trending_products';
-const STORAGE_PROMO_KEY = 'hs_homepage_promo_banner';
-const STORAGE_FOOTER_KEY = 'hs_homepage_footer';
-const STORAGE_STYLES_KEY = 'hs_homepage_styles';
-const STORAGE_FLASH_KEY = 'hs_homepage_flash_sale';
-const STORAGE_TESTIMONIALS_KEY = 'hs_homepage_testimonials';
-const STORAGE_PROOF_KEY = 'hs_homepage_social_proof';
+const STORAGE_HERO_KEY = 'hs_homepage_hero_v2';
+const STORAGE_CARDS_KEY = 'hs_feature_cards_v2';
+const STORAGE_PRODUCTS_KEY = 'hs_trending_products_v2';
+const STORAGE_PROMO_KEY = 'hs_homepage_promo_banner_v2';
+const STORAGE_FOOTER_KEY = 'hs_homepage_footer_v2';
+const STORAGE_STYLES_KEY = 'hs_homepage_styles_v2';
+const STORAGE_FLASH_KEY = 'hs_homepage_flash_sale_v2';
+const STORAGE_TESTIMONIALS_KEY = 'hs_homepage_testimonials_v2';
+const STORAGE_PROOF_KEY = 'hs_homepage_social_proof_v2';
 
 @Injectable({
   providedIn: 'root'
