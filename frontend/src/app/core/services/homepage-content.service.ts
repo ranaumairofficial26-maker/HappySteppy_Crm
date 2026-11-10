@@ -74,26 +74,31 @@ export interface SocialProofConfig {
 export function normalizeImageUrl(url?: string | null): string {
   if (!url) return 'assets/images/hero-upgrade-lifestyle.jpg?v=2';
   if (url.startsWith('data:')) return url;
-  if (url.startsWith('http://') || url.startsWith('https://')) return url;
-  if (url.startsWith('assets/uploads/')) {
-    const filename = url.replace('assets/uploads/', '');
-    return `http://localhost:5000/uploads/${filename}`;
+  // If URL references localhost:5000/uploads/ or /uploads/, point directly to the static bundled asset
+  if (url.includes('localhost:5000/uploads/')) {
+    const filename = url.split('localhost:5000/uploads/')[1];
+    return `assets/uploads/${filename}`;
   }
   if (url.startsWith('/uploads/')) {
-    return `http://localhost:5000${url}`;
+    const filename = url.replace('/uploads/', '');
+    return `assets/uploads/${filename}`;
   }
+  if (url.startsWith('assets/uploads/') || url.startsWith('assets/images/')) {
+    return url;
+  }
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
   return url;
 }
 
 const DEFAULT_HERO: HeroBannerConfig = {
   badgeText: 'HEALTH & WELLNESS ESSENTIALS',
-  title: 'Trusted Care for a Healthier You',
-  description: 'Premium supplements and natural medicines for your everyday wellness.',
+  title: 'Trusted Care\n for a Healthier You',
+  description: 'Premium supplements and natural medicines\nfor your everyday wellness.',
   primaryButtonText: 'Shop Now',
   primaryButtonUrl: '#trending-products',
   secondaryButtonText: 'Explore Products',
   secondaryButtonUrl: '#trending-products',
-  imageUrl: 'http://localhost:5000/uploads/hero-1794205517574-health_wellness_text_free_1200x420.png',
+  imageUrl: 'assets/uploads/hero-1794205517574-health_wellness_text_free_1200x420.png',
   recommendedWidth: 1200,
   recommendedHeight: 420
 };
@@ -129,8 +134,36 @@ const DEFAULT_PRODUCTS: TrendingProduct[] = [
     reviewCount: '1.2k',
     price: 8200,
     originalPrice: 10250,
-    imageUrl: 'assets/images/bioray-belly-mend.webp',
+    imageUrl: 'assets/uploads/prod-1794209234560-BELLY-MEND-organic.webp',
     displayOrder: 2,
+    isActive: true,
+    isWishlisted: false
+  },
+  {
+    id: 9,
+    name: 'Stainless Steel Insulated Sport Bottle',
+    category: 'Supplements',
+    discount: 20,
+    rating: 5.0,
+    reviewCount: '850',
+    price: 4500,
+    originalPrice: 5600,
+    imageUrl: 'assets/images/prod-bottle.jpg',
+    displayOrder: 3,
+    isActive: true,
+    isWishlisted: false
+  },
+  {
+    id: 11,
+    name: 'Kirkman',
+    category: 'Supplements',
+    discount: 14,
+    rating: 5.0,
+    reviewCount: '410',
+    price: 500,
+    originalPrice: 582,
+    imageUrl: 'assets/uploads/prod-1794286652120-0283-100_bottle_1.webp',
+    displayOrder: 4,
     isActive: true,
     isWishlisted: false
   }
@@ -143,7 +176,7 @@ const DEFAULT_PROMO: PromoBannerConfig = {
   discountText: '40% OFF',
   buttonText: 'Discover Now',
   buttonUrl: '#trending-products',
-  imageUrl: 'assets/images/home-refresh-banner.jpg',
+  imageUrl: 'assets/uploads/promo-1794222998271-FINAL.png',
   recommendedWidth: 1200,
   recommendedHeight: 200
 };
@@ -174,10 +207,38 @@ const DEFAULT_FOOTER: FooterConfig = {
 };
 
 const DEFAULT_STYLES: StyleCategoryItem[] = [
-  { id: 1, title: 'Tech Lover', subtitle: 'Smart & connected', imageUrl: 'assets/images/style-tech.jpg', linkUrl: '/shop?cat=tech', displayOrder: 1 },
-  { id: 2, title: 'Modern Fashion', subtitle: 'Trendy & versatile', imageUrl: 'assets/images/style-fashion.jpg', linkUrl: '/shop?cat=fashion', displayOrder: 2 },
-  { id: 3, title: 'Home Vibes', subtitle: 'Cozy & stylish', imageUrl: 'assets/images/style-home.jpg', linkUrl: '/shop?cat=home', displayOrder: 3 },
-  { id: 4, title: 'Active Life', subtitle: 'Fit, strong & healthy', imageUrl: 'assets/images/style-active.jpg', linkUrl: '/shop?cat=active', displayOrder: 4 }
+  {
+    id: 1,
+    title: 'Tech Lover',
+    subtitle: 'Smart & connected',
+    imageUrl: 'assets/uploads/style-1794287461163-300x400.png',
+    linkUrl: '/shop?cat=tech',
+    displayOrder: 1
+  },
+  {
+    id: 2,
+    title: 'Modern Fashion',
+    subtitle: 'Trendy & versatile',
+    imageUrl: 'assets/uploads/style-1794288119428-300x400.png',
+    linkUrl: '/shop?cat=fashion',
+    displayOrder: 2
+  },
+  {
+    id: 3,
+    title: 'Home Vibes',
+    subtitle: 'Cozy & stylish',
+    imageUrl: 'assets/uploads/style-1794223760944-BELLY-MEND-bioray.webp',
+    linkUrl: '/shop?cat=home',
+    displayOrder: 3
+  },
+  {
+    id: 4,
+    title: 'Active Life',
+    subtitle: 'Fit, strong & healthy',
+    imageUrl: 'assets/uploads/style-1794223764876-BELLY-MEND-organic.webp',
+    linkUrl: '/shop?cat=active',
+    displayOrder: 4
+  }
 ];
 
 const DEFAULT_FLASH_SALE: FlashSaleConfig = {
@@ -303,7 +364,12 @@ export class HomepageContentService {
       const stored = localStorage.getItem(STORAGE_PRODUCTS_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map(p => ({
+            ...p,
+            imageUrl: normalizeImageUrl(p.imageUrl)
+          }));
+        }
       }
     } catch {}
     return [...DEFAULT_PRODUCTS];
@@ -314,7 +380,12 @@ export class HomepageContentService {
       const stored = localStorage.getItem(STORAGE_STYLES_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map(s => ({
+            ...s,
+            imageUrl: normalizeImageUrl(s.imageUrl)
+          }));
+        }
       }
     } catch {}
     return [...DEFAULT_STYLES];
@@ -323,7 +394,12 @@ export class HomepageContentService {
   private loadInitialFlashSale(): FlashSaleConfig {
     try {
       const stored = localStorage.getItem(STORAGE_FLASH_KEY);
-      if (stored) return JSON.parse(stored);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed.imageUrl) parsed.imageUrl = normalizeImageUrl(parsed.imageUrl);
+        if (parsed.secondaryImageUrl) parsed.secondaryImageUrl = normalizeImageUrl(parsed.secondaryImageUrl);
+        return parsed;
+      }
     } catch {}
     return { ...DEFAULT_FLASH_SALE };
   }

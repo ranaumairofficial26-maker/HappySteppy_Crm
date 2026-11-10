@@ -56,7 +56,7 @@ export class AdminComponent implements OnInit {
   }
 
   // --- Hero Banner Form State ---
-  heroImageUrl = signal<string>('http://localhost:5000/uploads/hero-1794205517574-health_wellness_text_free_1200x420.png');
+  heroImageUrl = signal<string>('assets/uploads/hero-1794205517574-health_wellness_text_free_1200x420.png');
   resolvedHeroImageUrl = computed(() => normalizeImageUrl(this.heroImageUrl()));
   heroBadgeText = signal<string>('HEALTH & WELLNESS ESSENTIALS');
   heroTitle = signal<string>('Trusted Care for a Healthier You');
@@ -127,7 +127,7 @@ export class AdminComponent implements OnInit {
   promoDiscountText = signal<string>('40% OFF');
   promoButtonText = signal<string>('Discover Now');
   promoButtonUrl = signal<string>('#trending-products');
-  promoImageUrl = signal<string>('assets/images/home-refresh-banner.jpg');
+  promoImageUrl = signal<string>('assets/uploads/promo-1794222998271-FINAL.png');
   resolvedPromoImageUrl = computed(() => normalizeImageUrl(this.promoImageUrl()));
   promoRecWidth = signal<number>(1200);
   promoRecHeight = signal<number>(200);

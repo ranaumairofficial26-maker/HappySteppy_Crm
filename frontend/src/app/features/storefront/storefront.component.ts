@@ -51,12 +51,12 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
   currentFlashImg(): string {
     const fs = this.flashSale();
     if (this.isFlashImgHovered() && fs.secondaryImageUrl) {
-      return fs.secondaryImageUrl;
+      return this.resolveHeroImage(fs.secondaryImageUrl);
     }
     if (this.activeFlashImgIndex() === 1 && fs.secondaryImageUrl) {
-      return fs.secondaryImageUrl;
+      return this.resolveHeroImage(fs.secondaryImageUrl);
     }
-    return fs.imageUrl || 'assets/images/bioray-belly-mend.webp';
+    return this.resolveHeroImage(fs.imageUrl) || 'assets/images/bioray-belly-mend.webp';
   }
 
   onFlashSaleCta() {
@@ -376,6 +376,6 @@ export class StorefrontComponent implements OnInit, OnDestroy, AfterViewInit {
     try {
       localStorage.removeItem('hs_admin_auth');
       sessionStorage.removeItem('hs_admin_auth');
-    } catch {}
+    } catch { }
   }
 }
