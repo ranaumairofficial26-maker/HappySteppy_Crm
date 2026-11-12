@@ -1616,31 +1616,48 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/api/homepage/products' && req.method === 'POST') {
     try {
       const data = await parseBody(req);
-      const name = data.name?.trim();
+      const name = typeof data.name === 'string' ? data.name.trim() : '';
       if (!name) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ message: 'Product name is required.' }));
         return;
       }
-      const category = data.category?.trim() || 'Supplements';
-      const discount = parseInt(data.discount, 10) || 0;
-      const rating = parseFloat(data.rating) || 5.0;
-      const reviewCount = data.reviewCount?.trim() || '1.0k';
-      const price = parseFloat(data.price) || 0;
-      const originalPrice = parseFloat(data.originalPrice) || price;
-      const imageUrl = data.imageUrl?.trim() || 'assets/images/nordic-naturals-omega-3.jpg';
+      const category = (typeof data.category === 'string' && data.category.trim()) || 'Supplements';
+      const discount = isNaN(parseInt(data.discount, 10)) ? 0 : parseInt(data.discount, 10);
+      const rating = isNaN(parseFloat(data.rating)) ? 5.0 : parseFloat(data.rating);
+      const reviewCount = (typeof data.reviewCount === 'string' && data.reviewCount.trim()) || '1.0k';
+      const price = isNaN(parseFloat(data.price)) ? 0 : parseFloat(data.price);
+      const originalPrice = isNaN(parseFloat(data.originalPrice)) ? price : parseFloat(data.originalPrice);
+      const imageUrl = (typeof data.imageUrl === 'string' && data.imageUrl.trim()) || 'assets/images/nordic-naturals-omega-3.jpg';
 
       const maxOrderRow = await pool.query('SELECT COALESCE(MAX(display_order), 0) as "maxOrder" FROM trending_products;');
       const nextOrder = parseInt(maxOrderRow.rows[0].maxOrder, 10) + 1;
 
-      const insertRes = await pool.query(`
-        INSERT INTO trending_products 
-          (name, category, discount, rating, review_count, price, original_price, image_url, display_order, is_active)
-        VALUES 
-          ($1, $2, $3, $4, $5, $6, $7, $8, $9, true)
-        RETURNING 
-          id, name, category, discount, rating, review_count as "reviewCount", price::float as price, original_price::float as "originalPrice", image_url as "imageUrl", display_order as "displayOrder", is_active as "isActive";
-      `, [name, category, discount, rating, reviewCount, price, originalPrice, imageUrl, nextOrder]);
+      let insertRes;
+      try {
+        insertRes = await pool.query(`
+          INSERT INTO trending_products 
+            (name, category, discount, rating, review_count, price, original_price, image_url, display_order, is_active)
+          VALUES 
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9, true)
+          RETURNING 
+            id, name, category, discount, rating, review_count as "reviewCount", price::float as price, original_price::float as "originalPrice", image_url as "imageUrl", display_order as "displayOrder", is_active as "isActive";
+        `, [name, category, discount, rating, reviewCount, price, originalPrice, imageUrl, nextOrder]);
+      } catch (insertErr) {
+        if (insertErr.code === '23505') {
+          await pool.query(`SELECT setval(pg_get_serial_sequence('trending_products', 'id'), COALESCE((SELECT MAX(id) FROM trending_products), 1));`);
+          insertRes = await pool.query(`
+            INSERT INTO trending_products 
+              (name, category, discount, rating, review_count, price, original_price, image_url, display_order, is_active)
+            VALUES 
+              ($1, $2, $3, $4, $5, $6, $7, $8, $9, true)
+            RETURNING 
+              id, name, category, discount, rating, review_count as "reviewCount", price::float as price, original_price::float as "originalPrice", image_url as "imageUrl", display_order as "displayOrder", is_active as "isActive";
+          `, [name, category, discount, rating, reviewCount, price, originalPrice, imageUrl, nextOrder]);
+        } else {
+          throw insertErr;
+        }
+      }
 
       console.log(`[PostgreSQL] Added new product id=${insertRes.rows[0].id}: "${insertRes.rows[0].name}"`);
       res.writeHead(201, { 'Content-Type': 'application/json' });
@@ -1666,15 +1683,15 @@ const server = http.createServer(async (req, res) => {
         return;
       }
       const row = existing.rows[0];
-      const name = data.name !== undefined ? data.name.trim() : row.name;
-      const category = data.category !== undefined ? data.category.trim() : row.category;
-      const discount = data.discount !== undefined ? parseInt(data.discount, 10) : row.discount;
-      const rating = data.rating !== undefined ? parseFloat(data.rating) : row.rating;
-      const reviewCount = data.reviewCount !== undefined ? data.reviewCount.trim() : row.review_count;
-      const price = data.price !== undefined ? parseFloat(data.price) : parseFloat(row.price);
-      const originalPrice = data.originalPrice !== undefined ? parseFloat(data.originalPrice) : parseFloat(row.original_price);
-      const imageUrl = data.imageUrl !== undefined ? data.imageUrl.trim() : row.image_url;
-      const displayOrder = data.displayOrder !== undefined ? parseInt(data.displayOrder, 10) : row.display_order;
+      const name = typeof data.name === 'string' && data.name.trim() ? data.name.trim() : row.name;
+      const category = typeof data.category === 'string' && data.category.trim() ? data.category.trim() : row.category;
+      const discount = data.discount !== undefined && !isNaN(parseInt(data.discount, 10)) ? parseInt(data.discount, 10) : row.discount;
+      const rating = data.rating !== undefined && !isNaN(parseFloat(data.rating)) ? parseFloat(data.rating) : row.rating;
+      const reviewCount = typeof data.reviewCount === 'string' && data.reviewCount.trim() ? data.reviewCount.trim() : row.review_count;
+      const price = data.price !== undefined && !isNaN(parseFloat(data.price)) ? parseFloat(data.price) : parseFloat(row.price);
+      const originalPrice = data.originalPrice !== undefined && !isNaN(parseFloat(data.originalPrice)) ? parseFloat(data.originalPrice) : parseFloat(row.original_price);
+      const imageUrl = typeof data.imageUrl === 'string' && data.imageUrl.trim() ? data.imageUrl.trim() : row.image_url;
+      const displayOrder = data.displayOrder !== undefined && !isNaN(parseInt(data.displayOrder, 10)) ? parseInt(data.displayOrder, 10) : row.display_order;
       const isActive = data.isActive !== undefined ? !!data.isActive : row.is_active;
 
       const updateRes = await pool.query(`

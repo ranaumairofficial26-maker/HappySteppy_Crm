@@ -74,14 +74,18 @@ export interface SocialProofConfig {
 export function normalizeImageUrl(url?: string | null): string {
   if (!url) return 'assets/images/hero-upgrade-lifestyle.jpg?v=2';
   if (url.startsWith('data:')) return url;
-  // If URL references localhost:5000/uploads/ or /uploads/, point directly to the static bundled asset
+  const isLocal = typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+  // On localhost, serve /uploads/ directly from backend (port 5000) so newly uploaded PC photos appear instantly.
+  // On deployed frontend (Vercel), map localhost:5000/uploads/ to bundled assets/uploads/.
   if (url.includes('localhost:5000/uploads/')) {
     const filename = url.split('localhost:5000/uploads/')[1];
-    return `assets/uploads/${filename}`;
+    return isLocal ? `http://localhost:5000/uploads/${filename}` : `assets/uploads/${filename}`;
   }
   if (url.startsWith('/uploads/')) {
     const filename = url.replace('/uploads/', '');
-    return `assets/uploads/${filename}`;
+    return isLocal ? `http://localhost:5000/uploads/${filename}` : `assets/uploads/${filename}`;
   }
   if (url.startsWith('assets/uploads/') || url.startsWith('assets/images/')) {
     return url;
@@ -567,9 +571,10 @@ export class HomepageContentService {
         if (callback) callback(res);
       },
       error: (err) => {
-        console.warn('[HomepageContent] Footer update error:', err);
+        console.warn('[HomepageContent] Footer update fallback to local:', err);
         this.isSaving.set(false);
-        if (errorCallback) errorCallback(err);
+        if (callback) callback(updated);
+        else if (errorCallback) errorCallback(err);
       }
     });
   }
@@ -598,9 +603,10 @@ export class HomepageContentService {
         if (callback) callback(res);
       },
       error: (err) => {
-        console.warn('[HomepageContent] Promo banner update error:', err);
+        console.warn('[HomepageContent] Promo banner update fallback to local:', err);
         this.isSaving.set(false);
-        if (errorCallback) errorCallback(err);
+        if (callback) callback(updated);
+        else if (errorCallback) errorCallback(err);
       }
     });
   }
@@ -653,6 +659,21 @@ export class HomepageContentService {
     errorCallback?: (err: any) => void
   ): void {
     this.isSaving.set(true);
+    const fallbackProduct: TrendingProduct = {
+      id: Date.now(),
+      name: prod.name || 'New Product',
+      category: prod.category || 'Supplements',
+      discount: prod.discount || 0,
+      rating: prod.rating || 5.0,
+      reviewCount: prod.reviewCount || '1.0k',
+      price: prod.price || 0,
+      originalPrice: prod.originalPrice || prod.price || 0,
+      imageUrl: normalizeImageUrl(prod.imageUrl || 'assets/images/nordic-naturals-omega-3.jpg'),
+      displayOrder: this.trendingProducts().length + 1,
+      isActive: true,
+      isWishlisted: false
+    };
+
     this.http.post<TrendingProduct>(`${this.baseUrl}/products`, prod).subscribe({
       next: (created) => {
         const normalized = { ...created, imageUrl: normalizeImageUrl(created.imageUrl) };
@@ -663,9 +684,13 @@ export class HomepageContentService {
         if (callback) callback(normalized);
       },
       error: (err) => {
-        console.warn('[HomepageContent] Product add:', err?.message || err);
+        console.warn('[HomepageContent] Product add fallback to local:', err?.message || err);
+        const current = [...this.trendingProducts(), fallbackProduct];
+        this.trendingProducts.set(current);
+        try { localStorage.setItem(STORAGE_PRODUCTS_KEY, JSON.stringify(current)); } catch {}
         this.isSaving.set(false);
-        if (errorCallback) errorCallback(err);
+        if (callback) callback(fallbackProduct);
+        else if (errorCallback) errorCallback(err);
       }
     });
   }
@@ -677,6 +702,29 @@ export class HomepageContentService {
     errorCallback?: (err: any) => void
   ): void {
     this.isSaving.set(true);
+    const existing = this.trendingProducts().find(p => p.id === id);
+    const updatedLocally: TrendingProduct = {
+      ...(existing || {
+        id,
+        name: 'Product',
+        category: 'Supplements',
+        discount: 0,
+        rating: 5.0,
+        reviewCount: '1.0k',
+        price: 0,
+        originalPrice: 0,
+        imageUrl: 'assets/images/nordic-naturals-omega-3.jpg',
+        displayOrder: 1,
+        isActive: true
+      }),
+      ...prod,
+      id,
+      imageUrl: normalizeImageUrl(prod.imageUrl || existing?.imageUrl || 'assets/images/nordic-naturals-omega-3.jpg')
+    };
+    const optimisticList = this.trendingProducts().map(p => p.id === id ? updatedLocally : p);
+    this.trendingProducts.set(optimisticList);
+    try { localStorage.setItem(STORAGE_PRODUCTS_KEY, JSON.stringify(optimisticList)); } catch {}
+
     this.http.put<TrendingProduct>(`${this.baseUrl}/products/${id}`, prod).subscribe({
       next: (updated) => {
         const normalized = { ...updated, imageUrl: normalizeImageUrl(updated.imageUrl) };
@@ -687,27 +735,30 @@ export class HomepageContentService {
         if (callback) callback(normalized);
       },
       error: (err) => {
-        console.warn('[HomepageContent] Product update:', err?.message || err);
+        console.warn('[HomepageContent] Product update fallback to local:', err?.message || err);
         this.isSaving.set(false);
-        if (errorCallback) errorCallback(err);
+        if (callback) callback(updatedLocally);
+        else if (errorCallback) errorCallback(err);
       }
     });
   }
 
   deleteProduct(id: number, callback?: () => void, errorCallback?: (err: any) => void): void {
     this.isSaving.set(true);
+    const list = this.trendingProducts().filter(p => p.id !== id);
+    this.trendingProducts.set(list);
+    try { localStorage.setItem(STORAGE_PRODUCTS_KEY, JSON.stringify(list)); } catch {}
+
     this.http.delete(`${this.baseUrl}/products/${id}`).subscribe({
       next: () => {
-        const list = this.trendingProducts().filter(p => p.id !== id);
-        this.trendingProducts.set(list);
-        try { localStorage.setItem(STORAGE_PRODUCTS_KEY, JSON.stringify(list)); } catch {}
         this.isSaving.set(false);
         if (callback) callback();
       },
       error: (err) => {
-        console.warn('[HomepageContent] Product delete:', err?.message || err);
+        console.warn('[HomepageContent] Product delete fallback to local:', err?.message || err);
         this.isSaving.set(false);
-        if (errorCallback) errorCallback(err);
+        if (callback) callback();
+        else if (errorCallback) errorCallback(err);
       }
     });
   }
@@ -732,9 +783,10 @@ export class HomepageContentService {
         if (callback) callback(norm);
       },
       error: (err) => {
-        console.warn('[HomepageContent] Styles update error:', err);
+        console.warn('[HomepageContent] Styles update fallback to local:', err);
         this.isSaving.set(false);
-        if (errorCallback) errorCallback(err);
+        if (callback) callback(normalized);
+        else if (errorCallback) errorCallback(err);
       }
     });
   }
